@@ -9,10 +9,10 @@ using System.Linq;
 using Microsoft.Owin.Security;
 using System;
 
-namespace SX.WebCore.Controllers
+namespace SX.WebCore.MvcControllers
 {
     [Authorize]
-    public abstract class SxAccountController : Controller
+    public abstract class SxAccountController : SxBaseController
     {
         private SxAppSignInManager _signInManager;
         private SxAppUserManager _userManager;

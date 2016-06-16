@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.SessionState;
 
-namespace SX.WebCore.Controllers
+namespace SX.WebCore.MvcControllers
 {
     [SessionState(SessionStateBehavior.Disabled)]
-    public abstract class SxPicturesController<TDbContext> : Controller where TDbContext : SxDbContext
+    public abstract class SxPicturesController<TDbContext> : SxBaseController where TDbContext : SxDbContext
     {
         private static SxDbRepository<Guid, SxPicture, TDbContext> _repo;
         private static CacheItemPolicy _defaultPolicy

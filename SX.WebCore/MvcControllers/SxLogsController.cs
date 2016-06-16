@@ -4,9 +4,9 @@ using System;
 using System.IO;
 using System.Web.Mvc;
 
-namespace SX.WebCore.Controllers
+namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxLogsController : Controller
+    public abstract class SxLogsController : SxBaseController
     {
         [HttpGet]
         public virtual FileResult GetLog(string siteName=null)

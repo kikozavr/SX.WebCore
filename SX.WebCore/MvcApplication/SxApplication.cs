@@ -26,53 +26,14 @@ namespace SX.WebCore.MvcApplication
             }
         }
 
-        private Action<HttpConfiguration> _configWebApi;
-        private Action<RouteCollection> _registerRoutes;
         private static MapperConfiguration _mapperConfiguration;
-        private static SxErrorProvider _errorProvider;
-        private static SxBannerProvider _bannerProvider;
-        private static SxSiteSettingsProvider _siteSettingsProvider;
-        private static MemoryCache _cache;
-        private static string _logDirectory;
-        private static bool _isLogRequests;
+        public static MapperConfiguration MapperConfiguration { get { return _mapperConfiguration; } }
 
-        protected SxApplication(
-            Action<HttpConfiguration> webApiConfigRegister,
-            Action<RouteCollection> registerRoutes,
-            MapperConfiguration mapperConfiguration,
-            string logDirectory = null,
-            bool isLogRequests=false)
-        {
-            _configWebApi = webApiConfigRegister;
-            _registerRoutes = registerRoutes;
-            _mapperConfiguration = mapperConfiguration;
-            _logDirectory = logDirectory;
-            _isLogRequests = isLogRequests;
-        }
+        //private static bool _loggingRequest=false;
+        public static bool LoggingRequest { get { return (bool)_appCache["APP_LoggingRequest"]; } }
 
-        public static bool IsLogRequest
-        {
-            get
-            {
-                return _isLogRequests;
-            }
-        }
-
-        public static MemoryCache AppCache
-        {
-            get
-            {
-                return _cache;
-            }
-        }
-
-        public static MapperConfiguration MapperConfiguration
-        {
-            get
-            {
-                return _mapperConfiguration;
-            }
-        }
+        private static MemoryCache _appCache;
+        public static MemoryCache AppCache { get { return _appCache; } }
 
         public static string[] GetBannedUrls(CacheItemPolicy cip = null)
         {
@@ -105,35 +66,20 @@ namespace SX.WebCore.MvcApplication
             return cacheBanners;
         }
 
-        protected virtual void Application_Start()
-        {
-            AreaRegistration.RegisterAllAreas();
+        private static SxErrorProvider _errorProvider;
+        public static SxErrorProvider ErrorProvider { get { return _errorProvider; } }
 
-            if (_configWebApi != null)
-                GlobalConfiguration.Configure(_configWebApi);
+        private static SxBannerProvider _bannerProvider;
+        public static SxBannerProvider BannerProvider { get { return _bannerProvider; } }
 
-            if (_registerRoutes != null)
-                _registerRoutes(RouteTable.Routes);
-
-            _cache = new MemoryCache("APPLICATION_CACHE");
-
-            _logDirectory = _logDirectory ?? "~/Logs";
-            var logDirectoryPath = Server.MapPath(_logDirectory);
-            if (!Directory.Exists(logDirectoryPath))
-                Directory.CreateDirectory(logDirectoryPath);
-            _errorProvider = new SxErrorProvider(logDirectoryPath);
-
-            _bannerProvider = new SxBannerProvider(() => GetBanners().Banners);
-
-            _siteSettingsProvider = new SxSiteSettingsProvider(()=>getSiteSettings());
-        }
-
+        private static SxSiteSettingsProvider _siteSettingsProvider;
+        public static SxSiteSettingsProvider SiteSettingsProvider { get { return _siteSettingsProvider; } }
         private static Dictionary<string, SxSiteSetting> getSiteSettings(CacheItemPolicy cip = null)
         {
             var data = (Dictionary<string, SxSiteSetting>)AppCache["CACHE_SITE_SETTINGS"];
             if (data == null)
             {
-                cip = cip  ?? _defaultPolicy15Min;
+                cip = cip ?? _defaultPolicy15Min;
                 data = new SxRepoSiteSetting<TDbContext>().GetByKeys(
                         Settings.siteName,
                         Settings.siteLogoPath,
@@ -150,28 +96,28 @@ namespace SX.WebCore.MvcApplication
             return data;
         }
 
-        public static SxErrorProvider ErrorProvider
+        protected virtual void Application_Start(object sender, EventArgs e)
         {
-            get
-            {
-                return _errorProvider;
-            }
-        }
+            _appCache = new MemoryCache("APPLICATION_CACHE");
 
-        public static SxBannerProvider BannerProvider
-        {
-            get
-            {
-                return _bannerProvider;
-            }
-        }
+            var args = (SxApplicationEventArgs)e;
 
-        public static SxSiteSettingsProvider SiteSettingsProvider
-        {
-            get
-            {
-                return _siteSettingsProvider;
-            }
+            AreaRegistration.RegisterAllAreas();
+            GlobalConfiguration.Configure(args.WebApiConfigRegister);
+            args.RegisterRoutes(RouteTable.Routes);
+
+            _mapperConfiguration = args.MapperConfiguration;
+
+            var logDirectoryPath = Server.MapPath(args.LogDirectory ?? "~/Logs");
+            if (!Directory.Exists(logDirectoryPath))
+                Directory.CreateDirectory(logDirectoryPath);
+            _errorProvider = new SxErrorProvider(logDirectoryPath);
+
+            Context.Cache["APP_LoggingRequest"]=args.LoggingRequest;
+
+            _bannerProvider = new SxBannerProvider(() => GetBanners().Banners);
+
+            _siteSettingsProvider = new SxSiteSettingsProvider(() => getSiteSettings());
         }
 
         protected virtual void Session_Start()
@@ -187,7 +133,17 @@ namespace SX.WebCore.MvcApplication
         protected void Application_Error()
         {
             var ex = Server.GetLastError();
-            _errorProvider.WriteMessage(ex);
+            ErrorProvider.WriteMessage(ex);
         }
     }
+
+    public class SxApplicationEventArgs : EventArgs
+    {
+        public Action<HttpConfiguration> WebApiConfigRegister { get; set; }
+        public Action<RouteCollection> RegisterRoutes { get; set; }
+        public MapperConfiguration MapperConfiguration { get; set; }
+        public string LogDirectory { get; set; }
+        public bool LoggingRequest { get; set; }
+    }
+
 }

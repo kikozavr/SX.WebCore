@@ -25,19 +25,12 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
-        private static IMapper _mapper;
-        protected IMapper Mapper
-        {
-            get
-            {
-                return _mapper;
-            }
-        }
+        protected static IMapper Mapper { get; set; }
 
         public SxBaseController()
         {
-            if (_mapper == null)
-                _mapper = SxApplication<TDbContext>.MapperConfiguration.CreateMapper();
+            if (Mapper == null)
+                Mapper = SxApplication<TDbContext>.MapperConfiguration.CreateMapper();
         }
 
         public string SxAreaName { get; set; }
@@ -73,7 +66,7 @@ namespace SX.WebCore.MvcControllers
 
             //редирект, если есть
             var redirect = getRedirect();
-            if(redirect != null && redirect.NewUrl!=null)
+            if (redirect != null && redirect.NewUrl != null)
             {
                 filterContext.Result = new RedirectResult(redirect.NewUrl);
                 return;
@@ -86,7 +79,7 @@ namespace SX.WebCore.MvcControllers
             writePageBanners();
 
             //пишем информацию о запросе
-            if (SxApplication<SxDbContext>.IsLogRequest)
+            if (!Request.IsLocal && Equals(filterContext.HttpContext.Cache["APP_LoggingRequest"],true))
             {
                 writeRequestInfo();
             }

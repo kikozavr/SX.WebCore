@@ -15,6 +15,7 @@ namespace SX.WebCore
         {
             _nameOrConnectionString = nameOrConnectionString;
         }
+
         public static TDbContext Create<TDbContext>()
         {
             var context = Activator.CreateInstance<TDbContext>();

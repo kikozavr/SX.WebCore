@@ -56,12 +56,6 @@ namespace SX.WebCore.MvcControllers
             SxSessionId = session?.SessionID;
             SxRawUrl = Request.RawUrl.ToLower();
 
-            if(!SxApplication<SxDbContext>.IsLogRequest)
-            {
-                base.OnActionExecuting(filterContext);
-                return;
-            }
-
             //забаненные адреса
             var urlRef = Request.UrlReferrer;
             if (urlRef != null)
@@ -92,7 +86,10 @@ namespace SX.WebCore.MvcControllers
             writePageBanners();
 
             //пишем информацию о запросе
-            writeRequestInfo();
+            if (SxApplication<SxDbContext>.IsLogRequest)
+            {
+                writeRequestInfo();
+            }
 
             base.OnActionExecuting(filterContext);
         }

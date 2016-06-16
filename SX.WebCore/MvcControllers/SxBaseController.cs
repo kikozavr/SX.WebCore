@@ -79,7 +79,7 @@ namespace SX.WebCore.MvcControllers
             writePageBanners();
 
             //пишем информацию о запросе
-            if (!Request.IsLocal && Equals(filterContext.HttpContext.Cache["APP_LoggingRequest"],true))
+            if (Equals(filterContext.HttpContext.Cache["APP_LoggingRequest"],true))
             {
                 writeRequestInfo();
             }

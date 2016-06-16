@@ -24,7 +24,8 @@ namespace SX.WebCore.Repositories
                     userAgent = model.UserAgent
                 });
             }
-            return base.Create(model);
+
+            return base.GetByKey(id);
         }
     }
 }

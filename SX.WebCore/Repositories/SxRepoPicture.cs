@@ -6,14 +6,13 @@ using System.Linq;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class RepoPicture<TDbContext> : SxDbRepository<Guid, SxPicture, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoPicture<TDbContext> : SxDbRepository<Guid, SxPicture, TDbContext> where TDbContext : SxDbContext
     {
         public override SxPicture GetByKey(params object[] id)
         {
-            using (var conn = new SqlConnection(base.ConnectionString))
+            using (var conn = new SqlConnection(ConnectionString))
             {
-                var picture = conn.Query<SxPicture>("select dp.Id, dp.Caption, dp.Description, dp.OriginalContent, dp.Width, dp.Height, dp.ImgFormat, dp.DateCreate from D_PICTURE dp where dp.ID=@PICTURE_ID", new { PICTURE_ID = id }).SingleOrDefault();
-                return picture;
+                return conn.Query<SxPicture>("get_picture @pictureId", new { pictureId = id[0] }).SingleOrDefault();
             }
         }
 

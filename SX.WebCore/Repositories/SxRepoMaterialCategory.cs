@@ -4,11 +4,10 @@ using System.Data.SqlClient;
 using Dapper;
 using SX.WebCore.Providers;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
-using System.Collections.Generic;
 
 namespace SX.WebCore.Repositories
 {
-    public class RepoMaterialCategory<TDbContext> : SxDbRepository<string, SxMaterialCategory, TDbContext> where TDbContext : SxDbContext
+    public class SxRepoMaterialCategory<TDbContext> : SxDbRepository<string, SxMaterialCategory, TDbContext> where TDbContext : SxDbContext
     {
         public override IQueryable<SxMaterialCategory> Query(SxFilter filter)
         {

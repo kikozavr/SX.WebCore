@@ -7,7 +7,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class RepoSiteTestBlock<TDbContext> : SxDbRepository<int, SxSiteTestBlock, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoSiteTestBlock<TDbContext> : SxDbRepository<int, SxSiteTestBlock, TDbContext> where TDbContext : SxDbContext
     {
         public override IQueryable<SxSiteTestBlock> Query(SxFilter filter)
         {

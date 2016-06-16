@@ -1,8 +1,6 @@
-﻿using SX.WebCore.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SX.WebCore.Providers
 {
@@ -66,7 +64,7 @@ namespace SX.WebCore.Providers
             return banner;
         }
 
-        public SxBanner[] GetPageBanners<TDbContext>(string controllerName, string actionName) where TDbContext : SxDbContext
+        public SxBanner[] GetPageBanners(string controllerName, string actionName)
         {
             var list = new List<SxBanner>();
             foreach (var p in Enum.GetValues(typeof(SxBanner.BannerPlace)))
@@ -76,12 +74,6 @@ namespace SX.WebCore.Providers
                 if (banner != null)
                     list.Add(banner);
             }
-
-            Task.Run(() =>
-            {
-                var keys = list.Select(x => x.Id).ToArray();
-                new RepoBanner<TDbContext>().AddShows(keys);
-            });
 
             return list.ToArray();
         }

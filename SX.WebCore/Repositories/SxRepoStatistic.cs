@@ -9,7 +9,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class RepoStatistic<TDbContext> : SxDbRepository<Guid, SxStatistic, TDbContext> where TDbContext : SxDbContext
+    public class SxRepoStatistic<TDbContext> : SxDbRepository<Guid, SxStatistic, TDbContext> where TDbContext : SxDbContext
     {
         public SxStatisticUserLogin[] UserLogins(SxFilter filter)
         {

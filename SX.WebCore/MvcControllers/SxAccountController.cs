@@ -12,7 +12,7 @@ using System;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize]
-    public abstract class SxAccountController : SxBaseController
+    public abstract class SxAccountController<TDbContext> : SxBaseController<TDbContext> where TDbContext: SxDbContext
     {
         private SxAppSignInManager _signInManager;
         private SxAppUserManager _userManager;

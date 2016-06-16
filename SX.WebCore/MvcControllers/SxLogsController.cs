@@ -6,10 +6,10 @@ using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxLogsController : SxBaseController
+    public abstract class SxLogsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         [HttpGet]
-        public virtual FileResult GetLog(string siteName=null)
+        public virtual FileResult GetLog(string siteName = null)
         {
             var dir = Server.MapPath("~/Logs");
             if (!Directory.Exists(dir))

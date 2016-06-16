@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class RepoBanner<TDbContext> : SxDbRepository<Guid, SxBanner, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoBanner<TDbContext> : SxDbRepository<Guid, SxBanner, TDbContext> where TDbContext : SxDbContext
     {
         public override IQueryable<SxBanner> All
         {

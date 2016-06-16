@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class RepoProjectStep<TDbContext> : SxDbRepository<int, SxProjectStep, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoProjectStep<TDbContext> : SxDbRepository<int, SxProjectStep, TDbContext> where TDbContext : SxDbContext
     {
         public override IQueryable<SxProjectStep> Query(SxFilter filter)
         {

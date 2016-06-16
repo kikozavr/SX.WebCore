@@ -1,4 +1,5 @@
 ﻿using SX.WebCore.Abstract;
+using SX.WebCore.Attrubutes;
 using SX.WebCore.Providers;
 using SX.WebCore.Repositories;
 using System;
@@ -12,7 +13,7 @@ using System.Web.SessionState;
 namespace SX.WebCore.MvcControllers
 {
     [SessionState(SessionStateBehavior.Disabled)]
-    public abstract class SxPicturesController<TDbContext> : SxBaseController where TDbContext : SxDbContext
+    public abstract class SxPicturesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxDbRepository<Guid, SxPicture, TDbContext> _repo;
         private static CacheItemPolicy _defaultPolicy
@@ -29,7 +30,7 @@ namespace SX.WebCore.MvcControllers
         private static object _lck = new object();
         static SxPicturesController()
         {
-            _repo = new RepoPicture<TDbContext>();
+            _repo = new SxRepoPicture<TDbContext>();
             _cache = new MemoryCache("CACHE_PICTURES");
         }
 
@@ -42,6 +43,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
+        [NotLogRequest]
         [OutputCache(Duration = 900, VaryByParam = "id;width;height")]
         public async virtual Task<ActionResult> Picture(Guid id, int? width = null, int? height = null)
         {

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class RepoSiteSetting<TDbContext> : SxDbRepository<string, SxSiteSetting, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoSiteSetting<TDbContext> : SxDbRepository<string, SxSiteSetting, TDbContext> where TDbContext : SxDbContext
     {
         public Dictionary<string, SxSiteSetting> GetByKeys(params string[] keys)
         {

@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class RepoEmployee<TDbContext> : SxDbRepository<string, SxEmployee, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoEmployee<TDbContext> : SxDbRepository<string, SxEmployee, TDbContext> where TDbContext : SxDbContext
     {
         public override IQueryable<SxEmployee> All
         {

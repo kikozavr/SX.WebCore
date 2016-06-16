@@ -5,7 +5,7 @@ using Dapper;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class RepoComment<TDbContext> : SxDbRepository<int, SxComment, TDbContext> where TDbContext: SxDbContext
+    public sealed class SxRepoComment<TDbContext> : SxDbRepository<int, SxComment, TDbContext> where TDbContext: SxDbContext
     {
         public override IQueryable<SxComment> Query(SxFilter filter)
         {

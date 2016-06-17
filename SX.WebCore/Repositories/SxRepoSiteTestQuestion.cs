@@ -84,5 +84,19 @@ namespace SX.WebCore.Repositories
                 conn.Execute("del_site_test_question @questionId", new { questionId = id[0] });
             }
         }
+
+        public override SxSiteTestQuestion Create(SxSiteTestQuestion model)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxSiteTestQuestion>("add_site_test_question @blockId, @text, @isCorrect", new
+                {
+                    blockId = model.BlockId,
+                    text = model.Text,
+                    isCorrect = model.IsCorrect
+                }).SingleOrDefault();
+                return data;
+            }
+        }
     }
 }

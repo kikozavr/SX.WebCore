@@ -1,8 +1,13 @@
 ﻿using Dapper;
+using OfficeOpenXml;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Web;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
@@ -68,32 +73,34 @@ namespace SX.WebCore.Repositories
             param = new
             {
                 title = title,
-                desc=desc
+                desc = desc
             };
 
             return query;
         }
 
-        public dynamic[] RandomList(int amount=3)
+        public dynamic[] RandomList(int amount = 3)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
 
-                var data = conn.Query("get_random_site_tests @amount", new { amount= amount });
+                var data = conn.Query("get_random_site_tests @amount", new { amount = amount });
                 return data.ToArray();
             }
         }
 
-        public SxSiteTestQuestion[] GetSiteTestPage(string titleUrl)
+        public SxSiteTestQuestion GetSiteTestPage(string titleUrl)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestQuestion, SxSiteTestBlock, SxSiteTest, SxSiteTestQuestion>("get_site_test_page @titleUrl", (q, b, t)=> {
+                var data = conn.Query<SxSiteTestQuestion, SxSiteTestBlock, SxSiteTest, SxSiteTestQuestion>("get_site_test_page @titleUrl", (q, b, t) =>
+                {
                     b.Test = t;
                     q.Block = b;
                     return q;
-                }, new { titleUrl = titleUrl }, splitOn:"Id");
-                return data.ToArray();
+                }, new { titleUrl = titleUrl }, splitOn: "Id").SingleOrDefault();
+
+                return data;
             }
         }
 
@@ -109,11 +116,131 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestQuestion, SxSiteTestBlock, SxSiteTestQuestion>("get_site_test_matrix @testId", (q,b)=> {
+                var data = conn.Query<SxSiteTestQuestion, SxSiteTestBlock, SxSiteTestQuestion>("get_site_test_matrix @testId", (q, b) =>
+                {
                     q.Block = b;
                     return q;
                 }, new { testId = testId });
                 return data.ToArray();
+            }
+        }
+
+        public SxSiteTest LoadFromFile(HttpPostedFileBase file)
+        {
+            var test = new SxSiteTest();
+            var testBlocks = new List<SxSiteTestBlock>();
+            var blockQuestions = new SxSiteTestQuestion[0];
+
+            using (ExcelPackage pck = new ExcelPackage(file.InputStream))
+            {
+                var ws = pck.Workbook.Worksheets["test"];
+
+                var range = ws.Cells["A1"];
+                test.Title = range.Value.ToString();
+
+                range = ws.Cells["A2"];
+                test.Description = range.Value.ToString();
+
+                //100 вопросов
+                range = ws.Cells["C6:CX6"];
+                var qList = new List<SxSiteTestQuestion>();
+                foreach (var cell in range)
+                {
+                    if (cell.Value != null)
+                        qList.Add(new SxSiteTestQuestion
+                        {
+                            Text = cell.Value.ToString()
+                        });
+                    else
+                        break;
+                }
+                blockQuestions = qList.ToArray();
+
+                range = ws.Cells["A7"];
+                fillBlocksFromRows(testBlocks, blockQuestions, ws, range);
+                test.Blocks = testBlocks;
+
+                return test;
+            }
+
+        }
+        private static void fillBlocksFromRows(List<SxSiteTestBlock> testBlocks, SxSiteTestQuestion[] blockQuestions, ExcelWorksheet ws, ExcelRange range)
+        {
+            var block = new SxSiteTestBlock();
+            block.Title = range.Value.ToString();
+
+            var startRow = range.Start.Row;
+
+            range = ws.Cells["B" + startRow];
+            if (range.Value != null)
+                block.Description = range.Value.ToString();
+
+            var cells = ws.Cells["C" + startRow + ":CX" + startRow].ToArray();
+            SxSiteTestQuestion q;
+            object value = null;
+            var questions = new List<SxSiteTestQuestion>();
+            for (int i = 0; i < blockQuestions.Length; i++)
+            {
+                q = blockQuestions[i];
+                value = cells[i].Value;
+                questions.Add(new SxSiteTestQuestion
+                {
+                    Text = q.Text,
+                    IsCorrect = value != null ? Convert.ToBoolean(value) : false
+                });
+            }
+            block.Questions = questions;
+            testBlocks.Add(block);
+
+            range = ws.Cells["A" + (startRow + 1)];
+            if (range.Value != null)
+                fillBlocksFromRows(testBlocks, blockQuestions, ws, range);
+        }
+
+        public override SxSiteTest Create(SxSiteTest model)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxSiteTest>("add_site_test @title, @desc, @type, @titleUrl", new
+                {
+                    title = model.Title,
+                    desc = model.Description,
+                    type = model.TestType,
+                    titleUrl = UrlHelperExtensions.SeoFriendlyUrl(model.Title)
+                }).SingleOrDefault();
+
+                return data;
+            }
+        }
+
+        public SxSiteTestQuestion GetGuessYesNoStep(string ttu, List<SxSiteTestStep> pastQ, out int blocksCount)
+        {
+            var table = new DataTable();
+            table.Columns.Add(new DataColumn { Caption = "QuestionText" });
+            table.Columns.Add(new DataColumn { Caption = "IsCorrect" });
+            table.Columns.Add(new DataColumn { Caption = "Order" });
+            foreach (var item in pastQ)
+            {
+                table.Rows.Add(item.Question.Text, item.Question.IsCorrect, item.Order);
+            }
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var p = new DynamicParameters();
+                p.Add("ttu", ttu);
+                p.Add("pastQ", table.AsTableValuedParameter("dbo.SiteTestStep"));
+                p.Add("blocksCount", dbType: DbType.Int32, direction: ParameterDirection.Output );
+
+                var data = conn.Query<SxSiteTestQuestion, SxSiteTestBlock, SxSiteTest, SxSiteTestQuestion>("get_guess_yes_no_step", (q, b, t) =>
+                {
+                    b.Test = t;
+                    q.Block = b;
+                    return q;
+                }, p, splitOn: "Id", commandType: CommandType.StoredProcedure).SingleOrDefault();
+
+                blocksCount = p.Get<int>("blocksCount");
+
+                return data;
             }
         }
     }

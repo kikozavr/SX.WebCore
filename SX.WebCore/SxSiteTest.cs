@@ -22,6 +22,8 @@ namespace SX.WebCore
 
         public SiteTestType TestType { get; set; }
 
+        public bool Show { get; set; }
+
         public enum SiteTestType : byte
         {
             [Description("Угадыватель")]

@@ -252,6 +252,7 @@
     <Compile Include="SxLike.cs" />
     <Compile Include="SxSiteTestBlock.cs" />
     <Compile Include="SxSiteTestQuestion.cs" />
+    <Compile Include="SxSiteTestStep.cs" />
     <Compile Include="SxStatisticUserLogin.cs" />
     <Compile Include="SxManual.cs" />
     <Compile Include="SxMaterialCategory.cs" />

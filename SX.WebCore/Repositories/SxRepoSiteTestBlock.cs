@@ -79,5 +79,19 @@ JOIN D_SITE_TEST AS dst ON dst.Id = dstb.TestId ";
                 conn.Execute("del_site_test_block @blockId", new { blockId = id[0] });
             }
         }
+
+        public override SxSiteTestBlock Create(SxSiteTestBlock model)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxSiteTestBlock>("add_site_test_block @testId, @title, @desc", new {
+                    testId= model.TestId,
+                    title=model.Title,
+                    desc= model.Description
+                }).SingleOrDefault();
+
+                return data;
+            }
+        }
     }
 }

@@ -305,9 +305,12 @@
     <None Include="Resources\ReleaseNotes.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Sql\requests.sql" />
+    <Content Include="Sql\pictures.sql" />
+    <Content Include="Sql\siteTests.sql" />
+    <Content Include="Sql\html.sql" />
     <Content Include="Sql\sitePartners.sql" />
     <Content Include="Sql\places.sql" />
-    <Content Include="Sql\sql.sql" />
     <Content Include="Sql\sql.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

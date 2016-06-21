@@ -40,6 +40,8 @@ namespace SX.WebCore
 
         public DbSet<SxPicture> Pictures { get; set; }
 
+        public DbSet<SxPlace> Places { get; set; }
+
         public DbSet<SxProjectStep> ProjectSteps { get; set; }
 
         public DbSet<SxRedirect> Redirects { get; set; }
@@ -49,6 +51,8 @@ namespace SX.WebCore
         public DbSet<SxSeoInfo> SeoInfo { get; set; }
 
         public DbSet<SxSeoKeyword> SeoKeyWords { get; set; }
+
+        public DbSet<SxSitePartner> SitePartners { get; set; }
 
         public DbSet<SxSiteSetting> SiteSettings { get; set; }
 

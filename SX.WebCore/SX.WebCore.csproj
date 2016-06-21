@@ -250,6 +250,8 @@
     <Compile Include="SxForumPart.cs" />
     <Compile Include="SxForumTheme.cs" />
     <Compile Include="SxLike.cs" />
+    <Compile Include="SxPlace.cs" />
+    <Compile Include="SxSitePartner.cs" />
     <Compile Include="SxSiteTestBlock.cs" />
     <Compile Include="SxSiteTestQuestion.cs" />
     <Compile Include="SxSiteTestStep.cs" />
@@ -301,6 +303,12 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Resources\ReleaseNotes.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Sql\sitePartners.sql" />
+    <Content Include="Sql\places.sql" />
+    <Content Include="Sql\sql.sql" />
+    <Content Include="Sql\sql.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

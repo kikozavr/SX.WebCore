@@ -106,9 +106,14 @@ namespace SX.WebCore.Abstract
             }
         }
 
-        public virtual IQueryable<TModel> Query(SxFilter filter)
+        //public virtual IQueryable<TModel> Query(SxFilter filter)
+        //{
+        //    return All;
+        //}
+
+        public virtual TModel[] Query(SxFilter filter)
         {
-            return All;
+            return All.Take(100).ToArray();
         }
 
         public virtual int Count(SxFilter filter)

@@ -5,8 +5,16 @@
 
 <h2>@ViewBag.Title</h2>
 <p class="text-info">Данные предоставлены с <a href="http://www.cbr.ru/scripts/Root.asp?PrtId=SXML">http://www.cbr.ru/scripts/Root.asp?PrtId=SXML</a> .Частота обновления данных - 2 часа</p>
-<form method="get">
-    <div id="grid-valutes">
-        @Html.Partial("_GridView", Model)
-    </div>
-</form>
+
+<div id="grid-valutes">
+    @Html.Partial("_GridView", Model)
+</div>
+
+
+@section scripts{
+    <script>
+        $(function () {
+            $('#grid-valutes').sx_gv();
+        });
+    </script>
+}

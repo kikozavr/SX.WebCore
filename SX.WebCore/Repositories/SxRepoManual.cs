@@ -9,7 +9,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoManual<TDbContext> : SxDbRepository<int, SxManual, TDbContext> where TDbContext: SxDbContext
     {
-        public override IQueryable<SxManual> Query(SxFilter filter)
+        public override SxManual[] Query(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString(new string[] { "da.Id", "dm.Title", "dm.CategoryId" });
             query += " FROM D_MANUAL AS da JOIN DV_MATERIAL AS dm ON dm.ID = da.ID AND dm.ModelCoreType = da.ModelCoreType LEFT JOIN D_MATERIAL_CATEGORY as dmc on dmc.Id=dm.CategoryId ";
@@ -24,7 +24,7 @@ namespace SX.WebCore.Repositories
             using (var conn = new SqlConnection(ConnectionString))
             {
                 var data = conn.Query<SxManual>(query, param: param);
-                return data.AsQueryable();
+                return data.ToArray();
             }
         }
 

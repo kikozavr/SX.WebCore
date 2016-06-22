@@ -94,8 +94,8 @@ namespace SX.WebCore.HtmlHelpers
                         { "href", "javascript:void(0)" },
                         { "data-page", page }
                     });
-                if (pagerinfo.Page != page)
-                    a.MergeAttribute("onclick", pagerinfo.FuncClick != null ? pagerinfo.FuncClick() : "clickPager(this)");
+                //if (pagerinfo.Page != page)
+                //    a.MergeAttribute("onclick", pagerinfo.FuncClick != null ? pagerinfo.FuncClick() : "clickPager(this)");
             }
             else
             {
@@ -166,7 +166,7 @@ namespace SX.WebCore.HtmlHelpers
                 }
             }
 
-            public Func<string> FuncClick { get; set; }
+            //public Func<string> FuncClick { get; set; }
         }
 
         private enum SxPagerItemType : byte

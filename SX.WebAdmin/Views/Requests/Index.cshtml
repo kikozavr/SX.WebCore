@@ -1,0 +1,19 @@
+﻿@model SxVMRequest[]
+@{
+    ViewBag.Title = "Статистика запросов";
+}
+
+<h2>@ViewBag.Title</h2>
+<br />
+
+<div id="grid-requests">
+    @Html.Partial("_GridView", Model)
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+            $('#grid-requests').sx_gv();
+        });
+    </script>
+}

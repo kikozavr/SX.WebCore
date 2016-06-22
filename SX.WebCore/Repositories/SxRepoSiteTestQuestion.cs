@@ -9,7 +9,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoSiteTestQuestion<TDbContext> : SxDbRepository<int, SxSiteTestQuestion, TDbContext> where TDbContext : SxDbContext
     {
-        public override IQueryable<SxSiteTestQuestion> Query(SxFilter filter)
+        public override SxSiteTestQuestion[] Query(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString(new string[] { "dstq.*", "dstb.Id", "dstb.Title", "dstb.Title AS BlockTitle", "dst.Id", "dst.Title", "dst.Title AS TestTitle" });
             query += @" FROM   D_SITE_TEST_QUESTION    AS dstq
@@ -33,7 +33,7 @@ namespace SX.WebCore.Repositories
                     q.Block = b;
                     return q;
                 }, param: param, splitOn: "Id");
-                return data.AsQueryable();
+                return data.ToArray();
             }
         }
 

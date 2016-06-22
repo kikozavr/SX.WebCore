@@ -7,7 +7,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoProjectStep<TDbContext> : SxDbRepository<int, SxProjectStep, TDbContext> where TDbContext : SxDbContext
     {
-        public override IQueryable<SxProjectStep> Query(SxFilter filter)
+        public override SxProjectStep[] Query(SxFilter filter)
         {
             var query = @"WITH j(Id, [Level]) AS (
          SELECT dps.Id,
@@ -33,7 +33,7 @@ ORDER BY
             using (var connection = new SqlConnection(ConnectionString))
             {
                 var data = connection.Query<SxProjectStep>(query);
-                return data.AsQueryable();
+                return data.ToArray();
             }
         }
 

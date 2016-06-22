@@ -2,6 +2,7 @@
 using System.Text;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 using System.Linq;
+using System;
 
 namespace SX.WebCore.Providers
 {
@@ -26,6 +27,7 @@ namespace SX.WebCore.Providers
             return "SELECT " + s.Substring(1);
         }
 
+        [Obsolete]
         public static string GetOrderString(string dc, SortDirection dsd, IDictionary<string, SortDirection> orders = null)
         {
             var orderCount = orders!=null? orders.Where(x => x.Value != SortDirection.Unknown).Count():0;
@@ -45,6 +47,18 @@ namespace SX.WebCore.Providers
             var s = sb.ToString();
 
             return "ORDER BY " + s.Substring(1);
+        }
+
+        public static string GetOrderString(SxOrder defaultOrder, SxOrder order=null)
+        {
+            var sb = new StringBuilder();
+            if (order==null)
+                sb.AppendFormat(",{0} {1}", defaultOrder.FieldName, defaultOrder.Direction.ToString().ToUpper());
+            else
+                sb.AppendFormat(",{0} {1}", order.FieldName, order.Direction.ToString().ToUpper());
+
+            sb.Remove(0, 1);
+            return "ORDER BY "+sb.ToString();
         }
     }
 }

@@ -171,7 +171,8 @@
     <Compile Include="Abstract\SxDbModel.cs" />
     <Compile Include="Abstract\SxDbRepository.cs" />
     <Compile Include="Abstract\SxDbUpdatedModel.cs" />
-    <Compile Include="Abstract\SxFilter.cs" />
+    <Compile Include="MvcControllers\SxRequestsController.cs" />
+    <Compile Include="SxFilter.cs" />
     <Compile Include="Abstract\SxMaterial.cs" />
     <Compile Include="Abstract\SxPerson.cs" />
     <Compile Include="Adapters\SxReportAdapter.cs" />
@@ -249,6 +250,7 @@
     <Compile Include="SxDbContext.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="SxEmployee.cs" />
+    <Compile Include="SxOrder.cs" />
     <Compile Include="SxForumPart.cs" />
     <Compile Include="SxForumTheme.cs" />
     <Compile Include="SxLike.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="ViewModels\SxVMResetPassword.cs" />
     <Compile Include="ViewModels\SxVMSendCode.cs" />
     <Compile Include="ViewModels\SxVMVerifyCode.cs" />
+    <Compile Include="ViewModels\SxVMRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

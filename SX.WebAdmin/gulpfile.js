@@ -76,7 +76,7 @@ function createJs() {
         .pipe(concat('js.js'));
 
     var sitejs = gulp.src([
-        'scripts/site.js'
+        'scripts/sx-gv.js'
     ])
         .pipe(uglify())
         .pipe(concat('sitejs.js'));

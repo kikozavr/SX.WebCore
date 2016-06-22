@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using SX.WebCore;
+using SX.WebCore.ViewModels;
 
 namespace SX.WebAdmin
 {
@@ -10,7 +12,7 @@ namespace SX.WebAdmin
             {
                 return new MapperConfiguration(cfg =>
                 {
-                    
+                    cfg.CreateMap<SxRequest, SxVMRequest>();
                 });
             }
         }

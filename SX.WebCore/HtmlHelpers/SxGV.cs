@@ -12,18 +12,22 @@ namespace SX.WebCore.HtmlHelpers
             public SxGVSettings()
             {
                 Columns = new SxGvColumn<TModel>[0];
-                PagerInfo = new SxPagerInfo(1,10);
+                Filter = new SxFilter{
+                    PagerInfo=new SxPagerInfo(1,10)
+                };
             }
 
             public string GridId { get; set; }
             public SxGvColumn<TModel>[] Columns { get; set; }
             public bool HasRow { get; set; }
-            public SxPagerInfo PagerInfo { get; set; }
-            public TModel FilterModel { get; set; }
+            public SxFilter Filter { get; set; }
             public Func<TModel, string> RowCssClass { get; set; }
             public bool ShowFilterRow { get; set; } = true;
             public bool EnableEditing { get; set; } = false;
             public Func<TModel, string> EditRowUrl { get; set; }
+            public bool EnableCreating { get; set; } = false;
+            public string CreateRowUrl { get; set; }
+            public string DataAjaxUrl { get; set; }
         }
 
         public sealed class SxGvColumn<TModel>
@@ -48,32 +52,35 @@ namespace SX.WebCore.HtmlHelpers
 
         public static MvcHtmlString SxGV<TModel>(this HtmlHelper htmlHelper, TModel[] collection, SxGVSettings<TModel> settings = null, object htmlAttributes = null)
         {
+            if (settings.DataAjaxUrl == null)
+                throw new ArgumentNullException("DataAjaxUrl");
+
             settings = settings ?? new SxGVSettings<TModel>();
             settings.HasRow = collection.Any();
             if (settings.HasRow)
             {
-                var pagerInfo = htmlHelper.ViewBag.PagerInfo;
-                if (pagerInfo != null)
-                    settings.PagerInfo = (SxPagerInfo)pagerInfo;
+                var filter = (SxFilter)htmlHelper.ViewBag.Filter;
+                if (filter != null)
+                    settings.Filter = filter;
                 else
-                    throw new ArgumentNullException("ViewBag.PagerInfo");
+                    throw new ArgumentNullException("ViewBag.Filter");
             }
-            settings.FilterModel = htmlHelper.ViewBag.FilterModel;
 
             var guid = Guid.NewGuid().ToString().ToLower();
             settings.GridId = guid;
             var div = new TagBuilder("div");
             div.AddCssClass("sx-gv");
             div.MergeAttribute("id", guid);
+            div.MergeAttribute("data-ajax-url", settings.DataAjaxUrl);
 
             var table = new TagBuilder("table");
             table.AddCssClass("table table-condensed table-bordered table-responsive table-striped");
 
-            table.InnerHtml += getHeader(settings);
+            table.InnerHtml += getHeader(htmlHelper, settings);
 
             table.InnerHtml += getBody(htmlHelper, collection, settings);
 
-            if(settings.HasRow && settings.PagerInfo.TotalPages>1)
+            if (settings.HasRow && settings.Filter.PagerInfo.TotalPages > 1)
                 table.InnerHtml += getFooter(htmlHelper, settings);
 
             div.InnerHtml += table;
@@ -81,14 +88,14 @@ namespace SX.WebCore.HtmlHelpers
             return MvcHtmlString.Create(div.ToString());
         }
 
-        private static TagBuilder getHeader<TModel>(SxGVSettings<TModel> settings)
+        private static TagBuilder getHeader<TModel>(HtmlHelper htmlHelper, SxGVSettings<TModel> settings)
         {
             var columns = new List<SxGvColumn<TModel>>();
             var propertyInfoes = typeof(TModel).GetProperties();
             SxGvColumn<TModel> column;
             if (!settings.Columns.Any())
             {
-                
+
                 foreach (var propertyInfo in propertyInfoes)
                 {
                     columns.Add(new SxGvColumn<TModel>
@@ -117,19 +124,38 @@ namespace SX.WebCore.HtmlHelpers
             var header = new TagBuilder("thead");
             var tr = new TagBuilder("tr");
             TagBuilder th;
-            
-            for (int i = 0; i < settings.Columns.Length+1; i++)
+
+            for (int i = 0; i < settings.Columns.Length + 1; i++)
             {
                 th = new TagBuilder("th");
+                if (settings.HasRow)
+                    th.MergeAttribute("style", "cursor: pointer;");
                 if (i == 0)
                 {
-                    th.InnerHtml += "#";
+                    if (settings.EnableCreating && settings.CreateRowUrl != null)
+                    {
+                        var a = new TagBuilder("a");
+                        a.MergeAttribute("data-toggle", "tooltip");
+                        a.MergeAttribute("title", "Добавить");
+                        a.MergeAttribute("href", settings.CreateRowUrl);
+                        var link = new TagBuilder("i");
+                        link.AddCssClass("fa fa-plus-circle");
+                        a.InnerHtml += link;
+                        th.InnerHtml += a;
+                    }
+                    else
+                    {
+                        th.InnerHtml += "#";
+                    }
                     th.AddCssClass("sx-gv_first-column");
                 }
                 else
                 {
-                    column = settings.Columns[i-1];
+                    column = settings.Columns[i - 1];
                     th.InnerHtml += column.Caption;
+                    th.MergeAttribute("data-field-name", column.FieldName);
+                    if(settings.Filter.Order!=null && settings.Filter.Order.FieldName==column.FieldName)
+                        th.InnerHtml += getSortArrow(settings.Filter.Order.Direction);
                 }
                 tr.InnerHtml += th;
             }
@@ -158,10 +184,11 @@ namespace SX.WebCore.HtmlHelpers
                     model = collection[i];
 
                     tr = new TagBuilder("tr");
+                    tr.AddCssClass("sx-gv__row");
                     if (settings.RowCssClass != null)
                     {
                         rowCssClass = settings.RowCssClass(model);
-                        if (rowCssClass!=null)
+                        if (rowCssClass != null)
                             tr.AddCssClass(rowCssClass);
                     }
 
@@ -184,7 +211,8 @@ namespace SX.WebCore.HtmlHelpers
                                 td.InnerHtml += a;
                             }
                         }
-                        else {
+                        else
+                        {
                             column = settings.Columns[y - 1];
 
                             if (column.Template != null)
@@ -223,26 +251,40 @@ namespace SX.WebCore.HtmlHelpers
             TagBuilder td;
             TagBuilder input;
             SxGvColumn<TModel> column;
-            var filterProperties=new Dictionary<string, string>();
-            if (settings.FilterModel != null)
+            var filterProperties = new Dictionary<string, string>();
+            if (settings.Filter.WhereExpressionObject != null)
             {
                 object propValue;
-                foreach (var prop in settings.FilterModel.GetType().GetProperties())
+                string propStringValue;
+                foreach (var prop in settings.Filter.WhereExpressionObject.GetType().GetProperties())
                 {
-                    propValue = prop.GetValue(settings.FilterModel);
-                    if(propValue!=null)
-                        filterProperties.Add(prop.Name, propValue.ToString());
+                    propValue = prop.GetValue(settings.Filter.WhereExpressionObject);
+                    propStringValue = propValue != null ? propValue.ToString() : null;
+                    if (propStringValue != null && propStringValue != "0" && propStringValue!= "01.01.0001 0:00:00" && propStringValue!= "00000000-0000-0000-0000-000000000000")
+                        filterProperties.Add(prop.Name, propStringValue);
                 }
             }
-            for (int i = 0; i < settings.Columns.Length+1; i++)
+            for (int i = 0; i < settings.Columns.Length + 1; i++)
             {
                 td = new TagBuilder("td");
                 if (i == 0)
                 {
-                    
+                    if (filterProperties.Count > 0)
+                    {
+                        var a = new TagBuilder("a");
+                        a.MergeAttribute("href", "javascript:void(0)");
+                        a.AddCssClass("sx-gv__clear-btn");
+                        var link = new TagBuilder("i");
+                        link.AddCssClass("fa fa-repeat");
+                        link.MergeAttribute("data-toggle", "tooltip");
+                        link.MergeAttribute("title", "Сбросить все");
+                        a.InnerHtml += link;
+                        td.InnerHtml += a;
+                    }
                 }
-                else {
-                    column = settings.Columns[i-1];
+                else
+                {
+                    column = settings.Columns[i - 1];
                     input = new TagBuilder("input");
                     input.MergeAttribute("type", "text");
                     input.MergeAttribute("name", column.FieldName);
@@ -267,13 +309,26 @@ namespace SX.WebCore.HtmlHelpers
             tr.InnerHtml += td;
 
             td = new TagBuilder("td");
-            td.InnerHtml += htmlHelper.SxPager(settings.PagerInfo, htmlAttributes: new { @class= "list-unstyled list-inline sx-gv__pager" }, pageUrl:(x)=>"/valutes?page="+x, isAjax: true);
+            td.InnerHtml += htmlHelper.SxPager(settings.Filter.PagerInfo, htmlAttributes: new { @class = "list-unstyled list-inline sx-gv__pager" }, pageUrl: (x) => "/valutes?page=" + x, isAjax: true);
             td.MergeAttribute("colspan", settings.Columns.Length.ToString());
 
             tr.InnerHtml += td;
             footer.InnerHtml += tr;
 
             return footer;
+        }
+
+        //get sort direction arrow
+        private static TagBuilder getSortArrow(SortDirection sortDirection)
+        {
+            if (Equals(sortDirection, SortDirection.Unknown)) return null;
+
+            var i = new TagBuilder("i");
+            var directionCssClass = Equals(sortDirection, SortDirection.Asc) ? "asc" : "desc";
+            i.AddCssClass("sx-gv__sort-arow");
+            i.MergeAttribute("data-sort-direction", sortDirection.ToString());
+            i.AddCssClass("fa fa-sort-" + directionCssClass);
+            return i;
         }
     }
 }

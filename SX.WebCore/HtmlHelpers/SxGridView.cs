@@ -463,8 +463,8 @@ namespace SX.WebCore.HtmlHelpers
             {
                 if (settings.PagerInfo.TotalPages > 1)
                 {
-                    if (settings.Mode == SxGridViewMode.Lookup)
-                        settings.PagerInfo.FuncClick = ()=> "clickLookupPager(this)";
+                    //if (settings.Mode == SxGridViewMode.Lookup)
+                    //    settings.PagerInfo.FuncClick = ()=> "clickLookupPager(this)";
 
                     td.InnerHtml += htmlHelper.SxPager(settings.PagerInfo);
                 }

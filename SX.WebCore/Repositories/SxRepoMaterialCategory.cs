@@ -9,7 +9,7 @@ namespace SX.WebCore.Repositories
 {
     public class SxRepoMaterialCategory<TDbContext> : SxDbRepository<string, SxMaterialCategory, TDbContext> where TDbContext : SxDbContext
     {
-        public override IQueryable<SxMaterialCategory> Query(SxFilter filter)
+        public override SxMaterialCategory[] Query(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString(new string[] { "dmc.*" });
             query += " FROM D_MATERIAL_CATEGORY AS dmc ";
@@ -22,7 +22,7 @@ namespace SX.WebCore.Repositories
             using (var connection = new SqlConnection(ConnectionString))
             {
                 var data = connection.Query<SxMaterialCategory>(query, param: param);
-                return data.AsQueryable();
+                return data.ToArray();
             }
         }
 

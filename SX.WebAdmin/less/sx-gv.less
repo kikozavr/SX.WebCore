@@ -2,28 +2,68 @@
 @import (reference) "colors.less";
 @import (reference) "sizes.less";
 
-.sx-gv a{
-    color:inherit;
+.sx-gv a {
+    color: inherit;
 }
 
-.sx-gv .tooltip{
-    font-size:11px;
+.sx-gv .tooltip {
+    font-size: 11px;
 }
 
-.sx-gv .sx-gv__filter-row input{
-    width:100%;
+.sx-gv thead th{
+    user-select:none;
 }
 
-.sx-gv .sx-gv_first-column{
-    width:0;
+.sx-gv thead th:active{
+    background-color:@color-gray;
+}
+
+.sx-gv .sx-gv__sort-arow{
+    float:right;
+    margin-top:2px;
+}
+
+.sx-gv .sx-gv__filter-row td {
+    vertical-align: middle;
+}
+
+.sx-gv .sx-gv__filter-row input {
+    width: 100%;
+    border: 1px solid @color-gray;
+    padding: 2px 5px;
+}
+
+.sx-gv .sx-gv_first-column {
+    width: 0;
+}
+
+.sx-gv .sx-gv__row > td:first-child {
+    vertical-align: middle;
 }
 
 .sx-gv .sx-gv__pager {
     margin-bottom: 0;
+    margin-left:0;
+}
+
+.sx-gv .sx-gv__pager > li {
+    border: 1px solid @color-gray;
+    margin-right: 2px;
+    padding:0;
+}
+
+.sx-gv .sx-gv__pager > li.active {
+    font-weight:bold;
+    background-color:@color-orange;
+    border:1px solid @color-white;
+    color:@color-white;
 }
 
 .sx-gv .sx-gv__pager > li > a {
-    display:block;
-    text-decoration:none;
-    padding:0 5px;
+    display: block;
+    text-decoration: none;
+    padding: 0 8px;
+    font-size:.9em;
 }
+
+

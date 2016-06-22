@@ -9,7 +9,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoBannedUrl<TDbContext> : SxDbRepository<int, SxBannedUrl, TDbContext> where TDbContext : SxDbContext
     {
-        public override IQueryable<SxBannedUrl> Query(SxFilter filter)
+        public override SxBannedUrl[] Query(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString(new string[] { "dbu.Id", "dbu.Url", "dbu.Couse" });
             query += " FROM D_BANNED_URL AS dbu ";
@@ -24,7 +24,7 @@ namespace SX.WebCore.Repositories
             using (var conn = new SqlConnection(ConnectionString))
             {
                 var data = conn.Query<SxBannedUrl>(query, param: param);
-                return data.AsQueryable();
+                return data.ToArray();
             }
         }
 

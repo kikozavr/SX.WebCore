@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
-namespace SX.WebCore.Abstract
+namespace SX.WebCore
 {
+    [NotMapped]
     public class SxFilter
     {
         public SxFilter()
@@ -20,7 +23,9 @@ namespace SX.WebCore.Abstract
         public int? MaterialId { get; set; }
         public ModelCoreType ModelCoreType { get; set; }
         public dynamic WhereExpressionObject { get; set; }
+        [Obsolete]
         public IDictionary<string, SortDirection> Orders { get; set; }
+        public SxOrder Order { get; set; }
         public bool OnlyShow { get; set; }
     }
 }

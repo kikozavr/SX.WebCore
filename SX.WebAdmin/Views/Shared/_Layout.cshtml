@@ -445,18 +445,18 @@
                                         </li>
                                     }
                                     @*@if (MvcApplication.SiteDomain != null)
-                                    {
-                                        <li>
-                                            <a href="@(string.Format("{0}/api/logs", MvcApplication.SiteDomain))"> Скачать лог сайта</a>
-                                        </li>
-                                    }*@
+                                        {
+                                            <li>
+                                                <a href="@(string.Format("{0}/api/logs", MvcApplication.SiteDomain))"> Скачать лог сайта</a>
+                                            </li>
+                                        }*@
                                 </ul>
                             </li>
                         }
                         @if (User.IsInRole("seo"))
                         {
                             <li>
-                                <a href="#"><i class="fa fa-history fa-fw"></i> Статистика запросов</a>
+                                <a href="/requests"><i class="fa fa-history fa-fw"></i> Статистика запросов</a>
                             </li>
                         }
                         <li>
@@ -529,9 +529,11 @@
                 element.addClass('active');
             }
 
-            $(function () {
-                $('[data-toggle="tooltip"]').tooltip();
-            })
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $(document).ajaxError(function (event, xhr, settings) {
+                alert(xhr.responseText);
+            });
         });
     </script>
     @RenderSection("scripts", false)

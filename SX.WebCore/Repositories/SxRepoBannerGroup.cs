@@ -10,7 +10,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoBannerGroup<TDbContext> : SxDbRepository<Guid, SxBannerGroup, TDbContext> where TDbContext : SxDbContext
     {
-        public override IQueryable<SxBannerGroup> Query(SxFilter filter)
+        public override SxBannerGroup[] Query(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString();
             query += " FROM D_BANNER_GROUP AS dbg ";
@@ -25,7 +25,7 @@ namespace SX.WebCore.Repositories
             using (var conn = new SqlConnection(ConnectionString))
             {
                 var data = conn.Query<SxBannerGroup>(query, param: param);
-                return data.AsQueryable();
+                return data.ToArray();
             }
         }
 

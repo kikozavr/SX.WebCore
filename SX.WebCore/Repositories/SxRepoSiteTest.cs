@@ -27,7 +27,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override IQueryable<SxSiteTest> Query(SxFilter filter)
+        public override SxSiteTest[] Query(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString();
             query += " FROM D_SITE_TEST AS dst ";
@@ -42,7 +42,7 @@ namespace SX.WebCore.Repositories
             using (var conn = new SqlConnection(ConnectionString))
             {
                 var data = conn.Query<SxSiteTest>(query, param: param);
-                return data.AsQueryable();
+                return data.ToArray();
             }
         }
 

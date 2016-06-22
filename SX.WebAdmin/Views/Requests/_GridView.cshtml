@@ -1,0 +1,25 @@
+﻿@model SxVMRequest[]
+@{
+    Layout = null;
+}
+
+@Html.SxGV(Model, new SxExtantions.SxGVSettings<SxVMRequest>
+{
+    Columns = new SxExtantions.SxGvColumn<SxVMRequest>[] {
+        new SxExtantions.SxGvColumn<SxVMRequest> { FieldName="DateCreate", Caption="Дата"},
+        new SxExtantions.SxGvColumn<SxVMRequest> { FieldName="SessionId", Caption="Идентификатор сессии"},
+        new SxExtantions.SxGvColumn<SxVMRequest> { FieldName="Browser", Caption="Браузер"},
+        new SxExtantions.SxGvColumn<SxVMRequest> { FieldName="ClientIP", Caption="IP клиента"},
+        new SxExtantions.SxGvColumn<SxVMRequest> { FieldName="UserAgent", Caption="Строка агента", Template=(m)=> {
+            return m.UserAgent.Contains("bot") || m.UserAgent.Contains("Yahoo! Slurp") || m.UserAgent.Contains("spider")
+                    ? string.Format("<i class=\"fa fa-android text-muted\">&nbsp;</i><span class=\"text-muted\">{0}</span>",m.UserAgent)
+                : m.UserAgent;
+        } },
+        new SxExtantions.SxGvColumn<SxVMRequest>{FieldName="RequestType", Caption="Тип запросв"},
+        new SxExtantions.SxGvColumn<SxVMRequest>{FieldName="UrlRef", Caption="UrlRef",Template=(m)=> {
+                return !string.IsNullOrEmpty(m.UrlRef)? string.Format("<i class=\"fa fa-link\"></i>&nbsp;<a href=\"{0}\" target=\"_blank\" rel=\"nofollow\">{1}</a>", m.UrlRef, m.UrlRef.Length>=300?m.UrlRef.Substring(0,200)+"...":m.UrlRef):null;
+            }},
+        new SxExtantions.SxGvColumn<SxVMRequest>{FieldName="RawUrl", Caption="Целевой адрес"}
+    },
+    DataAjaxUrl = "/requests"
+})

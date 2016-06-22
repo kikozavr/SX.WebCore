@@ -9,7 +9,7 @@ namespace SX.WebCore.Abstract
         [Required, Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public virtual TKey Id { get; set; }
 
-        [DataType(DataType.DateTime)]
+        [DataType(DataType.DateTime), Index]
         public DateTime DateCreate { get; set; }
     }
 }

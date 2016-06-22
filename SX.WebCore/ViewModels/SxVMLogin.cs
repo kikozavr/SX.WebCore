@@ -11,7 +11,7 @@ namespace SX.WebCore.ViewModels
 
         [Required(ErrorMessage = "Требуется пароль")]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Пароль")]
         public string Password { get; set; }
 
         [Display(Name = "Запомнить?")]

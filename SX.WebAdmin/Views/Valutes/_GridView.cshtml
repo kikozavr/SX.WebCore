@@ -1,0 +1,19 @@
+﻿@model SxVMValute[]
+@{
+    Layout = null;
+    var pagerInfo = ViewBag.PagerInfo;
+    var filter = ViewBag.Filter != null ? (SxVMValute)ViewBag.Filter : null;
+    var sortDirections = ViewBag.Order != null ? (Dictionary<string, SxExtantions.SortDirection>)ViewBag.Order : null;
+}
+
+
+@Html.SxGV(Model, new SxExtantions.SxGVSettings<SxVMValute> {
+    Columns = new SxExtantions.SxGvColumn<SxVMValute>[] {
+        new SxExtantions.SxGvColumn<SxVMValute> { FieldName="Name", Caption="Наименование"},
+        new SxExtantions.SxGvColumn<SxVMValute> { FieldName="Nominal", Caption="Номинал"},
+        new SxExtantions.SxGvColumn<SxVMValute> { FieldName="Value", Caption="Значение, руб."},
+    },
+    RowCssClass = (x) => { return Equals(x.CharCode, "USD") || Equals(x.CharCode, "EUR") ? "success" : null; },
+    EnableEditing=true,
+    EditRowUrl=(x)=>"xxx"
+})

@@ -3,7 +3,6 @@ using SX.WebCore.Attrubutes;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.Repositories;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Text;

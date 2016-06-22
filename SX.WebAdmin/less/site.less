@@ -1,2 +1,19 @@
-﻿body {
+﻿@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300italic&subset=latin,cyrillic);
+
+@import (reference) "../bower_components/bootstrap/less/variables";
+@import (reference) "colors.less";
+@import "sb-admin-2.less";
+
+a, a:link, a:active, a:visited, a:focus, button, button:link, button:visited, button:active, button:focus{
+    outline:none !important;
+}
+
+body{
+    font-family: 'Roboto Condensed', sans-serif;
+    color:@color-black;
+    font-size:12px;
+}
+
+.navbar-top-links a{
+    color:inherit;
 }

@@ -1,0 +1,112 @@
+﻿@import (reference) "../bower_components/bootstrap/less/variables";
+@import (reference) "sizes.less";
+@import (reference) "colors.less";
+
+@body-pad: 60px;
+@body-pad-xs:150px;
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: transparent;
+    background-image: url(../i/bg.jpg);
+    background-position:center center;
+    color: @color-white;
+    margin-bottom: @body-pad + @def-pad*2;
+    @media (max-width: @screen-xs-max) {
+        margin-bottom: @body-pad-xs + @def-pad*3;
+        background-size:cover;
+    }
+
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+    }
+
+    @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+    }
+
+    @media (min-width: @screen-lg-min) {
+    }
+}
+
+.login-header__small {
+    line-height: 1;
+    display: inline-block;
+}
+
+.login-desc {
+    font-size: 14px;
+}
+
+.login-desc .login-desc__item {
+    margin-bottom: @def-pad*2;
+}
+
+.login-form {
+    display: table;
+    margin: 0 auto;
+    width: 400px;
+
+    @media (max-width: @screen-xs-max) {
+        width: 100%;
+        display: block;
+        padding: @def-pad;
+        max-width: 400px;
+    }
+
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+    }
+
+    @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+    }
+
+    @media (min-width: @screen-lg-min) {
+    }
+}
+
+.login-form .login-form__btn {
+    width: 100%;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    height:@body-pad + @def-pad*2;
+    width:100%;
+    background-color:rgba(255,255,255,.1);
+    padding:@def-pad 0;
+    border-top:1px solid rgba(255,255,255,.1);
+
+    @media (max-width: @screen-xs-max) {
+        height:@body-pad-xs + @def-pad*2;
+    }
+
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+    }
+
+    @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+    }
+
+    @media (min-width: @screen-lg-min) {
+    }
+}
+
+
+.footer .footer__preambule {
+    text-align: right;
+    @media (max-width: @screen-xs-max) {
+        margin-top:@def-pad;
+        text-align:left;
+    }
+
+    @media (min-width: @screen-sm-min) and (max-width: @screen-sm-max) {
+    }
+
+    @media (min-width: @screen-md-min) and (max-width: @screen-md-max) {
+    }
+
+    @media (min-width: @screen-lg-min) {
+    }
+}

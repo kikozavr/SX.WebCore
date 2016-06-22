@@ -4,7 +4,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Abstract
 {
-    public abstract class SxFilter
+    public class SxFilter
     {
         public SxFilter()
         {

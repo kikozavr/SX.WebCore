@@ -3,6 +3,10 @@
 	"private": true,
   "dependencies": {
     "bootstrap": "3.3.6",
-    "font-awesome": "4.6.3"
+    "font-awesome": "4.6.3",
+    "metisMenu": "2.5.2",
+    "jquery-validation": "1.15.0",
+    "jquery-validation-unobtrusive": "3.2.6",
+    "jquery-ajax-unobtrusive": "3.2.4"
   }
 }

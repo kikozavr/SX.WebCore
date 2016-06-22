@@ -178,6 +178,7 @@
     <Compile Include="Attrubutes\MinWordsCountAttribute.cs" />
     <Compile Include="Attrubutes\MaxWordsCountAttribute.cs" />
     <Compile Include="Attrubutes\NotLogRequestAttribute.cs" />
+    <Compile Include="HtmlHelpers\SxGV.cs" />
     <Compile Include="MvcApplication\SxApplication.cs" />
     <Compile Include="MvcControllers\SxAccountController.cs" />
     <Compile Include="MvcControllers\SxBaseController.cs" />
@@ -197,6 +198,7 @@
     <Compile Include="Managers\SxAppSignInManager.cs" />
     <Compile Include="Managers\SxAppUserManager.cs" />
     <Compile Include="Managers\SxSeoWordCounter.cs" />
+    <Compile Include="MvcControllers\SxValutesController.cs" />
     <Compile Include="MvcWebViewPage\SxWebViewPage.cs" />
     <Compile Include="Providers\SxErrorProvider.cs" />
     <Compile Include="Providers\SxPictureProvider.cs" />
@@ -305,6 +307,7 @@
     <None Include="Resources\ReleaseNotes.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Sql\createArchitect.sql" />
     <Content Include="Sql\requests.sql" />
     <Content Include="Sql\pictures.sql" />
     <Content Include="Sql\siteTests.sql" />

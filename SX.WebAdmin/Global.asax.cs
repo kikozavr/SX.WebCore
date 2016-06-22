@@ -1,18 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
+﻿using SX.WebCore.MvcApplication;
+using System;
+using System.Data.Entity;
 
 namespace SX.WebAdmin
 {
-    public class MvcApplication : System.Web.HttpApplication
+    public class MvcApplication : SxApplication<Infrastructure.DbContext>
     {
-        protected void Application_Start()
+        protected override void Application_Start(object sender, EventArgs e)
         {
-            AreaRegistration.RegisterAllAreas();
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            var args = new SxApplicationEventArgs();
+            args.WebApiConfigRegister = WebApiConfig.Register;
+            args.RegisterRoutes = RouteConfig.RegisterRoutes;
+            args.MapperConfiguration = AutoMapperConfig.MapperConfigurationInstance;
+            args.LogDirectory = null;
+            args.LoggingRequest = false;
+
+            Database.SetInitializer<Infrastructure.DbContext>(null);
+
+            base.Application_Start(sender, args);
         }
     }
 }

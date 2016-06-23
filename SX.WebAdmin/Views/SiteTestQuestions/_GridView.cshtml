@@ -1,0 +1,25 @@
+﻿@model SxVMSiteTestQuestion[]
+@{
+    Layout = null;
+}
+
+
+@Html.SxGV(Model,
+        new SxExtantions.SxGVSettings<SxVMSiteTestQuestion>
+        {
+            Columns = new SxExtantions.SxGvColumn<SxVMSiteTestQuestion>[]{
+                new SxExtantions.SxGvColumn<SxVMSiteTestQuestion>{FieldName="DateCreate", Caption="Дата создания"},
+                new SxExtantions.SxGvColumn<SxVMSiteTestQuestion>{FieldName="TestTitle", Caption="Тест"},
+                new SxExtantions.SxGvColumn<SxVMSiteTestQuestion>{FieldName="BlockTitle", Caption="Блок"},
+                new SxExtantions.SxGvColumn<SxVMSiteTestQuestion>{FieldName="Text", Caption="Текст"},
+                new SxExtantions.SxGvColumn<SxVMSiteTestQuestion>{FieldName="IsCorrect", Caption="Корректность",Template= (q)=> {
+                    return q.IsCorrect?"Да":"Нет";
+                } }
+            },
+            EnableCreating = true,
+            CreateRowUrl = "/sitetestquestions/edit/",
+            EnableEditing = true,
+            EditRowUrl = (x) => { return "/sitetestquestions/edit/" + x.Id; },
+            DataAjaxUrl = "/sitetestquestions"
+        }
+    )

@@ -1,0 +1,18 @@
+﻿@model SxVMSiteTest[]
+@{
+    ViewBag.Title = "Тесты сайта";
+}
+
+<h2>@ViewBag.Title</h2>
+<br />
+<div id="site-tests">
+    @Html.Partial("_gridview", Model)
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+            $('#site-tests').sx_gv();
+        });
+    </script>
+}

@@ -57,14 +57,11 @@ namespace SX.WebCore.HtmlHelpers
 
             settings = settings ?? new SxGVSettings<TModel>();
             settings.HasRow = collection.Any();
-            if (settings.HasRow)
-            {
-                var filter = (SxFilter)htmlHelper.ViewBag.Filter;
-                if (filter != null)
-                    settings.Filter = filter;
-                else
-                    throw new ArgumentNullException("ViewBag.Filter");
-            }
+            var filter = (SxFilter)htmlHelper.ViewBag.Filter;
+            if (filter != null)
+                settings.Filter = filter;
+            else
+                throw new ArgumentNullException("ViewBag.Filter");
 
             var guid = Guid.NewGuid().ToString().ToLower();
             settings.GridId = guid;
@@ -260,7 +257,7 @@ namespace SX.WebCore.HtmlHelpers
                 {
                     propValue = prop.GetValue(settings.Filter.WhereExpressionObject);
                     propStringValue = propValue != null ? propValue.ToString() : null;
-                    if (propStringValue != null && propStringValue != "0" && propStringValue!= "01.01.0001 0:00:00" && propStringValue!= "00000000-0000-0000-0000-000000000000")
+                    if (propStringValue != null && propStringValue != "0" && propStringValue!= "01.01.0001 0:00:00" && propStringValue!= "00000000-0000-0000-0000-000000000000" && propStringValue!="False")
                         filterProperties.Add(prop.Name, propStringValue);
                 }
             }

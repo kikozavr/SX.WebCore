@@ -1,0 +1,16 @@
+﻿@model SxVMAppRole[]
+@{
+    Layout = null;
+}
+
+@Html.SxGV(Model, new SxExtantions.SxGVSettings<SxVMAppRole>() {
+    Columns=new SxExtantions.SxGvColumn<SxVMAppRole>[] {
+        new SxExtantions.SxGvColumn<SxVMAppRole> { FieldName="Name", Caption="Роль"},
+        new SxExtantions.SxGvColumn<SxVMAppRole> { FieldName="Description", Caption="Описание"},
+    },
+    EnableCreating=true,
+    CreateRowUrl="/userroles/edit",
+    EnableEditing=true,
+    EditRowUrl = (x) => { return "/userroles/edit/"+x.Id; },
+    DataAjaxUrl= "/userroles"
+})

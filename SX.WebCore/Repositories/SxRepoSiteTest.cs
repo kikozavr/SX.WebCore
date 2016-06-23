@@ -14,20 +14,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoSiteTest<TDbContext> : SxDbRepository<int, SxSiteTest, TDbContext> where TDbContext : SxDbContext
     {
-        public override IQueryable<SxSiteTest> All
-        {
-            get
-            {
-                var query = @"SELECT * FROM D_SITE_TEST AS dst";
-                using (var conn = new SqlConnection(ConnectionString))
-                {
-                    var data = conn.Query<SxSiteTest>(query);
-                    return data.AsQueryable();
-                }
-            }
-        }
-
-        public override SxSiteTest[] Query(SxFilter filter)
+        public override SxVMSiteTest[] Query<SxVMSiteTest>(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString();
             query += " FROM D_SITE_TEST AS dst ";
@@ -35,13 +22,14 @@ namespace SX.WebCore.Repositories
             object param = null;
             query += getSiteTestWhereString(filter, out param);
 
-            query += SxQueryProvider.GetOrderString("dst.DateCreate", SortDirection.Desc, filter.Orders);
+            var defaultOrder = new SxOrder { FieldName = "dst.DateCreate", Direction = SortDirection.Desc };
+            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
 
             query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTest>(query, param: param);
+                var data = conn.Query<SxVMSiteTest>(query, param: param);
                 return data.ToArray();
             }
         }

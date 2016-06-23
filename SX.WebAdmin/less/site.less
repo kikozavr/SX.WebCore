@@ -1,4 +1,4 @@
-﻿@import url(https://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700&subset=latin,cyrillic);
+﻿@import url(https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700&subset=latin,cyrillic);
 
 @import (reference) "../bower_components/bootstrap/less/variables";
 @import (reference) "colors.less";
@@ -9,11 +9,16 @@ a, a:link, a:active, a:visited, a:focus, button, button:link, button:visited, bu
 }
 
 body{
-    font-family: 'PT Sans Narrow', sans-serif;
+    font-family: 'Roboto Condensed', sans-serif;
+    font-weight:300;
     color:@color-black;
     font-size:13px;
 }
 
 .navbar-top-links a{
     color:inherit;
+}
+
+.field-validation-error{
+    color:@color-danger;
 }

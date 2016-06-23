@@ -1,0 +1,23 @@
+﻿@model SxVMAppUser[]
+@{
+    Layout = null;
+}
+
+@Html.SxGV(Model, new SxExtantions.SxGVSettings<SxVMAppUser>()
+{
+    Columns = new SxExtantions.SxGvColumn<SxVMAppUser>[] {
+        new SxExtantions.SxGvColumn<SxVMAppUser> { FieldName="NikName", Caption="Ник-нейм"},
+        new SxExtantions.SxGvColumn<SxVMAppUser> { FieldName="Email", Template=(m)=> {
+                return string.Format("<a href=\"mailto:{0}\">{0}</a>", m.Email);
+            }},
+        new SxExtantions.SxGvColumn<SxVMAppUser> { FieldName="RoleNames", Caption="Роли"},
+        new SxExtantions.SxGvColumn<SxVMAppUser> { FieldName="IsOnline", Caption="Статус", Template=(u)=> {
+                return u.IsOnline?string.Format("<span class=\"badge\">online</span>"):null;
+            }}
+    },
+    EnableCreating = true,
+    CreateRowUrl = "/users/edit",
+    EnableEditing = true,
+    EditRowUrl = (x) => { return "/users/edit/" + x.Id; },
+    DataAjaxUrl = "/users"
+})

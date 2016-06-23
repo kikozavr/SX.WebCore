@@ -24,13 +24,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual ActionResult Index(int page = 1, DateTime? date = null)
+        public virtual ViewResult Index(int page = 1, DateTime? date = null)
         {
             var data = getValutes(date);
             var viewModel = data.Skip(_pageSize * (page - 1)).Take(_pageSize).ToArray();
 
             var order = new SxOrder { FieldName = "Name", Direction = SxExtantions.SortDirection.Asc };
-            var filter = new SxFilter(page, _pageSize) { Order= order };
+            var filter = new SxFilter(page, _pageSize) { Order = order };
             filter.PagerInfo.TotalItems = data.Length;
             ViewBag.Filter = filter;
 

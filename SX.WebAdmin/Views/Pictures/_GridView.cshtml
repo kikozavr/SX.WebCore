@@ -1,0 +1,30 @@
+﻿@model SxVMPicture[]
+@{
+    Layout = null;
+}
+
+@Html.SxGV(Model,
+        new SxExtantions.SxGVSettings<SxVMPicture>
+        {
+            Columns = new SxExtantions.SxGvColumn<SxVMPicture>[]{
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Id", Caption="Идентификатор", Template=(p)=> {
+                return string.Format("<b class=\"text-info\">{0}</b>", p.Id);
+            } },
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Caption", Caption="Название"},
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Description", Caption="Описание"},
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Width", Caption="Ширина, px"},
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Height", Caption="Высота, px"},
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Size", Caption="Размер, Kb", Template=(p)=> {
+                return string.Format("<span>{0}</span>", Math.Round((double)p.Size/1024, 2));
+            } },
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Id", Caption="Картинка", Template=(p)=> {
+                return string.Format("<a data-lightbox=\"roadtrip\" data-title=\"{1}\" data-toggle=\"tooltip\" title=\"Помотреть картинку\" href=\"/pictures/picture/{0}\"><i class=\"fa fa-picture-o\"></i></a>", p.Id, p.Caption);
+            } }
+        },
+            EnableCreating = true,
+            CreateRowUrl = "/pictures/edit",
+            EnableEditing = true,
+            EditRowUrl = (x) => { return "/pictures/edit/" + x.Id; },
+            DataAjaxUrl = "/pictures"
+        }
+    )

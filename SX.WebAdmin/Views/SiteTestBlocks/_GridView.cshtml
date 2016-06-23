@@ -1,0 +1,21 @@
+﻿@model SxVMSiteTestBlock[]
+@{
+    Layout = null;
+}
+
+@Html.SxGV(Model,
+        new SxExtantions.SxGVSettings<SxVMSiteTestBlock>
+        {
+            Columns = new SxExtantions.SxGvColumn<SxVMSiteTestBlock>[]{
+                new SxExtantions.SxGvColumn<SxVMSiteTestBlock>{FieldName="DateCreate", Caption="Дата создания"},
+                new SxExtantions.SxGvColumn<SxVMSiteTestBlock>{FieldName="TestTitle", Caption="Тест"},
+                new SxExtantions.SxGvColumn<SxVMSiteTestBlock>{FieldName="Title", Caption="Заголовок"},
+                new SxExtantions.SxGvColumn<SxVMSiteTestBlock>{FieldName="Description", Caption="Описание"}
+            },
+            EnableCreating=true,
+            CreateRowUrl= "/sitetestblocks/edit/",
+            EnableEditing=true,
+            EditRowUrl = (x) => { return "/sitetestblocks/edit/"+x.Id; },
+            DataAjaxUrl="/sitetestblocks"
+        }
+    )

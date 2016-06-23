@@ -1,0 +1,27 @@
+﻿@model SxVMVideo[]
+@{
+    Layout = null;
+}
+
+@Html.SxGV(Model,
+            new SxExtantions.SxGVSettings<SxVMVideo>
+            {
+                Columns = new SxExtantions.SxGvColumn<SxVMVideo>[]{
+            new SxExtantions.SxGvColumn<SxVMVideo>{FieldName="Id", Caption="Внутренний идентификатор", Template=(v)=> {
+                return string.Format("<b class=\"text-info\">{0}</b>", v.Id);
+            }},
+            new SxExtantions.SxGvColumn<SxVMVideo>{FieldName="VideoId", Caption="Идентификатор", Template=(v)=> {
+                return string.Format("<b class=\"text-warning\">{0}</b>", v.VideoId);
+            } },
+            new SxExtantions.SxGvColumn<SxVMVideo>{FieldName="Title", Caption="Название видео"},
+            new SxExtantions.SxGvColumn<SxVMVideo>{FieldName="SourceUrl", Caption="Источник", Template=(v)=> {
+                return v.SourceUrl!=null?string.Format("<i class=\"fa fa-link\"></i>&nbsp;<a rel=\"nofollow\" href=\"{0}\">{0}</a>", v.SourceUrl):null;
+            } }
+        },
+                EnableCreating = true,
+                CreateRowUrl = "/videos/edit",
+                EnableEditing = true,
+                EditRowUrl = (x) => { return "/videos/edit/" + x.Id; },
+                DataAjaxUrl = "/videos"
+            }
+    )

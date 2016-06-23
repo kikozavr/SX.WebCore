@@ -1,0 +1,15 @@
+﻿@model SxVMEmployee[]
+@{
+    Layout = null;
+}
+
+@Html.SxGV(Model, new SxExtantions.SxGVSettings<SxVMEmployee>()
+{
+    Columns = new SxExtantions.SxGvColumn<SxVMEmployee>[] {
+        new SxExtantions.SxGvColumn<SxVMEmployee> { FieldName="Email", Caption="Email"},
+        new SxExtantions.SxGvColumn<SxVMEmployee> { FieldName="NikName", Caption="NikName"},
+    },
+    EnableEditing = true,
+    EditRowUrl = (x) => { return "/employees/edit/" + x.Id; },
+    DataAjaxUrl = "/employees"
+})

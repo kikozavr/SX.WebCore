@@ -10,6 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@ViewBag.Title</title>
 
+    <link rel="icon" href="~/content/dist/i/faveicon.png" type="image/png" />
+
     <link href="~/content/dist/css/site.min.css" rel="stylesheet">
     @RenderSection("styles", false)
 </head>
@@ -261,16 +263,16 @@
                                 <a href="javascript:void(0)"><i class="fa fa-fw fa-user"></i> Система доступа<span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level">
                                     <li>
-                                        <a href="#"><i class="fa fa-fw fa-street-view"></i> Роли</a>
+                                        <a href="/userroles"><i class="fa fa-fw fa-street-view"></i> Роли</a>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="fa fa-fw fa-user"></i> Пользователи</a>
+                                        <a href="/users"><i class="fa fa-fw fa-user"></i> Пользователи</a>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="fa fa-fw fa-male"></i> Сотрудники</a>
+                                        <a href="/employees"><i class="fa fa-fw fa-male"></i> Сотрудники</a>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="fa fa-fw fa-sign-in"></i> Статистика входов</a>
+                                        <a href="/statistics/userlogins"><i class="fa fa-fw fa-sign-in"></i> Статистика входов</a>
                                     </li>
                                 </ul>
                             </li>
@@ -283,13 +285,13 @@
                                     @if (User.IsInRole("photo-redactor"))
                                     {
                                         <li>
-                                            <a href="#"><i class="fa fa-image fa-fw"></i> Фото-контент</a>
+                                            <a href="/pictures"><i class="fa fa-image fa-fw"></i> Фото-контент</a>
                                         </li>
                                     }
                                     @if (User.IsInRole("video-redactor"))
                                     {
                                         <li>
-                                            <a href="#"><i class="fa fa-youtube fa-fw"></i> Видео сайта</a>
+                                            <a href="/videos"><i class="fa fa-youtube fa-fw"></i> Видео сайта</a>
                                         </li>
                                     }
                                 </ul>
@@ -368,27 +370,16 @@
                         @if (User.IsInRole("admin"))
                         {
                             <li>
-                                <a href="#"><i class="fa fa-forumbee fa-fw"></i> Форум<span class="fa arrow"></span></a>
+                                <a href="#"><i class="fa fa-database fa-fw"></i> Тесты<span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level">
                                     <li>
-                                        <a href="#"><i class="fa fa-envelope"></i> Разделы</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        }
-                        @if (User.IsInRole("admin"))
-                        {
-                            <li>
-                                <a href="#"><i class="fa fa-university fa-fw"></i> Тесты<span class="fa arrow"></span></a>
-                                <ul class="nav nav-second-level">
-                                    <li>
-                                        <a href="#"> Список тестов</a>
+                                        <a href="/sitetests"> Список тестов</a>
                                     </li>
                                     <li>
-                                        <a href="#"> Блоки тестов</a>
+                                        <a href="/sitetestblocks"> Блоки тестов</a>
                                     </li>
                                     <li>
-                                        <a href="#"> Вопросы тестов</a>
+                                        <a href="/sitetestquestions"> Вопросы тестов</a>
                                     </li>
                                 </ul>
                             </li>
@@ -405,7 +396,7 @@
                                         <a href="#"><i class="fa fa-arrow-right"></i> 301 редирект</a>
                                     </li>
                                     <li>
-                                        <a href="#"><i class="fa fa-ship"></i> robot.txt</a>
+                                        <a href="/seo/editrobotsfile"><i class="fa fa-ship"></i> robot.txt</a>
                                     </li>
                                     <li>
                                         <a href="#"><i class="fa fa-compress"></i> Счетчик слов</a>
@@ -436,20 +427,20 @@
                                 <a href="#"><i class="fa fa-wrench fa-fw"></i> Настройки<span class="fa arrow"></span></a>
                                 <ul class="nav nav-second-level">
                                     <li>
-                                        <a href="#">Настройки сайта</a>
+                                        <a href="/sitesettings/editsite">Настройки сайта</a>
                                     </li>
                                     @if (User.IsInRole("architect"))
                                     {
                                         <li>
-                                            <a href="#"> Скачать лог</a>
+                                            <a href="/logs/getlog"> Скачать лог</a>
                                         </li>
                                     }
-                                    @*@if (MvcApplication.SiteDomain != null)
-                                        {
-                                            <li>
-                                                <a href="@(string.Format("{0}/api/logs", MvcApplication.SiteDomain))"> Скачать лог сайта</a>
-                                            </li>
-                                        }*@
+                                    @if (MvcApplication.SiteDomain != null)
+                                    {
+                                        <li>
+                                            <a href="@(string.Format("{0}/api/logs", MvcApplication.SiteDomain))"> Скачать лог сайта</a>
+                                        </li>
+                                    }
                                 </ul>
                             </li>
                         }
@@ -484,7 +475,7 @@
                                     </li>
                                 }
                                 <li>
-                                    <a href="#">История выпусков</a>
+                                    <a href="/sitesettings/releasenotes">История выпусков</a>
                                 </li>
                             </ul>
                         </li>

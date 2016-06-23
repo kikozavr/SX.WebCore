@@ -1,4 +1,6 @@
 ﻿using SX.WebCore.MvcApplication;
+using SX.WebCore.Repositories;
+using SX.WebCore.Resources;
 using System;
 using System.Data.Entity;
 
@@ -19,6 +21,9 @@ namespace SX.WebAdmin
             Database.SetInitializer<Infrastructure.DbContext>(null);
 
             base.Application_Start(sender, args);
+
+            var siteDomainItem = new SxRepoSiteSetting<Infrastructure.DbContext>().GetByKey(Settings.siteDomain);
+            SiteDomain = siteDomainItem?.Value;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace SX.WebCore.Repositories
             return base.GetByKey(id);
         }
 
-        public override SxRequest[] Query(SxFilter filter)
+        public override SxVMRequest[] Query<SxVMRequest>(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString(new string[] {
                     "dr.Id", "dr.SessionId", "dr.UrlRef", "dr.Browser", "dr.ClientIP", "dr.UserAgent", "dr.RequestType", "dr.DateCreate", "dr.RawUrl"
@@ -48,7 +49,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxRequest>(query, param: param);
+                var data = conn.Query<SxVMRequest>(query, param: param);
                 return data.ToArray();
             }
         }

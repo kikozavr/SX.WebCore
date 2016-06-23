@@ -150,14 +150,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="content\dist\css\grid-pictures.min.css" />
+    <Content Include="content\dist\css\grid-users.min.css" />
+    <Content Include="content\dist\css\lightbox.min.css" />
     <Content Include="content\dist\css\login.min.css" />
     <Content Include="content\dist\css\site.min.css" />
     <Content Include="content\dist\fonts\fontawesome-webfont.svg" />
+    <Content Include="content\dist\images\close.png" />
+    <Content Include="content\dist\images\loading.gif" />
+    <Content Include="content\dist\images\next.png" />
+    <Content Include="content\dist\images\prev.png" />
     <Content Include="content\dist\i\bg.jpg" />
     <Content Include="content\dist\i\faveicon.png" />
     <Content Include="content\dist\js\jquery.unobtrusive-ajax.min.js" />
     <Content Include="content\dist\js\jquery.validate.min.js" />
     <Content Include="content\dist\js\jquery.validate.unobtrusive.min.js" />
+    <Content Include="content\dist\js\lightbox.min.js" />
     <Content Include="content\dist\js\site.min.js" />
     <Content Include="Global.asax" />
     <Content Include="packages.config" />
@@ -170,9 +178,21 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LogsController.cs" />
+    <Compile Include="Controllers\PicturesController.cs" />
     <Compile Include="Controllers\RequestsController.cs" />
+    <Compile Include="Controllers\SiteSettingsController.cs" />
+    <Compile Include="Controllers\SiteTestBlocksController.cs" />
+    <Compile Include="Controllers\SiteTestQuestionsController.cs" />
+    <Compile Include="Controllers\SiteTestsController.cs" />
+    <Compile Include="Controllers\StatisticsController.cs" />
+    <Compile Include="Controllers\UserRolesController.cs" />
+    <Compile Include="Controllers\SeoController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\ValutesController.cs" />
+    <Compile Include="Controllers\VideosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -194,6 +214,38 @@
     <Content Include="Views\Valutes\_GridView.cshtml" />
     <Content Include="Views\Requests\Index.cshtml" />
     <Content Include="Views\Requests\_GridView.cshtml" />
+    <Content Include="Views\Seo\EditRobotsFile.cshtml" />
+    <Content Include="Views\UserRoles\Edit.cshtml" />
+    <Content Include="Views\UserRoles\Index.cshtml" />
+    <Content Include="Views\UserRoles\_GridView.cshtml" />
+    <Content Include="Views\Users\Edit.cshtml" />
+    <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Users\_GridView.cshtml" />
+    <Content Include="Views\Employees\Edit.cshtml" />
+    <Content Include="Views\Employees\Index.cshtml" />
+    <Content Include="Views\Employees\_GridView.cshtml" />
+    <Content Include="Views\Statistics\UserLogins.cshtml" />
+    <Content Include="Views\Statistics\_UserLoginsGridView.cshtml" />
+    <Content Include="Views\Pictures\Edit.cshtml" />
+    <Content Include="Views\Pictures\Index.cshtml" />
+    <Content Include="Views\Pictures\_GridView.cshtml" />
+    <Content Include="Views\Videos\Edit.cshtml" />
+    <Content Include="Views\Videos\Index.cshtml" />
+    <Content Include="Views\Videos\_GridView.cshtml" />
+    <Content Include="Views\SiteTests\Edit.cshtml" />
+    <Content Include="Views\SiteTests\Index.cshtml" />
+    <Content Include="Views\SiteTests\_FindGridView.cshtml" />
+    <Content Include="Views\SiteTests\_GridView.cshtml" />
+    <Content Include="Views\SiteTests\_Matrix.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
+    <Content Include="Views\SiteTestBlocks\Edit.cshtml" />
+    <Content Include="Views\SiteTestBlocks\Index.cshtml" />
+    <Content Include="Views\SiteTestBlocks\_FindGridView.cshtml" />
+    <Content Include="Views\SiteTestBlocks\_GridView.cshtml" />
+    <Content Include="Views\SiteTestQuestions\Edit.cshtml" />
+    <Content Include="Views\SiteTestQuestions\Index.cshtml" />
+    <Content Include="Views\SiteTestQuestions\_GridView.cshtml" />
+    <Content Include="Views\SiteSettings\EditSite.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -202,6 +254,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="bower_components\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>

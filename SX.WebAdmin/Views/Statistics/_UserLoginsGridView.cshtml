@@ -1,0 +1,13 @@
+﻿@model SxVMStatisticUserLogin[]
+@{
+    Layout = null;
+}
+
+@Html.SxGV(Model, new SxExtantions.SxGVSettings<SxVMStatisticUserLogin>()
+{
+    Columns = new SxExtantions.SxGvColumn<SxVMStatisticUserLogin>[] {
+        new SxExtantions.SxGvColumn<SxVMStatisticUserLogin> { FieldName="DateCreate", Caption="Дата"},
+        new SxExtantions.SxGvColumn<SxVMStatisticUserLogin> { FieldName="NikName", Caption="Ник-нейм"}
+    },
+    DataAjaxUrl = "/statistics/userlogins"
+})

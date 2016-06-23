@@ -21,7 +21,8 @@ namespace SX.WebCore.Repositories
             object param = null;
             query += getSiteTestQuestionWhereString(filter, out param);
 
-            query += SxQueryProvider.GetOrderString("dstq.DateCreate", SortDirection.Desc, filter.Orders);
+            var defaultOrder = new SxOrder { FieldName = "dstq.DateCreate", Direction = SortDirection.Desc };
+            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
 
             query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
 

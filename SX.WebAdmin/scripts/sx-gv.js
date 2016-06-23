@@ -42,6 +42,8 @@
             });
 
             $this.on('click', 'th', function () {
+                if ($(this).hasClass('sx-gv_first-column')) return;
+
                 $grid = $(this).closest('.sx-gv');
                 var page = $grid.find('.sx-gv__pager li.active a').data('page');
 

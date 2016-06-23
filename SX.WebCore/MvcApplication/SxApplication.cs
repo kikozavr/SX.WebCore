@@ -29,8 +29,34 @@ namespace SX.WebCore.MvcApplication
         private static MapperConfiguration _mapperConfiguration;
         public static MapperConfiguration MapperConfiguration { get { return _mapperConfiguration; } }
 
-        //private static bool _loggingRequest=false;
         public static bool LoggingRequest { get { return (bool)_appCache["APP_LoggingRequest"]; } }
+
+        public static Dictionary<string, string> UsersOnSite
+        {
+            get
+            {
+                var data = (Dictionary<string, string>)_appCache["CACHE_USERS_ON_SITE"];
+                if(data==null)
+                {
+                    data = new Dictionary<string, string>();
+                    _appCache["CACHE_USERS_ON_SITE"] = data;
+                }
+
+                return data;
+            }
+        }
+
+        public static string SiteDomain
+        {
+            get
+            {
+                return (string)AppCache["CACHE_SITE_DOMAIN"];
+            }
+            set
+            {
+                AppCache["CACHE_SITE_DOMAIN"] = value;
+            }
+        }
 
         private static MemoryCache _appCache;
         public static MemoryCache AppCache { get { return _appCache; } }

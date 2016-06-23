@@ -18,7 +18,8 @@ JOIN D_SITE_TEST AS dst ON dst.Id = dstb.TestId ";
             object param = null;
             query += getSiteTestBlockWhereString(filter, out param);
 
-            query += SxQueryProvider.GetOrderString("dstb.DateCreate", SortDirection.Desc, filter.Orders);
+            var defaultOrder = new SxOrder { FieldName = "dstb.DateCreate", Direction = SortDirection.Desc };
+            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
 
             query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
 

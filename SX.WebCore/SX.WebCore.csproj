@@ -171,7 +171,17 @@
     <Compile Include="Abstract\SxDbModel.cs" />
     <Compile Include="Abstract\SxDbRepository.cs" />
     <Compile Include="Abstract\SxDbUpdatedModel.cs" />
+    <Compile Include="MvcControllers\SxEmployeesController.cs" />
     <Compile Include="MvcControllers\SxRequestsController.cs" />
+    <Compile Include="MvcControllers\SxSeoController.cs" />
+    <Compile Include="MvcControllers\SxSiteSettingsController.cs" />
+    <Compile Include="MvcControllers\SxSiteTestBlocksController.cs" />
+    <Compile Include="MvcControllers\SxSiteTestController.cs" />
+    <Compile Include="MvcControllers\SxSiteTestQuestionsController.cs" />
+    <Compile Include="MvcControllers\SxStatisticsController.cs" />
+    <Compile Include="MvcControllers\SxUserRolesController.cs" />
+    <Compile Include="MvcControllers\SxUsersController.cs" />
+    <Compile Include="MvcControllers\SxVideosController.cs" />
     <Compile Include="SxFilter.cs" />
     <Compile Include="Abstract\SxMaterial.cs" />
     <Compile Include="Abstract\SxPerson.cs" />
@@ -280,6 +290,18 @@
     <Compile Include="SxSiteTest.cs" />
     <Compile Include="SxVideo.cs" />
     <Compile Include="SxVideoLink.cs" />
+    <Compile Include="ViewModels\SxVMEditPicture.cs" />
+    <Compile Include="ViewModels\SxVMEditSiteTest.cs" />
+    <Compile Include="ViewModels\SxVMEditSiteTestBlock.cs" />
+    <Compile Include="ViewModels\SxVMEditSiteTestQuestion.cs" />
+    <Compile Include="ViewModels\SxVMEditVideo.cs" />
+    <Compile Include="ViewModels\SxVMEmployee.cs" />
+    <Compile Include="ViewModels\SxVMPicture.cs" />
+    <Compile Include="ViewModels\SxVMSiteSettings.cs" />
+    <Compile Include="ViewModels\SxVMSiteTest.cs" />
+    <Compile Include="ViewModels\SxVMSiteTestBlock.cs" />
+    <Compile Include="ViewModels\SxVMSiteTestQuestion.cs" />
+    <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />
     <Compile Include="ViewModels\SxVMValute.cs" />
     <Compile Include="ViewModels\SxVMMaterialTag.cs" />
     <Compile Include="UrlHelper.cs" />
@@ -291,6 +313,12 @@
     <Compile Include="ViewModels\SxVMSendCode.cs" />
     <Compile Include="ViewModels\SxVMVerifyCode.cs" />
     <Compile Include="ViewModels\SxVMRequest.cs" />
+    <Compile Include="ViewModels\SxVMRobotsFile.cs" />
+    <Compile Include="ViewModels\SxVMAppRole.cs" />
+    <Compile Include="ViewModels\SxVMEditAppRole.cs" />
+    <Compile Include="ViewModels\SxVMAppUser.cs" />
+    <Compile Include="ViewModels\SxVMEditEmployee.cs" />
+    <Compile Include="ViewModels\SxVMVideo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

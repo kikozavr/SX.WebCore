@@ -1,0 +1,45 @@
+﻿@model SxVMSiteTestQuestion[]
+@{
+    Layout = null;
+    var blocks = Model.GroupBy(x => x.Block).Select(x => new { BlockId = x.Key.Id, Title = x.Key.Title }).Distinct().OrderBy(x => x.Title).ToArray();
+    var questions = Model.Select(x => new { Text = x.Text }).Distinct().OrderBy(x => x.Text).ToArray();
+    dynamic block = null;
+    dynamic question = null;
+}
+@if (Model.Any())
+{
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th colspan="2">Блок теста</th>
+                @for (int i = 0; i < questions.Length; i++)
+                {
+                    question = questions[i];
+                    <th style="max-width:150px;">@question.Text</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < blocks.Length; i++)
+            {
+                block = blocks[i];
+                <tr>
+                    <td>
+                        <a href="#" style="color:#000;"><i class="fa fa-pencil"></i></a>
+                    </td>
+                    <td>
+                         @block.Title
+                    </td>
+                    @for (int y = 0; y < questions.Length; y++)
+                    {
+                        question = questions[y];
+                        question = Model.SingleOrDefault(x => Equals(x.Text, question.Text) && Equals(x.Block.Id, block.BlockId));
+                        <td style="text-align:center;">
+                            @(question.IsCorrect ? Html.Raw("<b class=\"text-success\"><u>Да</u></b>") : Html.Raw("<span>Нет</span>"))
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}

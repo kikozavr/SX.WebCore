@@ -33,13 +33,25 @@ function createCss() {
 
     var cssStream = gulp.src([
         'bower_components/bootstrap/dist/css/bootstrap.min.css',
+        'bower_components/bootstrap/dist/css/bootstrap-theme.min.css',
         'bower_components/font-awesome/css/font-awesome.min.css',
         'bower_components/metisMenu/dist/metisMenu.min.css'
     ])
         .pipe(concat('css.css'));
 
-    var byOneLessStream = gulp.src([
-       'less/login.less'
+    var mergedStream = merge(lessStream, cssStream)
+        .pipe(order([
+            'css.css',
+            'sitecss.css'
+        ]))
+            .pipe(concat('site.min.css'))
+            .pipe(gulp.dest('content/dist/css'));
+
+    //by one less
+    gulp.src([
+       'less/login.less',
+       'less/grid-users.less',
+       'less/grid-pictures.less'
     ])
         .pipe(less())
         .pipe(cleanCSS({ compatibility: 'ie8' }))
@@ -49,13 +61,11 @@ function createCss() {
         }))
         .pipe(gulp.dest('content/dist/css'));
 
-    var mergedStream = merge(lessStream, cssStream)
-        .pipe(order([
-            'css.css',
-            'sitecss.css'
-        ]))
-            .pipe(concat('site.min.css'))
-            .pipe(gulp.dest('content/dist/css'));
+    //by one css
+    gulp.src([
+       'bower_components/lightbox2/dist/css/lightbox.min.css',
+    ])
+        .pipe(gulp.dest('content/dist/css'));
 }
 
 //create fonts
@@ -89,13 +99,22 @@ function createJs() {
             .pipe(concat('site.min.js'))
             .pipe(gulp.dest('content/dist/js'));
 
+    //by one js
     gulp.src([
         'bower_components/jquery-validation/dist/jquery.validate.min.js',
         'bower_components/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js',
-        'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js'
+        'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
+        'bower_components/lightbox2/dist/js/lightbox.min.js',
     ])
         .pipe(gulp.dest('content/dist/js'));
     
+}
+
+function createImages() {
+    gulp.src([
+        'bower_components/lightbox2/dist/images/**'
+    ])
+    .pipe(gulp.dest('content/dist/images'));
 }
 
 gulp.task('watch', function (cb) {
@@ -107,5 +126,6 @@ gulp.task('watch', function (cb) {
         createCss();
         createFonts();
         createJs();
+        createImages();
     });
 });

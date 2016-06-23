@@ -1,8 +1,8 @@
 ﻿/************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 21.06.2016 14:39:17
+ * Time: 23.06.2016 13:31:57
  ************************************************************/
- 
+
 /*******************************************
  * get picture
  *******************************************/
@@ -28,7 +28,6 @@ GO
 CREATE PROCEDURE dbo.del_picture
 	@pictureId UNIQUEIDENTIFIER
 AS
-BEGIN
 	BEGIN TRANSACTION
 	
 	UPDATE DV_MATERIAL
@@ -47,14 +46,13 @@ BEGIN
 	SET    PictureId = NULL
 	WHERE  PictureId = @pictureId
 	
-	UPDATE D_SITE_PARTNER
-	SET    PictureId = NULL
-	WHERE  PictureId = @pictureId
+	--UPDATE D_SITE_PARTNER
+	--SET    PictureId = NULL
+	--WHERE  PictureId = @pictureId
 	
 	DELETE 
 	FROM   D_PICTURE
 	WHERE  Id = @pictureId
 	
 	COMMIT TRANSACTION
-END
 GO

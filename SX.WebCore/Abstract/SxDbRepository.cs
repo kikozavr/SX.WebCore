@@ -116,6 +116,11 @@ namespace SX.WebCore.Abstract
             return All.Take(100).ToArray();
         }
 
+        public virtual T[] Query<T>(SxFilter filter)
+        {
+            return new T[0];
+        }
+
         public virtual int Count(SxFilter filter)
         {
             return All.Count();

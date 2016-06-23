@@ -150,6 +150,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="content\dist\css\grid-banners.min.css" />
     <Content Include="content\dist\css\grid-pictures.min.css" />
     <Content Include="content\dist\css\grid-users.min.css" />
     <Content Include="content\dist\css\lightbox.min.css" />
@@ -177,12 +178,17 @@
     <Compile Include="App_Start\Startup.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\BannedUrlsController.cs" />
+    <Compile Include="Controllers\BannerGroupsController.cs" />
+    <Compile Include="Controllers\BannersController.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LogsController.cs" />
     <Compile Include="Controllers\PicturesController.cs" />
     <Compile Include="Controllers\RequestsController.cs" />
+    <Compile Include="Controllers\SeoKeywordsController.cs" />
+    <Compile Include="Controllers\SeoTagsController.cs" />
     <Compile Include="Controllers\SiteSettingsController.cs" />
     <Compile Include="Controllers\SiteTestBlocksController.cs" />
     <Compile Include="Controllers\SiteTestQuestionsController.cs" />
@@ -246,6 +252,24 @@
     <Content Include="Views\SiteTestQuestions\Index.cshtml" />
     <Content Include="Views\SiteTestQuestions\_GridView.cshtml" />
     <Content Include="Views\SiteSettings\EditSite.cshtml" />
+    <Content Include="Views\Banners\Edit.cshtml" />
+    <Content Include="Views\Banners\Index.cshtml" />
+    <Content Include="Views\Banners\_FindGridView.cshtml" />
+    <Content Include="Views\Banners\_GridView.cshtml" />
+    <Content Include="Views\Banners\_GroupBanners.cshtml" />
+    <Content Include="Views\BannerGroups\Edit.cshtml" />
+    <Content Include="Views\BannerGroups\Index.cshtml" />
+    <Content Include="Views\BannerGroups\_GridView.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\AddBanner.cshtml" />
+    <Content Include="Views\BannedUrls\Edit.cshtml" />
+    <Content Include="Views\BannedUrls\Index.cshtml" />
+    <Content Include="Views\BannedUrls\_GridView.cshtml" />
+    <Content Include="Views\SeoTags\Edit.cshtml" />
+    <Content Include="Views\SeoTags\Index.cshtml" />
+    <Content Include="Views\SeoTags\_EditForMaterial.cshtml" />
+    <Content Include="Views\SeoTags\_GeneralEdit.cshtml" />
+    <Content Include="Views\SeoTags\_GridView.cshtml" />
+    <Content Include="Views\SeoKeywords\_GridView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,0 +1,57 @@
+﻿@model SxVMEditSeoTags
+@{
+    var isNew = Model.Id == 0;
+    ViewBag.Title = isNew ? "Добавить SEO теги" : "Редактировать SEO теги для адреса\"" + Model.RawUrl + "\"";
+}
+<h2>@ViewBag.Title</h2>
+<br />
+@if (!isNew)
+{
+    <form method="post" action="/seotags/delete">
+        @Html.HiddenFor(x => x.Id)
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-danger pull-right" onclick="if(!confirm('Удалить запись?')) return false;">Удалить</button>
+    </form>
+}
+<form method="post" action="/seotags/edit">
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="row">
+        <div class="col-md-12">
+            @Html.LabelFor(x => x.RawUrl, new { @class = "control-label" })
+            <span class="text-info"> (необходимо использовать внутренний адрес)</span>
+            @Html.EditorFor(x => x.RawUrl, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите адрес" } })
+            @Html.ValidationMessageFor(x => x.RawUrl)
+        </div>
+    </div>
+    <br />
+    @Html.Partial("_GeneralEdit")
+    <br />
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">@(Model.Id == 0 ? "Добавить" : "Сохранить")</button>
+                @Html.RouteLink("Назад", new { action = "Index" }, new { @class = "btn btn-default" })
+            </div>
+        </div>
+    </div>
+</form>
+
+<div id="seo-kw">
+    @if (!isNew)
+    {
+        @Html.Action("index", new { controller = "seokeywords", sid = Model.Id })
+    }
+</div>
+
+@section scripts{
+    <script src="~/content/dist/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script>
+        $(function () {
+            $('#seo-kw').sx_gv();
+        });
+    </script>
+}

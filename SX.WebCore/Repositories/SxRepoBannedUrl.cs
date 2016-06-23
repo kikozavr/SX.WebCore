@@ -9,7 +9,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoBannedUrl<TDbContext> : SxDbRepository<int, SxBannedUrl, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxBannedUrl[] Query(SxFilter filter)
+        public override SxVMBannedUrl[] Query<SxVMBannedUrl>(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString(new string[] { "dbu.Id", "dbu.Url", "dbu.Couse" });
             query += " FROM D_BANNED_URL AS dbu ";
@@ -17,13 +17,14 @@ namespace SX.WebCore.Repositories
             object param = null;
             query += getBannedUrlWhereString(filter, out param);
 
-            query += SxQueryProvider.GetOrderString("dbu.DateCreate", SortDirection.Desc, filter.Orders);
+            var defaultOrder = new SxOrder { FieldName = "dbu.DateCreate", Direction = SortDirection.Desc };
+            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
 
             query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxBannedUrl>(query, param: param);
+                var data = conn.Query<SxVMBannedUrl>(query, param: param);
                 return data.ToArray();
             }
         }

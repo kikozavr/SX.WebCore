@@ -18,7 +18,8 @@ namespace SX.WebCore.Repositories
             object param = null;
             query += getBannerGroupWhereString(filter, out param);
 
-            query += SxQueryProvider.GetOrderString("dbg.DateCreate", SortDirection.Desc, filter.Orders);
+            var defaultOrder = new SxOrder { FieldName= "dbg.DateCreate", Direction=SortDirection.Desc };
+            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
 
             query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
 

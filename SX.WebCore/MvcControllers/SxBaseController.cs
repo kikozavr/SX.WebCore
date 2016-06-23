@@ -99,12 +99,12 @@ namespace SX.WebCore.MvcControllers
             return redirect;
         }
 
-        private SxSeoInfo getPageSeoInfo(CacheItemPolicy cip = null)
+        private SxSeoTags getPageSeoInfo(CacheItemPolicy cip = null)
         {
-            var seoInfo = (SxSeoInfo)SxApplication<TDbContext>.AppCache["CACHE_SEOINFO_" + SxRawUrl];
+            var seoInfo = (SxSeoTags)SxApplication<TDbContext>.AppCache["CACHE_SEOINFO_" + SxRawUrl];
             if(seoInfo==null)
             {
-                seoInfo = new SxRepoSeoInfo<TDbContext>().GetSeoInfo(SxRawUrl);
+                seoInfo = new SxRepoSeoTags<TDbContext>().GetSeoTags(SxRawUrl);
                 SxApplication<TDbContext>.AppCache.Add("CACHE_SEOINFO_" + SxRawUrl, seoInfo, cip);
             }
             return seoInfo;

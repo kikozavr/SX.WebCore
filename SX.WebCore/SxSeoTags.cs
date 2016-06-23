@@ -6,8 +6,9 @@ using static SX.WebCore.Enums;
 
 namespace SX.WebCore
 {
+    //TOOD: Перименовать в [Table("D_SEO_INFO")]
     [Table("D_SEO_INFO")]
-    public class SxSeoInfo : SxDbUpdatedModel<int>
+    public class SxSeoTags : SxDbUpdatedModel<int>
     {
         [MaxLength(255), Required]
         public string SeoTitle { get; set; }

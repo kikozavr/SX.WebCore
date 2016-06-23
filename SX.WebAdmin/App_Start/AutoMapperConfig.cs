@@ -17,6 +17,22 @@ namespace SX.WebAdmin
                     cfg.CreateMap<SxAppRole, SxVMEditAppRole>();
                     cfg.CreateMap<SxVMEditAppRole, SxAppRole>();
 
+                    //banned url
+                    cfg.CreateMap<SxBannedUrl, SxVMBannedUrl>();
+                    cfg.CreateMap<SxBannedUrl, SxVMEditBannedUrl>();
+                    cfg.CreateMap<SxVMEditBannedUrl, SxBannedUrl>();
+
+                    //banner
+                    cfg.CreateMap<SxBanner, SxVMBanner>();
+                    cfg.CreateMap<SxVMBanner, SxBanner>();
+                    cfg.CreateMap<SxBanner, SxVMEditBanner>();
+                    cfg.CreateMap<SxVMEditBanner, SxBanner>();
+
+                    //banner group
+                    cfg.CreateMap<SxBannerGroup, SxVMBannerGroup>();
+                    cfg.CreateMap<SxBannerGroup, SxVMEditBannerGroup>();
+                    cfg.CreateMap<SxVMEditBannerGroup, SxBannerGroup>();
+
                     //employee
                     cfg.CreateMap<SxEmployee, SxVMEmployee>();
                     cfg.CreateMap<SxEmployee, SxVMEditEmployee>();
@@ -30,6 +46,17 @@ namespace SX.WebAdmin
 
                     //request
                     cfg.CreateMap<SxRequest, SxVMRequest>();
+
+                    //seo keywords
+                    cfg.CreateMap<SxSeoKeyword, SxVMSeoKeyword>();
+                    cfg.CreateMap<SxSeoKeyword, SxVMEditSeoKeyword>();
+                    cfg.CreateMap<SxVMEditSeoKeyword, SxSeoKeyword>();
+
+                    //seo tags
+                    cfg.CreateMap<SxSeoTags, SxVMSeoTags>();
+                    cfg.CreateMap<SxVMSeoTags, SxSeoTags>();
+                    cfg.CreateMap<SxSeoTags, SxVMEditSeoTags> ();
+                    cfg.CreateMap<SxVMEditSeoTags, SxSeoTags>();
 
                     //site test
                     cfg.CreateMap<SxSiteTest, SxVMSiteTest>();

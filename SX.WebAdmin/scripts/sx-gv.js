@@ -1,9 +1,10 @@
-﻿(function ($) {
+﻿/// <reference path="../bower_components/jquery/dist/jquery.min.js" />
+(function ($) {
     $.fn.sx_gv = function () {
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
 
         this.each(function () {
-            var $this = $(this).closest('div');
+            var $this = $(this);
 
             $this.on('click', '.sx-gv__pager a', function () {
                 $a = $(this);
@@ -60,6 +61,21 @@
 
                 getGridViewData($grid, page, order);
             });
+
+            $this.on('change', '.sx-gv__select-all-chbx', function () {
+                $chbx = $(this);
+                $grid = $chbx.closest('.sx-gv');
+                var checked = $chbx.prop('checked');
+                $a = $grid.find('.sx-gv__add-from-chbx-btn');
+                if (checked) {
+                    //$a.show();
+                    $grid.find('input[type="checkbox"]').prop('checked', 'checked');
+                }
+                else {
+                    //$a.hide();
+                    $grid.find('tbody input[type="checkbox"]').removeAttr('checked');
+                }
+            });
         });
     };
 })(jQuery);
@@ -92,10 +108,10 @@ function getGridViewData(grid, page, order) {
         data: data,
         method: 'post',
         success: function (result) {
-            $grid.html(result);
+            $grid.parent().html(result);
         },
         complete: function () {
-            $grid.find('[data-toggle="tooltip"]').tooltip();
+            $grid.parent().find('[data-toggle="tooltip"]').tooltip();
         }
     });
 }

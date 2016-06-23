@@ -1,0 +1,86 @@
+﻿@model SxVMEditBanner
+@{
+    var isNew = Model.Id == Guid.Empty;
+    ViewBag.Title = isNew ? "Добавить баннер" : "Редактировать баннер \"" + Model.Title ?? Model.Id.ToString() + "\"";
+}
+
+@section styles{
+    <link rel="stylesheet" href="~/content/dist/css/lightbox.min.css" />
+}
+
+<h2>@ViewBag.Title</h2>
+@if (!isNew)
+{
+    <div class="text-right">
+        <form method="post" action="/banners/delete">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => x.Id)
+            <button type="submit" class="btn btn-danger" onclick="if (!confirm('Удалить запись?')) { return false;}">Удалить</button>
+        </form>
+    </div>
+}
+<br />
+<form method="post" action="/banners/edit">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Url)
+        @Html.EditorFor(x => x.Url, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите адрес ссылки баннера" } })
+        @Html.ValidationMessageFor(x => x.Url)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.PictureId)
+        @if (!isNew && Model.Picture!=null)
+        {
+            <a style="color:inherit; text-decoration:none;" data-lightbox="roadtrip" data-title="@Model.Picture.Caption" data-toggle="tooltip" data-placement="right" title="Помотреть картинку" href="/pictures/picture/@Model.PictureId">&nbsp;<i class="fa fa-picture-o"></i></a>
+        }
+        @Html.EditorFor(x => x.PictureId, new { htmlAttributes = new { @class = "form-control", @placeholder = "Укажите изображение" } })
+        @Html.ValidationMessageFor(x => x.PictureId)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Title)
+        @Html.EditorFor(x => x.Title, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите заголовок" } })
+        @Html.ValidationMessageFor(x => x.Title)
+    </div>
+
+    <br />
+    <h4>Парметры сквозных баннеров</h4>
+    <p class="text-info" style="max-width:400px;">Баннер будет отображаться как сквозной только при условии задания этих парметров. Но даже если параметры заданы, баннер все равно может использоваться как обычный</p>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(x => x.Place)
+                <a style="color:inherit; text-decoration:none;" data-lightbox="cheme" data-title="Схема шаблона" data-toggle="tooltip" data-placement="right" title="Помотреть схему" href="~/Content/i/bannerPlaces.jpg">&nbsp;<i class="fa fa-question-circle-o"></i></a>
+                @Html.EnumDropDownListFor(x=>x.Place, new { @class = "form-control", @placeholder = "Задайте место баннера на странице" })
+                @Html.ValidationMessageFor(x => x.Place)
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(x => x.ControllerName)
+                @Html.EditorFor(x => x.ControllerName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите контроллер" } })
+                @Html.ValidationMessageFor(x => x.ControllerName)
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(x => x.ActionName)
+                @Html.EditorFor(x => x.ActionName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите действие" } })
+                @Html.ValidationMessageFor(x => x.ActionName)
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@(isNew ? "Добавить" : "Сохранить")</button>
+        <a href="/banners" class="btn btn-default">Назад</a>
+    </div>
+</form>
+
+@section scripts{
+    <script type="text/javascript" src="~/content/dist/js/lightbox.min.js"></script>
+}

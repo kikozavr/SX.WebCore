@@ -24,7 +24,8 @@ function clear() {
 function createCss() {
     var lessStream = gulp.src([
        'less/site.less',
-       'less/sx-gv.less'
+       'less/sx-gv.less',
+       'less/sx-gvl.less'
     ])
         .pipe(less())
         .pipe(cleanCSS({ compatibility: 'ie8' }))
@@ -51,7 +52,8 @@ function createCss() {
     gulp.src([
        'less/login.less',
        'less/grid-users.less',
-       'less/grid-pictures.less'
+       'less/grid-pictures.less',
+       'less/grid-banners.less'
     ])
         .pipe(less())
         .pipe(cleanCSS({ compatibility: 'ie8' }))
@@ -63,7 +65,7 @@ function createCss() {
 
     //by one css
     gulp.src([
-       'bower_components/lightbox2/dist/css/lightbox.min.css',
+       'bower_components/lightbox2/dist/css/lightbox.min.css'
     ])
         .pipe(gulp.dest('content/dist/css'));
 }
@@ -81,12 +83,13 @@ function createJs() {
     var js = gulp.src([
         'bower_components/jquery/dist/jquery.min.js',
         'bower_components/bootstrap/dist/js/bootstrap.min.js',
-        'bower_components/metisMenu/dist/metisMenu.min.js',
+        'bower_components/metisMenu/dist/metisMenu.min.js'
     ])
         .pipe(concat('js.js'));
 
     var sitejs = gulp.src([
-        'scripts/sx-gv.js'
+        'scripts/sx-gv.js',
+        'scripts/sx-gvl.js'
     ])
         .pipe(uglify())
         .pipe(concat('sitejs.js'));
@@ -104,7 +107,7 @@ function createJs() {
         'bower_components/jquery-validation/dist/jquery.validate.min.js',
         'bower_components/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js',
         'bower_components/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js',
-        'bower_components/lightbox2/dist/js/lightbox.min.js',
+        'bower_components/lightbox2/dist/js/lightbox.min.js'
     ])
         .pipe(gulp.dest('content/dist/js'));
     

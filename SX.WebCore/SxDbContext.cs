@@ -48,7 +48,7 @@ namespace SX.WebCore
 
         public DbSet<SxRequest> Requestes { get; set; }
 
-        public DbSet<SxSeoInfo> SeoInfo { get; set; }
+        public DbSet<SxSeoTags> SeoInfo { get; set; }
 
         public DbSet<SxSeoKeyword> SeoKeyWords { get; set; }
 
@@ -75,7 +75,7 @@ namespace SX.WebCore
             modelBuilder.Entity<SxMaterialTag>().HasKey(x=> new { x.Id, x.MaterialId, x.ModelCoreType }).HasRequired(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType }).WillCascadeOnDelete();
             modelBuilder.Entity<SxMaterialTag>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
-            modelBuilder.Entity<SxSeoInfo>().HasOptional(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType });
+            modelBuilder.Entity<SxSeoTags>().HasOptional(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType });
 
             modelBuilder.Entity<SxMaterialCategory>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 

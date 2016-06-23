@@ -1,0 +1,19 @@
+﻿@model SxVMSeoTags[]
+@{
+    Layout = null;
+}
+
+
+@Html.SxGV(Model,
+        new SxExtantions.SxGVSettings<SxVMSeoTags>
+        {
+            Columns = new SxExtantions.SxGvColumn<SxVMSeoTags>[]{
+                new SxExtantions.SxGvColumn<SxVMSeoTags>{FieldName="RawUrl", Caption="Адрес"}
+            },
+            EnableCreating = true,
+            CreateRowUrl = "/seotags/edit",
+            EnableEditing = true,
+            EditRowUrl = (x) => { return "/seotags/edit/" + x.Id; },
+            DataAjaxUrl = "/seotags"
+        }
+    )

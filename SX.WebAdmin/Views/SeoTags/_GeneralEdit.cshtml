@@ -1,0 +1,37 @@
+﻿@model SxVMEditSeoTags
+@{ 
+    Layout = null;
+
+}
+
+<div class="row">
+    <div class="col-md-12">
+        @Html.LabelFor(x => x.SeoTitle, new { @class = "control-label" })
+        <span class="text-info"> (тег Title. Обязательная длина - 7-15 слов)</span>
+        @Html.EditorFor(x => x.SeoTitle, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите заголовок страницы", @autocomplete = "off" } })
+        @Html.ValidationMessageFor(x => x.SeoTitle)
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        @Html.LabelFor(x => x.SeoDescription, new { @class = "control-label" })
+        <span class="text-info"> (тег Description. Обязательная длина - 150-700 знаков)</span>
+        @Html.EditorFor(x => x.SeoDescription, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите описание страницы", @autocomplete = "off" } })
+        @Html.ValidationMessageFor(x => x.SeoDescription)
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-9">
+        @Html.LabelFor(x => x.H1, new { @class = "control-label" })
+        <span class="text-info"> (тег h1. Обязательная длина - 2-8 слов. Тег отображается непосредственно перед началом любого полезного контента страницы.)</span>
+        @Html.EditorFor(x => x.H1, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите тег h1", @autocomplete = "off" } })
+        @Html.ValidationMessageFor(x => x.H1)
+    </div>
+    <div class="col-md-3">
+        @Html.LabelFor(x => x.H1CssClass, new { @class = "control-label" })
+        @Html.EditorFor(x => x.H1CssClass, new { htmlAttributes = new { @class = "form-control", @placeholder = "Css стиль тега h1", @autocomplete = "off" } })
+        @Html.ValidationMessageFor(x => x.H1CssClass)
+    </div>
+</div>

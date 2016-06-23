@@ -52,7 +52,7 @@ namespace SX.WebCore.Providers
         public static string GetOrderString(SxOrder defaultOrder, SxOrder order=null)
         {
             var sb = new StringBuilder();
-            if (order==null)
+            if (order==null || order.FieldName==null)
                 sb.AppendFormat(",{0} {1}", defaultOrder.FieldName, defaultOrder.Direction.ToString().ToUpper());
             else
                 sb.AppendFormat(",{0} {1}", order.FieldName, order.Direction.ToString().ToUpper());

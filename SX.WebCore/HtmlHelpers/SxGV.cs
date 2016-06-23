@@ -23,6 +23,7 @@ namespace SX.WebCore.HtmlHelpers
             public SxFilter Filter { get; set; }
             public Func<TModel, string> RowCssClass { get; set; }
             public bool ShowFilterRow { get; set; } = true;
+            public bool ShowSelectedCheckbox { get; set; } = false;
             public bool EnableEditing { get; set; } = false;
             public Func<TModel, string> EditRowUrl { get; set; }
             public bool EnableCreating { get; set; } = false;
@@ -140,6 +141,10 @@ namespace SX.WebCore.HtmlHelpers
                         a.InnerHtml += link;
                         th.InnerHtml += a;
                     }
+                    else if(settings.ShowSelectedCheckbox)
+                    {
+                        th.InnerHtml += "<input type=\"checkbox\" data-toggle=\"tooltip\" title=\"Выделить все\" class=\"sx-gv__select-all-chbx\" />";
+                    }
                     else
                     {
                         th.InnerHtml += "#";
@@ -207,6 +212,12 @@ namespace SX.WebCore.HtmlHelpers
                                 a.InnerHtml += link;
                                 td.InnerHtml += a;
                             }
+                            if(settings.ShowSelectedCheckbox)
+                            {
+                                var input = new TagBuilder("input");
+                                input.MergeAttribute("type", "checkbox");
+                                td.InnerHtml += input;
+                            }
                         }
                         else
                         {
@@ -228,6 +239,9 @@ namespace SX.WebCore.HtmlHelpers
             else
             {
                 tr = new TagBuilder("tr");
+                td = new TagBuilder("td");
+                tr.InnerHtml += td;
+
                 td = new TagBuilder("td");
                 td.MergeAttribute("colspan", settings.Columns.Length.ToString());
                 var span = new TagBuilder("span");
@@ -257,7 +271,14 @@ namespace SX.WebCore.HtmlHelpers
                 {
                     propValue = prop.GetValue(settings.Filter.WhereExpressionObject);
                     propStringValue = propValue != null ? propValue.ToString() : null;
-                    if (propStringValue != null && propStringValue != "0" && propStringValue!= "01.01.0001 0:00:00" && propStringValue!= "00000000-0000-0000-0000-000000000000" && propStringValue!="False")
+                    if (
+                        propStringValue != null
+                        && propStringValue != "0"
+                        && propStringValue!= "01.01.0001 0:00:00"
+                        && propStringValue!= "00000000-0000-0000-0000-000000000000"
+                        && propStringValue!="False"
+                        && propStringValue!= "Unknown"
+                        )
                         filterProperties.Add(prop.Name, propStringValue);
                 }
             }
@@ -303,6 +324,16 @@ namespace SX.WebCore.HtmlHelpers
             TagBuilder td;
 
             td = new TagBuilder("td");
+            if(settings.ShowSelectedCheckbox)
+            {
+                var a = new TagBuilder("a");
+                a.AddCssClass("sx-gv__add-from-chbx-btn");
+                a.MergeAttribute("data-toggle", "tooltip");
+                a.MergeAttribute("href", "javascript:void(0)");
+                a.MergeAttribute("title", "Добавить выбранные");
+                a.InnerHtml += "<i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i>";
+                td.InnerHtml += a;
+            }
             tr.InnerHtml += td;
 
             td = new TagBuilder("td");

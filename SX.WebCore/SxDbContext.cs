@@ -44,7 +44,7 @@ namespace SX.WebCore
 
         public DbSet<SxProjectStep> ProjectSteps { get; set; }
 
-        public DbSet<SxRedirect> Redirects { get; set; }
+        public DbSet<Sx301Redirect> Redirects { get; set; }
 
         public DbSet<SxRequest> Requestes { get; set; }
 

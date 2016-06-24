@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace SX.WebCore
 {
     [Table("D_REDIRECT")]
-    public sealed class SxRedirect : SxDbUpdatedModel<Guid>
+    public sealed class Sx301Redirect : SxDbUpdatedModel<Guid>
     {
         [MaxLength(255), Required]
         public string OldUrl { get; set; }

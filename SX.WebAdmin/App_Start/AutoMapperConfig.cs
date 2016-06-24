@@ -38,11 +38,19 @@ namespace SX.WebAdmin
                     cfg.CreateMap<SxEmployee, SxVMEditEmployee>();
                     cfg.CreateMap<SxVMEditEmployee, SxEmployee>();
 
+                    //faq
+                    cfg.CreateMap<SxManual, SxVMFAQ>();
+
                     //picture
                     cfg.CreateMap<SxPicture, SxVMPicture>();
                     cfg.CreateMap<SxVMPicture, SxPicture>();
                     cfg.CreateMap<SxPicture, SxVMEditPicture>();
                     cfg.CreateMap<SxVMEditPicture, SxPicture>();
+
+                    //redirect
+                    cfg.CreateMap<Sx301Redirect, SxVM301Redirect>();
+                    cfg.CreateMap<Sx301Redirect, SxVMEdit301Redirect>();
+                    cfg.CreateMap<SxVMEdit301Redirect, Sx301Redirect>();
 
                     //request
                     cfg.CreateMap<SxRequest, SxVMRequest>();

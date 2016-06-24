@@ -171,15 +171,19 @@
     <Compile Include="Abstract\SxDbModel.cs" />
     <Compile Include="Abstract\SxDbRepository.cs" />
     <Compile Include="Abstract\SxDbUpdatedModel.cs" />
+    <Compile Include="Attrubutes\NotEqualAttribute.cs" />
     <Compile Include="HtmlHelpers\SxGridLookup.cs" />
+    <Compile Include="MvcControllers\Sx301RedirectsController.cs" />
     <Compile Include="MvcControllers\SxBannedUrlsController.cs" />
     <Compile Include="MvcControllers\SxBannerGroupsController.cs" />
     <Compile Include="MvcControllers\SxBannersController.cs" />
     <Compile Include="MvcControllers\SxEmployeesController.cs" />
+    <Compile Include="MvcControllers\SxFAQController.cs" />
     <Compile Include="MvcControllers\SxRequestsController.cs" />
     <Compile Include="MvcControllers\SxSeoController.cs" />
     <Compile Include="MvcControllers\SxSeoKeywordsController.cs" />
     <Compile Include="MvcControllers\SxSeoTagsController.cs" />
+    <Compile Include="MvcControllers\SxSeoWordCounterController.cs" />
     <Compile Include="MvcControllers\SxSiteSettingsController.cs" />
     <Compile Include="MvcControllers\SxSiteTestBlocksController.cs" />
     <Compile Include="MvcControllers\SxSiteTestController.cs" />
@@ -228,7 +232,7 @@
     <Compile Include="Repositories\SxRepoComment.cs" />
     <Compile Include="Repositories\SxRepoEmployee.cs" />
     <Compile Include="Repositories\SxRepoPicture.cs" />
-    <Compile Include="Repositories\SxRepoRedirect.cs" />
+    <Compile Include="Repositories\SxRepo301Redirect.cs" />
     <Compile Include="Repositories\SxRepoSeoTags.cs" />
     <Compile Include="Repositories\SxRepoSiteSetting.cs" />
     <Compile Include="Repositories\SxRepoSiteTestQuestion.cs" />
@@ -284,7 +288,7 @@
     <Compile Include="SxPicture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SxProjectStep.cs" />
-    <Compile Include="SxRedirect.cs" />
+    <Compile Include="Sx301Redirect.cs" />
     <Compile Include="SxRequest.cs" />
     <Compile Include="SxSeoTags.cs" />
     <Compile Include="SxSeoKeyword.cs" />
@@ -297,9 +301,11 @@
     <Compile Include="SxSiteTest.cs" />
     <Compile Include="SxVideo.cs" />
     <Compile Include="SxVideoLink.cs" />
+    <Compile Include="ViewModels\SxVM301Redirect.cs" />
     <Compile Include="ViewModels\SxVMBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMBanner.cs" />
     <Compile Include="ViewModels\SxVMBannerGroup.cs" />
+    <Compile Include="ViewModels\SxVMEdit301Redirect.cs" />
     <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMEditBanner.cs" />
     <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />
@@ -311,6 +317,7 @@
     <Compile Include="ViewModels\SxVMEditSiteTestQuestion.cs" />
     <Compile Include="ViewModels\SxVMEditVideo.cs" />
     <Compile Include="ViewModels\SxVMEmployee.cs" />
+    <Compile Include="ViewModels\SxVMFAQ.cs" />
     <Compile Include="ViewModels\SxVMPicture.cs" />
     <Compile Include="ViewModels\SxVMSeoKeyword.cs" />
     <Compile Include="ViewModels\SxVMSeoTags.cs" />

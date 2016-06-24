@@ -64,7 +64,7 @@ namespace SX.WebCore.MvcControllers
             if (filterContext.IsChildAction || notLogRequest) return;
 
             //редирект, если есть
-            var redirect = getRedirect();
+            var redirect = get301Redirect();
             if (redirect != null && redirect.NewUrl != null)
             {
                 filterContext.Result = new RedirectResult(redirect.NewUrl);
@@ -86,13 +86,13 @@ namespace SX.WebCore.MvcControllers
             base.OnActionExecuting(filterContext);
         }
 
-        private SxRedirect getRedirect(CacheItemPolicy cip = null)
+        private Sx301Redirect get301Redirect(CacheItemPolicy cip = null)
         {
             cip = cip ?? _defaultPolicy15Min;
-            var redirect = (SxRedirect)SxApplication<TDbContext>.AppCache["CACHE_REDIRECT_"+SxRawUrl];
+            var redirect = (Sx301Redirect)SxApplication<TDbContext>.AppCache["CACHE_REDIRECT_"+SxRawUrl];
             if(redirect==null)
             {
-                redirect = new SxRepoRedirect<TDbContext>().GetRedirect(SxRawUrl);
+                redirect = new SxRepo301Redirect<TDbContext>().Get301Redirect(SxRawUrl);
                 SxApplication<TDbContext>.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect, cip);
             }
 

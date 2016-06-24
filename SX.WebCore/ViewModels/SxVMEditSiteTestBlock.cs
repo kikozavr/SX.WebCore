@@ -6,7 +6,7 @@ namespace SX.WebCore.ViewModels
     {
         public int Id { get; set; }
 
-        [Required, Display(Name = "Тест"), UIHint("EditSiteTest")]
+        [Required, Display(Name = "Тест"), UIHint("SiteTestBlocksLookupGrid")]
         public int TestId { get; set; }
 
         [Required, MaxLength(100), Display(Name = "Заголовок")]

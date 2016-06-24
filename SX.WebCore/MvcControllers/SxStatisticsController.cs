@@ -10,15 +10,19 @@ namespace SX.WebCore.MvcControllers
     public abstract class SxStatisticsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static int _pageUserLoginsSize = 20;
+        private SxRepoStatistic<TDbContext> _repo;
+        public SxStatisticsController()
+        {
+            _repo = new SxRepoStatistic<TDbContext>();
+        }
 
         [HttpGet]
         public virtual ActionResult UserLogins(int page = 1)
         {
-            var repo = new SxRepoStatistic<TDbContext>();
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageUserLoginsSize) { Order = order };
-            filter.PagerInfo.TotalItems = repo.UserLoginsCount(filter);
-            var data = repo.UserLogins(filter);
+            filter.PagerInfo.TotalItems = _repo.UserLoginsCount(filter);
+            var data = _repo.UserLogins(filter);
             var viewModel = data
                 .Select(x => Mapper.Map<SxStatisticUserLogin, SxVMStatisticUserLogin>(x))
                 .ToArray();
@@ -31,11 +35,10 @@ namespace SX.WebCore.MvcControllers
         [HttpPost]
         public virtual PartialViewResult UserLogins(SxVMStatisticUserLogin filterModel, SxOrder order, int page = 1)
         {
-            var repo = new SxRepoStatistic<TDbContext>();
             var filter = new SxFilter(page, _pageUserLoginsSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = repo.UserLoginsCount(filter);
+            filter.PagerInfo.TotalItems = _repo.UserLoginsCount(filter);
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageUserLoginsSize ? 1 : page;
-            var data = repo.UserLogins(filter);
+            var data = _repo.UserLogins(filter);
             var viewModel = data
                 .Select(x => Mapper.Map<SxStatisticUserLogin, SxVMStatisticUserLogin>(x))
                 .ToArray();

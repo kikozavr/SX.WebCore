@@ -1,29 +1,18 @@
-﻿@model VMSiteTestBlock[]
+﻿@model SxVMSiteTestBlock[]
 @{
     Layout = null;
-    var pagerInfo = ViewBag.PagerInfo;
-    var filter = ViewBag.Filter != null ? (VMSiteTestBlock)ViewBag.Filter : null;
-    var sortDirections = ViewBag.Order != null ? (Dictionary<string, SxExtantions.SortDirection>)ViewBag.Order : null;
+    var testId = ViewBag.SiteTestId;
 }
 
 
-@Html.SxGridView(
-        new SxExtantions.SxGridViewSettings<VMSiteTestBlock>
+@Html.SxGV(Model,
+        new SxExtantions.SxGVSettings<SxVMSiteTestBlock>
         {
-            UpdateTargetId = "grid-site-test-block",
-            Data = Model,
-            Columns = new SxExtantions.SxGridViewColumn<VMSiteTestBlock>[]{
-            new SxExtantions.SxGridViewColumn<VMSiteTestBlock>{FieldName="Title", Caption="Заголовок" }
-        },
-            PagerInfo = pagerInfo,
-            Filter = filter,
-            SortDirections = sortDirections,
-            EnableEditing = false,
-            EnableCreate = false,
-            Mode=SxExtantions.SxGridViewMode.Lookup,
-            FuncDataUrl=()=>Url.Action(MVC.SiteTestBlocks.FindGridView()),
-            FuncGetId=(x)=>x.Id,
-            FuncTextField=()=> "Title"
-        },
-            new { @class = "table table-condensed table-bordered table-responsive table-striped" }
+            Columns = new SxExtantions.SxGvColumn<SxVMSiteTestBlock>[]{
+                new SxExtantions.SxGvColumn<SxVMSiteTestBlock>{FieldName="Title", Caption="Заголовок" }
+            },
+            DataAjaxUrl = "/sitetestblocks/findgridview?testId="+ testId,
+            RowId = x => { return x.Id.ToString(); },
+            RowText = x => { return x.Title; }
+        }
     )

@@ -1,0 +1,16 @@
+﻿@model string
+@{
+    var pictureCaption = ViewBag.PictureCaption;
+}
+
+<div id="@Html.IdForModel()">
+    <input type="hidden" value="@Html.ValueForModel()" name="@Html.IdForModel()" />
+
+    @Html.SxGridLookup(new SxExtantions.SxGridLookupSettings
+{
+    DataAjaxUrl = "/pictures/findgridview",
+    DefaulText = pictureCaption == null ? Html.ValueForModel().ToString() : pictureCaption.ToString()
+},
+    new SxVMSiteTest[0]
+)
+</div>

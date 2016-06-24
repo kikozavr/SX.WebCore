@@ -10,15 +10,19 @@ namespace SX.WebCore.MvcControllers
     public abstract class SxEmployeesController<TDbContext> : SxBaseController<TDbContext> where TDbContext:SxDbContext
     {
         private static int _pageSize = 20;
+        private static SxRepoEmployee<TDbContext> _repo;
+        public SxEmployeesController()
+        {
+            _repo = new SxRepoEmployee<TDbContext>();
+        }
 
         [HttpGet]
         public virtual ViewResult Index(int page = 1)
         {
-            var repo = new SxRepoEmployee<TDbContext>();
             var order = new SxOrder { FieldName = "Email", Direction = SortDirection.Asc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
-            filter.PagerInfo.TotalItems = repo.Count(filter);
-            var data = repo.Query(filter);
+            filter.PagerInfo.TotalItems = _repo.Count(filter);
+            var data = _repo.Query(filter);
             var viewModel = data
                 .Select(x => Mapper.Map<SxEmployee, SxVMEmployee>(x))
                 .ToArray();
@@ -31,11 +35,10 @@ namespace SX.WebCore.MvcControllers
         [HttpPost]
         public virtual PartialViewResult Index(SxVMEmployee filterModel, SxOrder order, int page = 1)
         {
-            var repo = new SxRepoEmployee<TDbContext>();
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = repo.Count(filter);
+            filter.PagerInfo.TotalItems = _repo.Count(filter);
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-            var data = repo.Query(filter);
+            var data = _repo.Query(filter);
             var viewModel = data
                 .Select(x => Mapper.Map<SxEmployee, SxVMEmployee>(x))
                 .ToArray();
@@ -48,7 +51,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual ViewResult Edit(string id = null)
         {
-            var model = id != null ? new SxRepoEmployee<TDbContext>().GetByKey(id) : new SxEmployee();
+            var model = id != null ? _repo.GetByKey(id) : new SxEmployee();
             return View(Mapper.Map<SxEmployee, SxVMEditEmployee>(model));
         }
 
@@ -60,9 +63,9 @@ namespace SX.WebCore.MvcControllers
                 var redactModel = Mapper.Map<SxVMEditEmployee, SxEmployee>(model);
                 SxEmployee newModel = null;
                 if (model.Id == null)
-                    newModel = new SxRepoEmployee<TDbContext>().Create(redactModel);
+                    newModel = _repo.Create(redactModel);
                 else
-                    newModel = new SxRepoEmployee<TDbContext>().Update(redactModel, true, "Surname", "Name", "Patronymic", "Description");
+                    newModel = _repo.Update(redactModel, true, "Surname", "Name", "Patronymic", "Description");
                 return RedirectToAction("Index");
             }
             else

@@ -53,31 +53,31 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_GridView", viewModel);
         }
 
-        //[HttpPost]
-        //public virtual PartialViewResult FindGridView(int testId, VMSiteTestBlock filterModel, int page = 1, int pageSize = 10)
-        //{
-        //    if (filterModel == null && testId != 0)
-        //        filterModel = new VMSiteTestBlock();
-        //    filterModel.TestId = testId;
-        //    ViewBag.Filter = filterModel;
-        //    var filter = new WebCoreExtantions.Filter(page, pageSize) { WhereExpressionObject = filterModel };
-        //    filter.WhereExpressionObject = filterModel;
-        //    var totalItems = (_repo as SxRepoSiteTestBlock<DbContext>).Count(filter);
-        //    filter.PagerInfo.TotalItems = totalItems;
-        //    ViewBag.PagerInfo = filter.PagerInfo;
+        [HttpPost]
+        public virtual PartialViewResult FindGridView(int testId, SxVMSiteTestBlock filterModel, SxOrder order, int page = 1, int pageSize = 10)
+        {
+            if (filterModel == null && testId != 0)
+                filterModel = new SxVMSiteTestBlock();
+            filterModel.TestId = testId;
+            var filter = new SxFilter(page, pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
+            filter.PagerInfo.TotalItems = _repo.Count(filter);
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= pageSize ? 1 : page;
+            var viewModel = _repo.Query(filter)
+                .Select(x => Mapper.Map<SxSiteTestBlock, SxVMSiteTestBlock>(x))
+                .ToArray();
 
-        //    var viewModel = (_repo as SxRepoSiteTestBlock<DbContext>).Query(filter).ToArray()
-        //        .Select(x => Mapper.Map<SxSiteTestBlock, VMSiteTestBlock>(x)).ToArray();
+            ViewBag.Filter = filter;
+            ViewBag.SiteTestId = testId;
 
-        //    return PartialView("_FindGridView", viewModel);
-        //}
+            return PartialView("_FindGridView", viewModel);
+        }
 
         [HttpGet]
         public virtual ViewResult Edit(int? id)
         {
             var model = id.HasValue ? _repo.GetByKey(id) : new SxSiteTestBlock();
             if (id.HasValue)
-                ViewBag.SiteTestName = new SxRepoSiteTest<TDbContext>().GetByKey(model.TestId).Title;
+                ViewBag.SiteTestTitle = new SxRepoSiteTest<TDbContext>().GetByKey(model.TestId).Title;
             return View(Mapper.Map<SxSiteTestBlock, SxVMEditSiteTestBlock>(model));
         }
 

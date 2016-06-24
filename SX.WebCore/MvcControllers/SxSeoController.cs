@@ -8,10 +8,17 @@ namespace SX.WebCore.MvcControllers
     [Authorize(Roles = "seo")]
     public abstract class SxSeoController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
+        public static SxRepoSiteSetting<TDbContext> _repo;
+        public SxSeoController()
+        {
+            if (_repo == null)
+                _repo = new SxRepoSiteSetting<TDbContext>();
+        }
+
         [HttpGet]
         public virtual ViewResult EditRobotsFile()
         {
-            var settings = new SxRepoSiteSetting<TDbContext>().GetByKeys(
+            var settings = _repo.GetByKeys(
                                 Settings.robotsFileSetting
                             );
 
@@ -38,7 +45,7 @@ namespace SX.WebCore.MvcControllers
                     };
                     for (int i = 0; i < settings.Length; i++)
                     {
-                        new SxRepoSiteSetting<TDbContext>().Create(settings[i]);
+                        _repo.Create(settings[i]);
                     }
 
                     TempData["EditEmptyGameMessage"] = "Настройки успешно сохранены";
@@ -46,7 +53,7 @@ namespace SX.WebCore.MvcControllers
                 }
                 else if (isExists && isModified)
                 {
-                    new SxRepoSiteSetting<TDbContext>().Update(new SxSiteSetting { Id = Settings.robotsFileSetting, Value = model.FileContent }, true, "Value");
+                    _repo.Update(new SxSiteSetting { Id = Settings.robotsFileSetting, Value = model.FileContent }, true, "Value");
                     TempData["EditEmptyGameMessage"] = "Настройки успешно обновлены";
                     return RedirectToAction("editrobotsfile");
                 }

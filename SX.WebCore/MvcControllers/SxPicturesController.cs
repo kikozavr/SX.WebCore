@@ -35,14 +35,8 @@ namespace SX.WebCore.MvcControllers
         private static object _lck = new object();
         static SxPicturesController()
         {
-            _repo = new SxRepoPicture<TDbContext>();
-        }
-        protected SxDbRepository<Guid, SxPicture, TDbContext> Repo
-        {
-            get
-            {
-                return _repo;
-            }
+            if(_repo==null)
+                _repo = new SxRepoPicture<TDbContext>();
         }
 
         private static int _pageSize = 20;
@@ -78,7 +72,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual ViewResult Edit(Guid? id)
         {
-            var model = id.HasValue ? Repo.GetByKey(id) : new SxPicture();
+            var model = id.HasValue ? _repo.GetByKey(id) : new SxPicture();
             return View(Mapper.Map<SxPicture, SxVMEditPicture>(model));
         }
 
@@ -105,18 +99,18 @@ namespace SX.WebCore.MvcControllers
                 if (isNew)
                 {
                     redactModel = getImage(redactModel, file);
-                    Repo.Create(redactModel);
+                    _repo.Create(redactModel);
                 }
                 else
                 {
                     if (file != null)
                     {
                         redactModel = getImage(redactModel, file);
-                        Repo.Update(redactModel, true, "Caption", "Description", "OriginalContent", "Width", "Height", "Size", "ImgFormat");
+                        _repo.Update(redactModel, true, "Caption", "Description", "OriginalContent", "Width", "Height", "Size", "ImgFormat");
                     }
                     else
                     {
-                        Repo.Update(redactModel, true, "Caption", "Description");
+                        _repo.Update(redactModel, true, "Caption", "Description");
                     }
                 }
                 return RedirectToAction("index");
@@ -224,6 +218,20 @@ namespace SX.WebCore.MvcControllers
             }
 
             return picture.OriginalContent;
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "photo-redactor")]
+        public virtual PartialViewResult FindGridView(SxVMPicture filterModel, SxOrder order, int page = 1, int pageSize = 10)
+        {
+            var filter = new SxFilter(page, pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
+            filter.PagerInfo.TotalItems = _repo.Count(filter);
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            var viewModel = _repo.Query<SxVMPicture>(filter);
+
+            ViewBag.Filter = filter;
+
+            return PartialView("_FindGridView", viewModel);
         }
     }
 }

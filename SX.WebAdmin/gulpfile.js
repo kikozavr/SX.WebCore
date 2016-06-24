@@ -53,7 +53,8 @@ function createCss() {
        'less/login.less',
        'less/grid-users.less',
        'less/grid-pictures.less',
-       'less/grid-banners.less'
+       'less/grid-banners.less',
+       'less/ps-tree.less'
     ])
         .pipe(less())
         .pipe(cleanCSS({ compatibility: 'ie8' }))

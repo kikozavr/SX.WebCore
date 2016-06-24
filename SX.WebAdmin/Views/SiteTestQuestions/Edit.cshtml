@@ -61,39 +61,14 @@
 
 @section scripts{
     <script>
-        $test = $('.edit-site-test input.form-control');
-        $block = $('.edit-site-test-block input.form-control');
-
-        $(function () {
-            $('.edit-site-test .dropdown').on('click', 'tr', function () {
-                clickTest(this)
-            });
-
-            var testId = $test.val();
-            if (testId == '')
-                disableBlock();
-            else
-                enableBlock();
+        $('#TestId, #BlockId').sx_gvl();
+        $('#TestId').on('click', '.sx-gv__row', function () {
+            var testId = $(this).attr('data-row-id');
+            $('#BlockId').find('.sx-gvl')
+                .attr('data-ajax-url', '/sitetestblocks/findgridview?testId=' + testId)
+                .attr('data-is-loaded', 'false');
+            $('#BlockId').find('.sx-gvl__input').val('');
+            $('#BlockId input[name="BlockId"]').val(null);
         });
-
-        function clickTest(e) {
-            $tr = $(e);
-            var id = $tr.data('id');
-            $('.edit-site-test-block')
-                .attr('data-url', '/sitetestblocks/findgridview?testId=' + id)
-                .attr('data-is-load', false);
-            $block.val('');
-            enableBlock();
-        }
-
-        function disableBlock() {
-            $block.attr('disabled', '');
-            $block.next('.input-group-btn').find('button').attr('disabled', '');
-        }
-
-        function enableBlock() {
-            $block.removeAttr('disabled');
-            $block.next('.input-group-btn').find('button').removeAttr('disabled');
-        }
     </script>
 }

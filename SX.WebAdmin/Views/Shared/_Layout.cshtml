@@ -451,7 +451,7 @@
                             </li>
                         }
                         <li>
-                            <a href="#"><i class="fa fa-calendar fa-fw"></i> Развитие проекта</a>
+                            <a href="/projectsteps"><i class="fa fa-calendar fa-fw"></i> Развитие проекта</a>
                         </li>
                         @if (User.IsInRole("admin"))
                         {
@@ -524,6 +524,14 @@
 
             $(document).ajaxError(function (event, xhr, settings) {
                 alert(xhr.responseText);
+            });
+
+            $(document).mouseup(function (e) {
+                var container = $(".sx-gvl__dropdown");
+
+                if (!container.is(e.target) && container.has(e.target).length === 0) {
+                    container.hide();
+                }
             });
         });
     </script>

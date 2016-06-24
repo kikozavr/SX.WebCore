@@ -33,6 +33,8 @@
                 var page = $grid.find('.sx-gv__pager li.active a').data('page');
 
                 getGridViewData($grid, page);
+                event.preventDefault();
+                return false;
             });
 
             $this.on('click', '.sx-gv__clear-btn', function () {
@@ -84,7 +86,7 @@ function getGridViewData(grid, page, order) {
     $grid = $(grid);
     $pager = $grid.find('.sx-gv__pager');
 
-    var ajaxUrl = $grid.data('ajax-url');
+    var ajaxUrl = $grid.attr('data-ajax-url');
 
     var filterModel = {};
     $inputs = $grid.find('.sx-gv__filter-row input');

@@ -29,6 +29,8 @@ namespace SX.WebCore.HtmlHelpers
             public bool EnableCreating { get; set; } = false;
             public string CreateRowUrl { get; set; }
             public string DataAjaxUrl { get; set; }
+            public Func<TModel, string> RowId { get; set; }
+            public Func<TModel, string> RowText { get; set; }
         }
 
         public sealed class SxGvColumn<TModel>
@@ -193,6 +195,10 @@ namespace SX.WebCore.HtmlHelpers
                         if (rowCssClass != null)
                             tr.AddCssClass(rowCssClass);
                     }
+                    if (settings.RowId != null)
+                        tr.MergeAttribute("data-row-id", settings.RowId(model));
+                    if(settings.RowText!=null)
+                        tr.MergeAttribute("data-row-text", settings.RowText(model));
 
                     type = model.GetType();
                     for (int y = 0; y < settings.Columns.Length + 1; y++)

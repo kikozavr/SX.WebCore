@@ -155,6 +155,7 @@
     <Content Include="content\dist\css\grid-users.min.css" />
     <Content Include="content\dist\css\lightbox.min.css" />
     <Content Include="content\dist\css\login.min.css" />
+    <Content Include="content\dist\css\ps-tree.min.css" />
     <Content Include="content\dist\css\site.min.css" />
     <Content Include="content\dist\fonts\fontawesome-webfont.svg" />
     <Content Include="content\dist\images\close.png" />
@@ -187,6 +188,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LogsController.cs" />
     <Compile Include="Controllers\PicturesController.cs" />
+    <Compile Include="Controllers\ProjectStepsController.cs" />
     <Compile Include="Controllers\RedirectsController.cs" />
     <Compile Include="Controllers\RequestsController.cs" />
     <Compile Include="Controllers\SeoKeywordsController.cs" />
@@ -263,7 +265,6 @@
     <Content Include="Views\BannerGroups\Edit.cshtml" />
     <Content Include="Views\BannerGroups\Index.cshtml" />
     <Content Include="Views\BannerGroups\_GridView.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\AddBanner.cshtml" />
     <Content Include="Views\BannedUrls\Edit.cshtml" />
     <Content Include="Views\BannedUrls\Index.cshtml" />
     <Content Include="Views\BannedUrls\_GridView.cshtml" />
@@ -280,6 +281,13 @@
     <Content Include="Views\SeoWordCounter\_Table.cshtml" />
     <Content Include="Views\FAQ\Index.cshtml" />
     <Content Include="Views\FAQ\DisplayTemplate\SxVMFAQ.cshtml" />
+    <Content Include="Views\ProjectSteps\Edit.cshtml" />
+    <Content Include="Views\ProjectSteps\Index.cshtml" />
+    <Content Include="Views\ProjectSteps\DisplayTemplates\SxVMProjectStep.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SiteTestsLookupGrid.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\SiteTestBlocksLookupGrid.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\PicturesLookupGrid.cshtml" />
+    <Content Include="Views\Pictures\_FindGridView.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

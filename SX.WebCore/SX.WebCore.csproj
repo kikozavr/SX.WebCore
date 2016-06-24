@@ -179,6 +179,7 @@
     <Compile Include="MvcControllers\SxBannersController.cs" />
     <Compile Include="MvcControllers\SxEmployeesController.cs" />
     <Compile Include="MvcControllers\SxFAQController.cs" />
+    <Compile Include="MvcControllers\SxProjectStepsController.cs" />
     <Compile Include="MvcControllers\SxRequestsController.cs" />
     <Compile Include="MvcControllers\SxSeoController.cs" />
     <Compile Include="MvcControllers\SxSeoKeywordsController.cs" />
@@ -310,6 +311,7 @@
     <Compile Include="ViewModels\SxVMEditBanner.cs" />
     <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />
     <Compile Include="ViewModels\SxVMEditPicture.cs" />
+    <Compile Include="ViewModels\SxVMEditProjectStep.cs" />
     <Compile Include="ViewModels\SxVMEditSeoKeyword.cs" />
     <Compile Include="ViewModels\SxVMEditSeoTags.cs" />
     <Compile Include="ViewModels\SxVMEditSiteTest.cs" />
@@ -319,6 +321,7 @@
     <Compile Include="ViewModels\SxVMEmployee.cs" />
     <Compile Include="ViewModels\SxVMFAQ.cs" />
     <Compile Include="ViewModels\SxVMPicture.cs" />
+    <Compile Include="ViewModels\SxVMProjectStep.cs" />
     <Compile Include="ViewModels\SxVMSeoKeyword.cs" />
     <Compile Include="ViewModels\SxVMSeoTags.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />

@@ -1,0 +1,20 @@
+﻿@model SxVMPicture[]
+@{
+    Layout = null;
+}
+
+
+@Html.SxGV(Model,
+    new SxExtantions.SxGVSettings<SxVMPicture>
+    {
+        Columns = new SxExtantions.SxGvColumn<SxVMPicture>[]{
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Caption", Caption="Картинка" },
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Width", Caption="Ширина" },
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Height", Caption="Высота" },
+            new SxExtantions.SxGvColumn<SxVMPicture>{FieldName="Id", Caption="#", Template=x=> {return string.Format("<a onclick=\"x()\" data-lightbox=\"roadtrip\" data-title=\"{1}\" data-toggle=\"tooltip\" title=\"Помотреть картинку\" href=\"/pictures/picture/{0}\"><i class=\"fa fa-picture-o\"></i></a>", x.Id, x.Caption); } }
+        },
+        DataAjaxUrl="/pictures/findgridview",
+        RowId = x => { return x.Id.ToString(); },
+        RowText = x => { return x.Caption; }
+    }
+)

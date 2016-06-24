@@ -14,7 +14,7 @@ namespace SX.WebCore.MvcControllers
         public SxSiteTestController()
         {
             if(_repo==null)
-            _repo = new SxRepoSiteTest<TDbContext>();
+                _repo = new SxRepoSiteTest<TDbContext>();
         }
 
         private static int _pageSize = 20;
@@ -45,21 +45,18 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_GridView", viewModel);
         }
 
-        //[HttpPost]
-        //public virtual PartialViewResult FindGridView(VMSiteTest filterModel, int page = 1, int pageSize = 10)
-        //{
-        //    ViewBag.Filter = filterModel;
-        //    var filter = new WebCoreExtantions.Filter(page, pageSize);
-        //    filter.WhereExpressionObject = filterModel;
-        //    var totalItems = (_repo as SxRepoSiteTest<DbContext>).Count(filter);
-        //    filter.PagerInfo.TotalItems = totalItems;
-        //    ViewBag.PagerInfo = filter.PagerInfo;
+        [HttpPost]
+        public virtual PartialViewResult FindGridView(SxVMSiteTest filterModel, SxOrder order, int page = 1, int pageSize = 10)
+        {
+            var filter = new SxFilter(page, pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
+            filter.PagerInfo.TotalItems = _repo.Count(filter);
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= pageSize ? 1 : page;
+            var viewModel = _repo.Query<SxVMSiteTest>(filter);
 
-        //    var viewModel = (_repo as SxRepoSiteTest<DbContext>).Query(filter).ToArray()
-        //        .Select(x => Mapper.Map<SxSiteTest, VMSiteTest>(x)).ToArray();
+            ViewBag.Filter = filter;
 
-        //    return PartialView("_FindGridView", viewModel);
-        //}
+            return PartialView("_FindGridView", viewModel);
+        }
 
         [HttpGet]
         public virtual ViewResult Edit(int? id)

@@ -9,17 +9,17 @@ namespace SX.WebCore.ViewModels
         [MaxLength(50)]
         public string OldSiteName { get; set; }
 
-        [Display(Name = "Путь к изображению"), Required, MaxLength(255)]
+        [Display(Name = "Логотип сайта"), Required, MaxLength(255), UIHint("PicturesLookupGrid")]
         public string LogoPath { get; set; }
         [MaxLength(255)]
         public string OldLogoPath { get; set; }
 
-        [Display(Name = "Путь к файлу фона сайта"), MaxLength(255)]
+        [Display(Name = "Фон сайта"), MaxLength(255), UIHint("PicturesLookupGrid")]
         public string SiteBgPath { get; set; }
         [MaxLength(255)]
         public string OldSiteBgPath { get; set; }
 
-        [Display(Name = "Путь к иконке сайта"), MaxLength(255)]
+        [Display(Name = "Иконка сайта"), MaxLength(255), UIHint("PicturesLookupGrid")]
         public string SiteFaveiconPath { get; set; }
         [MaxLength(255)]
         public string OldSiteFaveiconPath { get; set; }

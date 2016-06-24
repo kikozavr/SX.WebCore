@@ -8,6 +8,8 @@ namespace SX.WebCore.HtmlHelpers
         public class SxGridLookupSettings
         {
             public string DataAjaxUrl { get; set; }
+            public bool IsSingleMode { get; set; } = true;
+            public string DefaulText { get; set; }
         }
 
         public static MvcHtmlString SxGridLookup<TModel>(this HtmlHelper htmlHelper, SxGridLookupSettings settings, TModel[] collection=null)
@@ -19,6 +21,7 @@ namespace SX.WebCore.HtmlHelpers
 
             var div = new TagBuilder("div");
             div.MergeAttribute("data-is-loaded", "false");
+            div.MergeAttribute("data-is-single-mode", settings.IsSingleMode.ToString().ToLower());
             div.MergeAttribute("data-ajax-url", settings.DataAjaxUrl);
             div.AddCssClass("sx-gvl");
 
@@ -26,7 +29,8 @@ namespace SX.WebCore.HtmlHelpers
             group.AddCssClass("input-group");
 
             var input = new TagBuilder("input");
-            input.AddCssClass("form-control");
+            input.AddCssClass("form-control sx-gvl__input");
+            input.MergeAttribute("value", settings.DefaulText);
             input.MergeAttribute("type", "text");
             group.InnerHtml += input;
 
@@ -34,9 +38,11 @@ namespace SX.WebCore.HtmlHelpers
             btnSpan.AddCssClass("input-group-btn");
 
             var btn = new TagBuilder("button");
-            btn.AddCssClass("btn btn-default");
+            btn.AddCssClass("btn btn-default sx-gvl__button");
             btn.MergeAttribute("type", "button");
-            btn.InnerHtml += "Выбрать";
+            btn.InnerHtml += "<i class=\"fa fa-spinner fa-spin\" style=\"display: none;\"></i> Выбрать";
+
+
             btnSpan.InnerHtml += btn;
 
             group.InnerHtml += btnSpan;
@@ -48,10 +54,6 @@ namespace SX.WebCore.HtmlHelpers
             var content = new TagBuilder("div");
             content.AddCssClass("sx-gvl__content");
             dropdown.InnerHtml += content;
-
-            var bottomPanel = new TagBuilder("div");
-            bottomPanel.AddCssClass("sx-gvl__bottom-panel");
-            dropdown.InnerHtml += bottomPanel;
 
             div.InnerHtml += dropdown;
 

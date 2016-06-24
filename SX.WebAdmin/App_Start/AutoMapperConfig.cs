@@ -47,6 +47,11 @@ namespace SX.WebAdmin
                     cfg.CreateMap<SxPicture, SxVMEditPicture>();
                     cfg.CreateMap<SxVMEditPicture, SxPicture>();
 
+                    //project step
+                    cfg.CreateMap<SxProjectStep, SxVMProjectStep>();
+                    cfg.CreateMap<SxProjectStep, SxVMEditProjectStep>();
+                    cfg.CreateMap<SxVMEditProjectStep, SxProjectStep>();
+
                     //redirect
                     cfg.CreateMap<Sx301Redirect, SxVM301Redirect>();
                     cfg.CreateMap<Sx301Redirect, SxVMEdit301Redirect>();

@@ -76,7 +76,7 @@ namespace SX.WebCore.MvcControllers
             return View(Mapper.Map<SxPicture, SxVMEditPicture>(model));
         }
 
-        private static int maxSize = 307200;
+        private static int maxSize = 153600;
         [Authorize(Roles = "photo-redactor")]
         [HttpPost, ValidateAntiForgeryToken]
         public virtual ActionResult Edit(SxVMEditPicture picture, HttpPostedFileBase file)

@@ -17,5 +17,10 @@ namespace SX.WebCore
 
         public virtual SxSeoTags SeoInfo { get; set; }
         public int SeoInfoId { get; set; }
+
+        internal bool Any()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

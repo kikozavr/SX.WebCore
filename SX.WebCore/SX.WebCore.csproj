@@ -193,6 +193,7 @@
     <Compile Include="MvcControllers\SxUserRolesController.cs" />
     <Compile Include="MvcControllers\SxUsersController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
+    <Compile Include="Repositories\SxRepoAppUser.cs" />
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
     <Compile Include="SxFilter.cs" />
     <Compile Include="Abstract\SxMaterial.cs" />
@@ -273,8 +274,6 @@
     <Compile Include="Enums.cs" />
     <Compile Include="SxEmployee.cs" />
     <Compile Include="SxOrder.cs" />
-    <Compile Include="SxForumPart.cs" />
-    <Compile Include="SxForumTheme.cs" />
     <Compile Include="SxLike.cs" />
     <Compile Include="SxPlace.cs" />
     <Compile Include="SxSitePartner.cs" />
@@ -310,6 +309,7 @@
     <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMEditBanner.cs" />
     <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />
+    <Compile Include="ViewModels\SxVMEditMaterialTag.cs" />
     <Compile Include="ViewModels\SxVMEditPicture.cs" />
     <Compile Include="ViewModels\SxVMEditProjectStep.cs" />
     <Compile Include="ViewModels\SxVMEditSeoKeyword.cs" />
@@ -317,6 +317,7 @@
     <Compile Include="ViewModels\SxVMEditSiteTest.cs" />
     <Compile Include="ViewModels\SxVMEditSiteTestBlock.cs" />
     <Compile Include="ViewModels\SxVMEditSiteTestQuestion.cs" />
+    <Compile Include="ViewModels\SxVMEditAppUser.cs" />
     <Compile Include="ViewModels\SxVMEditVideo.cs" />
     <Compile Include="ViewModels\SxVMEmployee.cs" />
     <Compile Include="ViewModels\SxVMFAQ.cs" />
@@ -328,6 +329,7 @@
     <Compile Include="ViewModels\SxVMSiteTest.cs" />
     <Compile Include="ViewModels\SxVMSiteTestBlock.cs" />
     <Compile Include="ViewModels\SxVMSiteTestQuestion.cs" />
+    <Compile Include="ViewModels\SxVMSiteTestStep.cs" />
     <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />
     <Compile Include="ViewModels\SxVMValute.cs" />
     <Compile Include="ViewModels\SxVMMaterialTag.cs" />

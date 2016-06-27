@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 21.06.2016 12:00:57
+ * Time: 27.06.2016 13:41:10
  ************************************************************/
 
 /*******************************************
@@ -202,6 +202,8 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
 
 
 
@@ -1288,5 +1290,22 @@ BEGIN
 	            AND dst.TitleUrl = @ttu
 	WHERE  dstq.[Text] NOT IN (SELECT p.QuestionText
 	                           FROM   @pastQ AS p)
+END
+GO
+
+/*******************************************
+ * get_users_by_emails
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_users_by_emails', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_users_by_emails;
+GO
+CREATE PROCEDURE dbo.get_users_by_emails
+	@emails VARCHAR(MAX)
+AS
+BEGIN
+	EXEC (
+	         'SELECT*FROM AspNetUsers AS anu WHERE anu.Email IN (' + @emails + 
+	         ')'
+	     )
 END
 GO

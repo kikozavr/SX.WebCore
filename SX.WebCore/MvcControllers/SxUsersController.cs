@@ -6,12 +6,26 @@ using Microsoft.AspNet.Identity.Owin;
 using SX.WebCore.ViewModels;
 using SX.WebCore.MvcApplication;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
+using SX.WebCore.Repositories;
+using Microsoft.AspNet.Identity;
+using System.Collections.Generic;
+using System;
 
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
     public abstract class SxUsersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
+        private static SxRepoAppUser<TDbContext> _repo;
+        private static SxRepoEmployee<TDbContext> _repoEmployee;
+        public SxUsersController()
+        {
+            if (_repo == null)
+                _repo = new SxRepoAppUser<TDbContext>();
+            if (_repoEmployee == null)
+                _repoEmployee = new SxRepoEmployee<TDbContext>();
+        }
+
         private static readonly string _architectRole = "architect";
         private SxAppUserManager _userManager;
         private SxAppRoleManager _roleManager;
@@ -111,6 +125,154 @@ namespace SX.WebCore.MvcControllers
             ViewBag.Filter = filter;
 
             return PartialView("_GridView", viewModel);
+        }
+
+        [HttpGet]
+        public PartialViewResult UsersOnSite()
+        {
+            var emails = SxApplication<TDbContext>.UsersOnSite.Select(x => x.Value).Distinct().ToArray();
+            var data = _repo.GetUsersByEmails(emails);
+            var viewModel = data.Select(x => Mapper.Map<SxAppUser, SxVMAppUser>(x)).ToArray();
+
+            return PartialView("~/views/users/_usersonsite.cshtml", viewModel);
+        }
+
+        [HttpGet]
+        public virtual ViewResult Edit(string id = null)
+        {
+            var data = UserManager.FindById(id);
+            var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray();
+            ViewBag.Roles = allRoles;
+            var viewModel = getEditUser(data, allRoles);
+            if (viewModel.Avatar != null)
+                ViewBag.PictureCaption = viewModel.Avatar.Caption;
+
+            return View(viewModel);
+        }
+
+        private SxVMEditAppUser getEditUser(SxAppUser data, SxAppRole[] allRoles)
+        {
+            var editUser = new SxVMEditAppUser
+            {
+                Id = data.Id,
+                Avatar = data.Avatar,
+                AvatarId = data.AvatarId,
+                Email = data.Email,
+                NikName = data.NikName,
+                IsOnline = SxApplication<TDbContext>.UsersOnSite.ContainsValue(data.UserName),
+                IsEmployee = _repoEmployee.GetByKey(data.Id) != null
+            };
+
+            editUser.Roles = data.Roles.Join(allRoles, u => u.RoleId, r => r.Id, (u, r) => new SxVMAppRole
+            {
+                Id = u.RoleId,
+                Name = r.Name,
+                Description = r.Description
+            }).ToArray();
+
+            return editUser;
+        }
+
+        private void addEmployee(SxVMEditAppUser model)
+        {
+            var redactModel = Mapper.Map<SxVMEditAppUser, SxEmployee>(model);
+            var data = _repoEmployee.Create(redactModel);
+        }
+
+        public void delEmployee(SxVMEditAppUser model)
+        {
+            _repoEmployee.Delete(model.Id);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public virtual PartialViewResult EditRoles(string userId)
+        {
+            var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray();
+            ViewBag.Roles = allRoles;
+
+            var roles = Request.Form.GetValues("role");
+            var data = UserManager.FindById(userId);
+            var userRoles = data.Roles.Join(allRoles, r1 => r1.RoleId, r2 => r2.Id, (r1, r2) => new { Id = r1.RoleId, Name = r2.Name })
+                .Where(x => x.Name != _architectRole).ToArray();
+            List<string> rolesForDelete = new List<string>();
+            List<string> rolesForAdd = new List<string>();
+            for (int i = 0; i < userRoles.Length; i++)
+            {
+                var userRole = userRoles[i];
+                if (roles.SingleOrDefault(x => x == userRole.Name) == null)
+                    rolesForDelete.Add(userRole.Name);
+            }
+
+            for (int i = 0; i < roles.Length; i++)
+            {
+                var role = roles[i];
+                if (userRoles.SingleOrDefault(x => x.Name == role) == null)
+                    rolesForAdd.Add(role);
+            }
+
+            if (rolesForDelete.Any())
+            {
+                UserManager.RemoveFromRoles(userId, rolesForDelete.ToArray());
+            }
+
+            if (rolesForAdd.Any())
+            {
+                UserManager.AddToRoles(userId, rolesForAdd.ToArray());
+            }
+
+            if (rolesForDelete.Any() || rolesForAdd.Any())
+            {
+                TempData["UserRoleMessage"] = "Роли успешно заданы";
+                data = UserManager.FindById(userId);
+            }
+
+            var viewModel = getEditUser(data, allRoles);
+            return PartialView("~/views/Users/_UserRoles.cshtml", viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public virtual PartialViewResult EditUserInfo(SxVMEditAppUser user)
+        {
+            if (ModelState.IsValid)
+            {
+                var oldUser = UserManager.FindById(user.Id);
+                oldUser.NikName = user.NikName;
+                oldUser.AvatarId = user.AvatarId;
+                UserManager.Update(oldUser);
+
+                if (user.IsEmployee)
+                    addEmployee(user);
+                else if (!user.IsEmployee)
+                    delEmployee(user);
+
+                var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray();
+                var viewModel = getEditUser(oldUser, allRoles);
+                if (viewModel.Avatar != null)
+                    ViewBag.PictureCaption = viewModel.Avatar.Caption;
+                TempData["UserInfoMessage"] = "Информация обновлена";
+                return PartialView("~/views/Users/_UserInfo.cshtml", viewModel);
+            }
+            else
+                return PartialView("~/views/Users/_UserInfo.cshtml", user);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public virtual PartialViewResult EditUserReport(int[] reportsId)
+        {
+            if (ModelState.IsValid)
+            {
+                TempData["UserInfoMessage"] = "Информация обновлена";
+                return PartialView("~/views/Users/_UserReports.cshtml", reportsId);
+            }
+            else
+                return PartialView("~/views/Users/_UserReports.cshtml", reportsId);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public virtual ActionResult Delete(SxVMEditAppRole model)
+        {
+            return RedirectToAction("index");
+            throw new NotImplementedException();
         }
     }
 }

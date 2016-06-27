@@ -122,7 +122,7 @@
     <comment>Наименование админ панели</comment>
   </data>
   <data name="adminPanelVersion" xml:space="preserve">
-    <value>v. 1.0.0.8</value>
+    <value>v. 1.0.0.9</value>
     <comment>Версия админ панели</comment>
   </data>
   <data name="emptyGameBadImagePath" xml:space="preserve">

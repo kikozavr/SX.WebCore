@@ -34,8 +34,6 @@ namespace SX.WebCore
 
         public DbSet<SxEmployee> Employees { get; set; }
 
-        public DbSet<SxForumPart> ForumParts { get; set; }
-
         public DbSet<SxNews> News { get; set; }
 
         public DbSet<SxPicture> Pictures { get; set; }

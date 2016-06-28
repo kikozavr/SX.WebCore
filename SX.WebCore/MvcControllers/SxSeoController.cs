@@ -1,6 +1,8 @@
-﻿using SX.WebCore.Repositories;
+﻿using SX.WebCore.MvcApplication;
+using SX.WebCore.Repositories;
 using SX.WebCore.Resources;
 using SX.WebCore.ViewModels;
+using System.Text;
 using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
@@ -65,6 +67,15 @@ namespace SX.WebCore.MvcControllers
             }
 
             return View(model);
+        }
+
+        [OutputCache(Duration = 900)]
+        public virtual ContentResult Robotstxt()
+        {
+            var fileContent = SxApplication<TDbContext>.SiteSettingsProvider.Get(Settings.robotsFileSetting);
+            if (fileContent != null)
+                return Content(fileContent.Value, "text/plain", Encoding.UTF8);
+            else return null;
         }
     }
 }

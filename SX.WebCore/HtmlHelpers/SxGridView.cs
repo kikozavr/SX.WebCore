@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace SX.WebCore.HtmlHelpers
 {
@@ -76,7 +77,13 @@ namespace SX.WebCore.HtmlHelpers
             div.MergeAttribute("data-ajax-url", settings.DataAjaxUrl);
 
             var table = new TagBuilder("table");
+            if(htmlAttributes!=null)
+            {
+                var attrs = new RouteValueDictionary(htmlAttributes);
+                table.MergeAttributes(attrs);
+            }
             table.AddCssClass("table table-condensed table-bordered table-responsive table-striped");
+                
 
             table.InnerHtml += getHeader(htmlHelper, settings);
 

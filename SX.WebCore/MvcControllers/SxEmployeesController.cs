@@ -13,7 +13,8 @@ namespace SX.WebCore.MvcControllers
         private static SxRepoEmployee<TDbContext> _repo;
         public SxEmployeesController()
         {
-            _repo = new SxRepoEmployee<TDbContext>();
+            if(_repo==null)
+                _repo = new SxRepoEmployee<TDbContext>();
         }
 
         [HttpGet]

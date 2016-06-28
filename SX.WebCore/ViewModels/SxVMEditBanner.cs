@@ -11,7 +11,7 @@ namespace SX.WebCore.ViewModels
         public string Title { get; set; }
 
         public SxVMPicture Picture { get; set; }
-        [Required, Display(Name = "Картинка"), UIHint("EditImage")]
+        [Required, Display(Name = "Картинка"), UIHint("PicturesLookupGrid")]
         public Guid? PictureId { get; set; }
 
         [Required, MaxLength(255), Display(Name = "Ссылка"), DataType(DataType.Url)]

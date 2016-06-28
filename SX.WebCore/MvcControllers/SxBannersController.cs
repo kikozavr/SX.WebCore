@@ -2,6 +2,7 @@
 using SX.WebCore.ViewModels;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -57,7 +58,7 @@ namespace SX.WebCore.MvcControllers
             if (!id.HasValue)
                 viewModel.PictureId = null;
             else
-                ViewBag.PictureCaption = model.Picture.Caption;
+                ViewData["PictureIdCaption"] = model.Picture.Caption;
 
             return View(viewModel);
         }
@@ -140,6 +141,24 @@ namespace SX.WebCore.MvcControllers
                 .ToArray();
 
             return PartialView("_GroupBanners", viewModel);
+        }
+
+        [HttpPost]
+        public async virtual Task AddClick(Guid bannerId)
+        {
+            await Task.Run(() =>
+            {
+                _repo.AddClick(bannerId);
+            });
+        }
+
+        [HttpPost]
+        public async virtual Task AddShow(Guid bannerId)
+        {
+            await Task.Run(() =>
+            {
+                _repo.AddShows(new Guid[] { bannerId });
+            });
         }
     }
 }

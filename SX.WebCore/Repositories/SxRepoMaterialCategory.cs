@@ -17,7 +17,8 @@ namespace SX.WebCore.Repositories
             object param = null;
             query += getMaterialGroupWhereString(filter, out param);
 
-            query += SxQueryProvider.GetOrderString("DateCreate", SortDirection.Desc);
+            var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
+            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
 
             using (var connection = new SqlConnection(ConnectionString))
             {

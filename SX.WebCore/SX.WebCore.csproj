@@ -179,6 +179,7 @@
     <Compile Include="MvcControllers\SxBannersController.cs" />
     <Compile Include="MvcControllers\SxEmployeesController.cs" />
     <Compile Include="MvcControllers\SxFAQController.cs" />
+    <Compile Include="MvcControllers\SxMaterialTagsController.cs" />
     <Compile Include="MvcControllers\SxProjectStepsController.cs" />
     <Compile Include="MvcControllers\SxRequestsController.cs" />
     <Compile Include="MvcControllers\SxSeoController.cs" />
@@ -192,8 +193,10 @@
     <Compile Include="MvcControllers\SxStatisticsController.cs" />
     <Compile Include="MvcControllers\SxUserRolesController.cs" />
     <Compile Include="MvcControllers\SxUsersController.cs" />
+    <Compile Include="MvcControllers\SxVideoLinksController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
     <Compile Include="Repositories\SxRepoAppUser.cs" />
+    <Compile Include="Repositories\SxRepoMaterialTag.cs" />
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
     <Compile Include="SxFilter.cs" />
     <Compile Include="Abstract\SxMaterial.cs" />
@@ -202,13 +205,12 @@
     <Compile Include="Attrubutes\MinWordsCountAttribute.cs" />
     <Compile Include="Attrubutes\MaxWordsCountAttribute.cs" />
     <Compile Include="Attrubutes\NotLogRequestAttribute.cs" />
-    <Compile Include="HtmlHelpers\SxGV.cs" />
+    <Compile Include="HtmlHelpers\SxGridView.cs" />
     <Compile Include="MvcApplication\SxApplication.cs" />
     <Compile Include="MvcControllers\SxAccountController.cs" />
     <Compile Include="MvcControllers\SxBaseController.cs" />
     <Compile Include="MvcControllers\SxPicturesController.cs" />
     <Compile Include="MvcControllers\SxLogsController.cs" />
-    <Compile Include="HtmlHelpers\SxGridView.cs" />
     <Compile Include="HtmlHelpers\SxIndicatorGroup.cs" />
     <Compile Include="HtmlHelpers\SxList.cs" />
     <Compile Include="HtmlHelpers\SxPager.cs" />
@@ -275,7 +277,6 @@
     <Compile Include="SxEmployee.cs" />
     <Compile Include="SxOrder.cs" />
     <Compile Include="SxLike.cs" />
-    <Compile Include="SxPlace.cs" />
     <Compile Include="SxSitePartner.cs" />
     <Compile Include="SxSiteTestBlock.cs" />
     <Compile Include="SxSiteTestQuestion.cs" />

@@ -89,10 +89,10 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult EditForMaterial(int mid, ModelCoreType mct, int? id)
         {
             var model = id.HasValue ? _repo.GetByKey(id) : new SxSeoTags { MaterialId = mid, ModelCoreType = mct };
-            var seoInfo = Mapper.Map<SxSeoTags, SxVMEditSeoTags>(model);
+            var seoTags = Mapper.Map<SxSeoTags, SxVMEditSeoTags>(model);
             if (id.HasValue)
-                seoInfo.Keywords = model.Keywords.Select(x => Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x)).ToArray();
-            return PartialView("_EditForMaterial", seoInfo);
+                seoTags.Keywords = model.Keywords.Select(x => Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x)).ToArray();
+            return PartialView("_EditForMaterial", seoTags);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -108,7 +108,7 @@ namespace SX.WebCore.MvcControllers
                 if (isNew)
                 {
                     newModel = _repo.Create(redactModel);
-                    updateMaterialSeoInfo((int)model.MaterialId, (Enums.ModelCoreType)model.ModelCoreType, newModel.Id);
+                    _repo.UpdateMaterialSeoInfo((int)model.MaterialId, (Enums.ModelCoreType)model.ModelCoreType, newModel.Id);
                     TempData["ModelSeoInfoRedactInfo"] = "Успешно добавлено";
                 }
                 else
@@ -128,7 +128,7 @@ namespace SX.WebCore.MvcControllers
         [HttpPost, ValidateAntiForgeryToken]
         public virtual PartialViewResult DeleteForMaterial(SxVMEditSeoTags model)
         {
-            updateMaterialSeoInfo((int)model.MaterialId, (ModelCoreType)model.ModelCoreType, null);
+            _repo.UpdateMaterialSeoInfo((int)model.MaterialId, (ModelCoreType)model.ModelCoreType, null);
 
             _repo.Delete(model.Id);
             TempData["ModelSeoInfoRedactInfo"] = "Успешно удалено";
@@ -140,26 +140,6 @@ namespace SX.WebCore.MvcControllers
         {
             _repo.Delete(model.Id);
             return RedirectToAction("index");
-        }
-
-
-        private static void updateMaterialSeoInfo(int mid, ModelCoreType mct, int? siid)
-        {
-            switch (mct)
-            {
-                case ModelCoreType.Article:
-                    //var repoA = new RepoArticle();
-                    //var art = repoA.GetByKey(mid, mct);
-                    //art.SeoInfoId = siid;
-                    //repoA.Update(art, true, "SeoInfoId");
-                    break;
-                case ModelCoreType.News:
-                    //var repoN = new RepoNews();
-                    //var news = repoN.GetByKey(mid, mct);
-                    //news.SeoInfoId = siid;
-                    //repoN.Update(news, true, "SeoInfoId");
-                    break;
-            }
         }
     }
 }

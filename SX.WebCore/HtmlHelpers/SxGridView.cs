@@ -1,153 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
 
 namespace SX.WebCore.HtmlHelpers
 {
     public static partial class SxExtantions
     {
-        public static MvcHtmlString SxGridView<TModel>(this HtmlHelper htmlHelper, SxGridViewSettings<TModel> settings = null, object htmlAttributes = null)
-        {
-            Check(settings);
-
-            var guid = Guid.NewGuid().ToString().ToLower();
-
-            if (settings != null && settings.ShowFilterRowMenu && settings.Mode==SxGridViewMode.View)
-            {
-                htmlHelper.ViewContext.Writer.Write(getForm(htmlHelper, settings, guid));
-            }
-
-            var table = new TagBuilder("table");
-            table.MergeAttribute("id", guid);
-            if(settings.Mode==SxGridViewMode.Lookup)
-                table.MergeAttribute("data-data-url", settings.FuncDataUrl());
-
-            if (htmlAttributes != null)
-            {
-                var attributes = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
-                table.MergeAttributes(attributes, true);
-            }
-            table.AddCssClass("sx-gv");
-
-            //header
-            table.InnerHtml += getGridViewHeader(settings);
-
-            //body
-            var tbody = new TagBuilder("tbody");
-            var showRowMenu = Convert.ToBoolean(settings.ShowFilterRowMenu);
-            if (showRowMenu)
-                tbody.InnerHtml += getGridViewRowMenu(settings);
-            tbody.InnerHtml += getGridViewRows(settings.Data, settings, htmlHelper);
-            table.InnerHtml += tbody;
-
-            //footer
-            if(settings.PagerInfo.TotalPages>1)
-                table.InnerHtml += getGridViewFooter(htmlHelper, settings);
-
-            return MvcHtmlString.Create(table.ToString());
-        }
-
-        private static void Check<TModel>(SxGridViewSettings<TModel> settings)
-        {
-            if(settings.Mode==SxGridViewMode.Lookup)
-            {
-                if (settings.FuncDataUrl == null) throw new ArgumentNullException("Для GridView не определён url получения данных для режима Lookup");
-                if (settings.FuncGetId == null) throw new ArgumentNullException("Для GridView не определена функция получения Id строки для режима Lookup");
-                if (settings.FuncTextField == null) throw new ArgumentNullException("Для GridView не определена функция обозначения текстового поля для режима Lookup");
-            }
-            if(settings.ShowSelectCheckbox)
-            {
-                if (settings.FunCheckBoxName == null) throw new ArgumentNullException("Не определена функция именования полей выбора");
-                if (settings.FunCheckBoxTrue == null) throw new ArgumentNullException("Не определена функция задачи полей выбора");
-                if (settings.FuncGetId == null) throw new ArgumentNullException("Не определена функция выбора идентификатора");
-                if (settings.FunCheckBoxChange == null) throw new ArgumentNullException("Не определена функция изменения полей выбора");
-            }
-            if(settings.EnableDelete)
-            {
-                if(settings.FuncDeleteLink==null) throw new ArgumentNullException("Не определена функция удаления");
-            }
-        }
-
-        public class SxGridViewSettings<TModel>
+        public sealed class SxGridViewSettings<TModel>
         {
             public SxGridViewSettings()
             {
-                Mode = SxGridViewMode.View;
-                KeyFieldsName = new string[] { "Id" };
-                ShowFilterRowMenu = true;
-                EnableSorting = true;
-                EnableCreate = true;
-                EnableEditing = true;
-                EnableDelete = false;
-                ShowSelectCheckbox = false;
+                Columns = new SxGridViewColumn<TModel>[0];
+                Filter = new SxFilter{
+                    PagerInfo=new SxPagerInfo(1,10)
+                };
             }
 
-            public string UpdateTargetId { get; set; }
+            public string GridId { get; set; }
+            public SxGridViewColumn<TModel>[] Columns { get; set; }
+            public bool HasRow { get; set; }
+            public SxFilter Filter { get; set; }
+            public Func<TModel, string> RowCssClass { get; set; }
+            public bool ShowFilterRow { get; set; } = true;
+            public bool ShowSelectedCheckbox { get; set; } = false;
+            public bool EnableEditing { get; set; } = false;
+            public Func<TModel, string> EditRowUrl { get; set; }
+            public bool EnableCreating { get; set; } = false;
+            public string CreateRowUrl { get; set; }
+            public bool EnableDeleting { get; set; } = false;
+            public Func<TModel, string> DeleteRowUrl { get; set; }
+            public string DataAjaxUrl { get; set; }
+            public Func<TModel, string> RowId { get; set; }
+            public Func<TModel, string> RowText { get; set; }
+        }
 
-            public TModel[] Data { get; set; }
-            public Type ModelType
+        public sealed class SxGridViewColumn<TModel>
+        {
+            private string _caption;
+
+            public string FieldName { get; set; }
+            public string Caption
             {
                 get
                 {
-                    var collectionType = Data.GetType();
-                    var modelType = collectionType.GetElementType();
-                    return modelType;
-                }
-            }
-
-            public SxGridViewColumn<TModel>[] Columns { get; set; }
-
-            public string GeneralControllerName { get; set; }
-
-            public string[] KeyFieldsName { get; set; }
-
-            public bool ShowFilterRowMenu { get; set; }
-
-            public bool EnableSorting { get; set; }
-
-            public IDictionary<string, SortDirection> SortDirections { get; set; }
-
-            public bool EnableCreate { get; set; }
-
-            public bool EnableEditing { get; set; }
-            public Func<TModel, string> FuncEditLink { get; set; }
-
-            public bool ShowSelectCheckbox { get; set; }
-
-            public string CreateLink { get; set; }
-            public string CreateJsLink { get; set; }
-
-            public bool EnableDelete { get; set; }
-            public Func<TModel, string> FuncDeleteLink { get; set; }
-
-            public TModel Filter { get; set; }
-            public SxPagerInfo PagerInfo { get; set; }
-            public string PagerLink { get; set; }
-
-            public SxGridViewMode Mode { get; set; }
-
-            public Func<TModel, object> FuncGetId { get; set; }
-            public Func<string> FuncTextField { get; set; }
-            public Func<string> FuncDataUrl { get; set; }
-            public Func<TModel, string> FunCheckBoxName { get; set; }
-            public Func<TModel, bool> FunCheckBoxTrue { get; set; }
-            public Func<TModel, string> FunCheckBoxChange { get; set; }
-            public Func<TModel, string> FuncRowCssClass { get; set; }
-        }
-        public class SxGridViewColumn<TModel>
-        {
-            public string FieldName { get; set; }
-
-            private string _caption;
-            public string Caption 
-            { 
-                get
-                {
-                    return string.IsNullOrEmpty(_caption) ? FieldName : _caption;
+                    return _caption ?? FieldName;
                 }
                 set
                 {
@@ -158,331 +55,324 @@ namespace SX.WebCore.HtmlHelpers
             public Func<TModel, string> Template { get; set; }
         }
 
-        private static TagBuilder getForm<TModel>(HtmlHelper htmlHelper, SxGridViewSettings<TModel> settings, string guid)
+        public static MvcHtmlString SxGridView<TModel>(this HtmlHelper htmlHelper, TModel[] collection, SxGridViewSettings<TModel> settings = null, object htmlAttributes = null)
         {
-            var form = new TagBuilder("form");
-            form.MergeAttributes(new Dictionary<string, string>{
-                    {"id", "grid-view-form-"+guid},
-                    {"method", "post"},
-                    {"data-ajax", "true"},
-                    {"data-ajax-update", "#"+settings.UpdateTargetId},
-                    {"data-ajax-url", settings.PagerLink ?? string.Format("/{0}/index", htmlHelper.ViewContext.RouteData.Values["controller"])}
-                });
+            if (settings.DataAjaxUrl == null)
+                throw new ArgumentNullException("DataAjaxUrl");
 
-            //pager
-            var pagerHidden = new TagBuilder("input");
-            pagerHidden.MergeAttributes(new Dictionary<string, string>{
-                        {"name", "page"},
-                        {"type", "hidden"}
-                    });
-            form.InnerHtml += pagerHidden;
+            settings = settings ?? new SxGridViewSettings<TModel>();
+            settings.HasRow = collection.Any();
+            var filter = (SxFilter)htmlHelper.ViewBag.Filter;
+            if (filter != null)
+                settings.Filter = filter;
+            else
+                throw new ArgumentNullException("ViewBag.Filter");
 
-            //columns
-            for (int i = 0; i < settings.Columns.Length; i++)
-            {
-                //filter
-                var column = settings.Columns[i];
-                var hidden = new TagBuilder("input");
-                hidden.MergeAttributes(new Dictionary<string, string>{
-                        {"name", column.FieldName},
-                        {"type", "hidden"}
-                    });
-                form.InnerHtml += hidden;
+            var guid = Guid.NewGuid().ToString().ToLower();
+            settings.GridId = guid;
+            var div = new TagBuilder("div");
+            div.AddCssClass("sx-gv");
+            div.MergeAttribute("id", guid);
+            div.MergeAttribute("data-ajax-url", settings.DataAjaxUrl);
 
-                //order
-                hidden = new TagBuilder("input");
-                hidden.MergeAttributes(new Dictionary<string, string>{
-                        {"name", string.Format("order[{0}]", column.FieldName)},
-                        {"type", "hidden"}
-                    });
-                form.InnerHtml += hidden;
-            }
+            var table = new TagBuilder("table");
+            table.AddCssClass("table table-condensed table-bordered table-responsive table-striped");
 
-            return form;
+            table.InnerHtml += getHeader(htmlHelper, settings);
+
+            table.InnerHtml += getBody(htmlHelper, collection, settings);
+
+            if (settings.HasRow && settings.Filter.PagerInfo.TotalPages > 1)
+                table.InnerHtml += getFooter(htmlHelper, settings);
+
+            div.InnerHtml += table;
+
+            return MvcHtmlString.Create(div.ToString());
         }
 
-        private static TagBuilder getGridViewHeader<TModel>(SxGridViewSettings<TModel> settings)
+        private static TagBuilder getHeader<TModel>(HtmlHelper htmlHelper, SxGridViewSettings<TModel> settings)
         {
-            var thead = new TagBuilder("thead");
-            var tr = new TagBuilder("tr");
-
-            if (settings.ShowFilterRowMenu || settings.EnableCreate)
+            var columns = new List<SxGridViewColumn<TModel>>();
+            var propertyInfoes = typeof(TModel).GetProperties();
+            SxGridViewColumn<TModel> column;
+            if (!settings.Columns.Any())
             {
-                var values=HttpContext.Current.Request.RequestContext.RouteData.Values;
-                var controller= values["controller"].ToString().ToLower();
-                var th = new TagBuilder("th");
-                th.AddCssClass("sx-gv-add-column");
-                var createUrl = settings.CreateJsLink!=null
-                    ? string.Format("<a href=\"javascript:void(0)\" onclick=\"{0}\"><i class=\"fa fa-plus-circle\"></i></a>", settings.CreateJsLink)
-                    : settings.CreateLink!=null
-                    ? string.Format("<a href=\"{0}\"><i class=\"fa fa-plus-circle\"></i></a>", settings.CreateLink)
-                    : string.Format("<a href=\"/{0}/edit\"><i class=\"fa fa-plus-circle\"></i></a>", controller);
-                th.InnerHtml += settings.EnableCreate ? createUrl : "#";
-                tr.InnerHtml += th;
-            }
 
-            for (int i = 0; i < settings.Columns.Length; i++)
-            {
-                var column = settings.Columns[i];
-
-                var th = new TagBuilder("th");
-                th.InnerHtml += column.Caption;
-
-                if (settings.EnableSorting)
+                foreach (var propertyInfo in propertyInfoes)
                 {
-                    var hasOrderDirection = settings.SortDirections != null && settings.SortDirections.ContainsKey(column.FieldName);
-                    var direction = hasOrderDirection && settings.SortDirections[column.FieldName] != SortDirection.Unknown ? settings.SortDirections[column.FieldName] : SortDirection.Unknown;
-                    th.MergeAttributes(new Dictionary<string, object>() {
-                        {"onclick", "pressGridViewColumn(this)"},
-                        { "class", "ordered-column" },
-                        { "data-column-name", column.FieldName },
-                        { "data-sort-direction", direction}
-                    });
-
-                    var span = new TagBuilder("span");
-                    span.MergeAttributes(new Dictionary<string, object>() {
-                        { "class", string.Format("sort-btn fa fa-caret-{0}", direction==SortDirection.Asc?"down":"up") }
-                    });
-                    th.InnerHtml += span;
-                }
-
-                tr.InnerHtml += th;
-            }
-            thead.InnerHtml += tr;
-
-            return thead;
-        }
-
-        private static string getGridViewRows<TModel>(TModel[] data, SxGridViewSettings<TModel> settings, HtmlHelper htmlHelper)
-        {
-            var sb = new StringBuilder();
-            if (data != null && data.Any())
-            {
-                for (int i = 0; i < data.Length; i++)
-                {
-                    var model = data[i];
-                    sb.Append(getGridViewRow(model, settings, htmlHelper));
-                }
-            }
-
-            return sb.ToString();
-        }
-        private static TagBuilder getGridViewRow<TModel>(TModel model, SxGridViewSettings<TModel> settings, HtmlHelper htmlHelper)
-        {
-            var tr = new TagBuilder("tr");
-
-            if(settings.FuncRowCssClass!=null)
-                tr.AddCssClass(settings.FuncRowCssClass(model));
-
-            if (settings.FuncGetId != null && !settings.ShowSelectCheckbox)
-            {
-                tr.MergeAttribute("data-id", settings.FuncGetId(model).ToString());
-                tr.MergeAttribute("onclick", "clickLookupRow(this)");
-            }
-
-            if (settings.ShowFilterRowMenu || settings.EnableEditing)
-            {
-                var td = new TagBuilder("td");
-                td.AddCssClass("sx-gv-edit-column");
-
-
-                //edit link
-                if (settings.EnableEditing)
-                {
-                    var routes = HttpContext.Current.Request.RequestContext.RouteData.Values;
-                    var controller = routes["controller"].ToString().ToLower();
-                    controller = settings.GeneralControllerName != null ? settings.GeneralControllerName.ToLowerInvariant() : controller;
-                    var queryString = new StringBuilder();
-                    queryString.Append("?");
-                    for (int i = 0; i < settings.KeyFieldsName.Length; i++)
+                    columns.Add(new SxGridViewColumn<TModel>
                     {
-                        var key = settings.KeyFieldsName[i];
-                        queryString.Append(key + "=" + model.GetType().GetProperty(key).GetValue(model) + "&");
-                    }
-                    var qs = queryString.ToString().Substring(0, queryString.Length - 1);
-                    var a = new TagBuilder("a");
-                    var type = typeof(TModel);
-
-                    a.MergeAttribute("href", settings.FuncEditLink!=null? settings.FuncEditLink(model) : string.Format("/{0}/edit{1}", controller, qs));
-                    a.MergeAttribute("data-title", "Редактировать");
-                    a.MergeAttribute("data-toggle", "tooltip");
-                    a.InnerHtml += "<i class=\"fa fa-pencil\"></i>";
-
-                    td.InnerHtml += a;
-                }
-                //delete link
-                if (settings.EnableDelete)
-                {
-                    td.InnerHtml += string.Format("<form method=\"post\" data-ajax-method=\"post\" action=\"{0}\" data-ajax=\"true\" data-ajax-mode=\"replace\" data-ajax-update=\"#{1}\">", settings.FuncDeleteLink(model) ?? "delete", settings.UpdateTargetId);
-                    td.InnerHtml += htmlHelper.AntiForgeryToken();
-                    //for (int i = 0; i < settings.KeyFieldsName.Length; i++)
-                    //{
-                    //    var key = settings.KeyFieldsName[i];
-                    //    td.InnerHtml += string.Format("<input type=\"hidden\" name=\"{0}\" value=\"{1}\" />", key, model.GetType().GetProperty(key).GetValue(model));
-                    //}
-                    td.InnerHtml += string.Format("<button title=\"Удалить\" type=\"submit\" onclick=\"if(!confirm('Удалить запись?')){{return false;}}\"><i class=\"fa fa-times\"></i></button>");
-                    td.InnerHtml += string.Format("</form>");
-                }
-                //select checkbox
-                if(settings.ShowSelectCheckbox)
-                {
-                    td.InnerHtml += string.Format("<input type=\"checkbox\" name=\"{0}\" value=\"{1}\" {2} onchange=\"{3}\" />", settings.FunCheckBoxName(model), settings.FuncGetId(model), settings.FunCheckBoxTrue(model)?"checked":null, settings.FunCheckBoxChange(model));
-                }
-
-                tr.InnerHtml += td;
-            }
-
-            var props = model.GetType().GetProperties();
-            for (int i = 0; i < settings.Columns.Length; i++)
-            {
-                var column = settings.Columns[i];
-                var td = new TagBuilder("td");
-                if (settings.FuncTextField != null && column.FieldName.ToLowerInvariant()== settings.FuncTextField().ToLowerInvariant())
-                    td.MergeAttribute("data-text-field", null);
-
-                var val=props.First(x => x.Name == column.FieldName).GetValue(model);
-                var value = column.Template != null
-                    ? htmlHelper.Raw(column.Template(model))
-                    : val;
-
-                td.InnerHtml += value;
-                tr.InnerHtml += td;
-            }
-            return tr;
-        }
-
-        private static TagBuilder getGridViewRowMenu<TModel>(SxGridViewSettings<TModel> settings)
-        {
-            var tr = new TagBuilder("tr");
-            tr.AddCssClass("filter-row");
-
-            if (settings.ShowFilterRowMenu || settings.EnableEditing)
-            {
-                var td = new TagBuilder("td");
-                td.MergeAttribute("style", "text-align: center;");
-                if (isNotEmptyFilter(settings))
-                {
-                    var span = new TagBuilder("span");
-                    span.AddCssClass("fa fa-refresh");
-                    span.MergeAttributes(new Dictionary<string, object>{
-                        {"onclick", settings.Mode==SxGridViewMode.View? "resetGridViewFilter(this)":"resetGridViewLookupFilter(this)"},
-                        {"style", "cursor:pointer;"}
+                        FieldName = propertyInfo.Name
                     });
-                    td.InnerHtml += span;
-                }
-                tr.InnerHtml += td;
-            }
-
-            for (int i = 0; i < settings.Columns.Length; i++)
-            {
-                var column = settings.Columns[i];
-                var td = new TagBuilder("td");
-
-                var prop = settings.ModelType.GetProperties().FirstOrDefault(x=>x.Name==column.FieldName);
-                if (prop == null)
-                    throw new ArgumentException(string.Format("Модель должна содержать свойство \"{0}\"", column.FieldName));
-                var editor = getColumnEditor(prop, settings);
-                td.InnerHtml += editor;
-
-                tr.InnerHtml += td;
-            }
-            return tr;
-        }
-        private static TagBuilder getColumnEditor<TModel>(PropertyInfo propertyInfo, SxGridViewSettings<TModel> settings)
-        {
-            var propertyType = propertyInfo.PropertyType;
-
-            var editor = new TagBuilder("input");
-            editor.MergeAttribute("name", propertyInfo.Name);
-            editor.MergeAttribute("onkeypress", settings.Mode==SxGridViewMode.View? "pressGridViewFilter(event)": "pressGridViewLookupFilter(event)");
-
-            object value = null;
-            if (settings.Filter != null)
-                value = settings.Filter.GetType().GetProperty(propertyInfo.Name).GetValue(settings.Filter);
-
-            if (propertyType == typeof(Int32))
-            {
-                editor.MergeAttributes(new Dictionary<string, object>() {
-                    { "type", "number" }
-                });
-                if (value != null && (int)value != 0)
-                    editor.MergeAttribute("value", value.ToString());
-            }
-            else if (propertyType == typeof(DateTime))
-            {
-                editor.MergeAttributes(new Dictionary<string, object>() {
-                    { "type", "datetime" }
-                });
-                if (value != null && (DateTime)value != DateTime.MinValue)
-                    editor.MergeAttribute("value", value.ToString());
-            }
-            else if (propertyType == typeof(String))
-            {
-                editor.MergeAttributes(new Dictionary<string, object>() {
-                    { "type", "text" }
-                });
-                if (value != null)
-                    editor.MergeAttribute("value", value.ToString());
-            }
-
-            return editor;
-        }
-        private static bool isNotEmptyFilter<TModel>(SxGridViewSettings<TModel> settings)
-        {
-            if (settings.Filter == null) return false;
-            var fields = settings.Columns.Select(c => c.FieldName);
-            var props = ((PropertyInfo[])settings.Filter.GetType().GetProperties())
-                .Where(x => fields.Contains(x.Name) && x.GetValue(settings.Filter) != null).ToArray();
-            
-            var count = 0;
-            for (int i = 0; i < props.Length; i++)
-            {
-                var prop = props[i];
-                var propType = prop.PropertyType;
-                var value = prop.GetValue(settings.Filter);
-                count += propType == typeof(Int32) && (int)value != 0 ? 1 : 0;
-                count += propType == typeof(DateTime) && (DateTime)value != DateTime.MinValue ? 1 : 0;
-                count += propType == typeof(String) && value != null ? 1 : 0;
-            }
-            return count > 0;
-        }
-
-        private static TagBuilder getGridViewFooter<TModel>(HtmlHelper htmlHelper, SxGridViewSettings<TModel> settings)
-        {
-            var tfoot = new TagBuilder("tfoot");
-            var tr = new TagBuilder("tr");
-            var td = new TagBuilder("td");
-            if (settings.ShowFilterRowMenu)
-            {
-                tr.InnerHtml += td;
-            }
-
-            td = new TagBuilder("td");
-            td.MergeAttribute("colspan", settings.Columns.Length.ToString());
-            if (settings.PagerInfo.TotalPages != 0)
-            {
-                if (settings.PagerInfo.TotalPages > 1)
-                {
-                    //if (settings.Mode == SxGridViewMode.Lookup)
-                    //    settings.PagerInfo.FuncClick = ()=> "clickLookupPager(this)";
-
-                    td.InnerHtml += htmlHelper.SxPager(settings.PagerInfo);
                 }
             }
             else
             {
-                td.InnerHtml += "<div class=\"text-danger\">Отсутствуют данные для отображения</div>";
+                bool existProperty = false;
+                for (int i = 0; i < settings.Columns.Length; i++)
+                {
+                    column = settings.Columns[i];
+                    existProperty = propertyInfoes.SingleOrDefault(x => Equals(x.Name, column.FieldName)) != null;
+                    if (existProperty)
+                        columns.Add(column);
+                    else
+                        throw new ArgumentNullException(column.FieldName);
+                }
+            }
+
+            settings.Columns = columns.ToArray();
+
+
+            var header = new TagBuilder("thead");
+            var tr = new TagBuilder("tr");
+            TagBuilder th;
+
+            for (int i = 0; i < settings.Columns.Length + 1; i++)
+            {
+                th = new TagBuilder("th");
+                if (settings.HasRow)
+                    th.MergeAttribute("style", "cursor: pointer;");
+                if (i == 0)
+                {
+                    if (settings.EnableCreating && settings.CreateRowUrl != null)
+                    {
+                        var a = new TagBuilder("a");
+                        a.AddCssClass("sx-gv__create-btn");
+                        a.MergeAttribute("data-toggle", "tooltip");
+                        a.MergeAttribute("title", "Добавить");
+                        a.MergeAttribute("href", settings.CreateRowUrl);
+                        var link = new TagBuilder("i");
+                        link.AddCssClass("fa fa-plus-circle");
+                        a.InnerHtml += link;
+                        th.InnerHtml += a;
+                    }
+                    else if(settings.ShowSelectedCheckbox)
+                    {
+                        th.InnerHtml += "<input type=\"checkbox\" data-toggle=\"tooltip\" title=\"Выделить все\" class=\"sx-gv__select-all-chbx\" />";
+                    }
+                    else
+                    {
+                        th.InnerHtml += "#";
+                    }
+                    th.AddCssClass("sx-gv_first-column");
+                }
+                else
+                {
+                    column = settings.Columns[i - 1];
+                    th.InnerHtml += column.Caption;
+                    th.MergeAttribute("data-field-name", column.FieldName);
+                    if(settings.Filter.Order!=null && settings.Filter.Order.FieldName==column.FieldName)
+                        th.InnerHtml += getSortArrow(settings.Filter.Order.Direction);
+                }
+                tr.InnerHtml += th;
+            }
+            header.InnerHtml += tr;
+
+            return header;
+        }
+
+        private static TagBuilder getBody<TModel>(HtmlHelper htmlHelper, TModel[] collection, SxGridViewSettings<TModel> settings)
+        {
+            var tbody = new TagBuilder("tbody");
+            if (settings.ShowFilterRow)
+                tbody.InnerHtml += getFilterRow(htmlHelper, settings);
+
+            TagBuilder tr;
+            SxGridViewColumn<TModel> column;
+            TagBuilder td;
+            object value;
+            Type type;
+            string rowCssClass;
+            if (settings.HasRow)
+            {
+                TModel model;
+                for (int i = 0; i < collection.Length; i++)
+                {
+                    model = collection[i];
+
+                    tr = new TagBuilder("tr");
+                    tr.AddCssClass("sx-gv__row");
+                    if (settings.RowCssClass != null)
+                    {
+                        rowCssClass = settings.RowCssClass(model);
+                        if (rowCssClass != null)
+                            tr.AddCssClass(rowCssClass);
+                    }
+                    if (settings.RowId != null)
+                        tr.MergeAttribute("data-row-id", settings.RowId(model));
+                    if(settings.RowText!=null)
+                        tr.MergeAttribute("data-row-text", settings.RowText(model));
+
+                    type = model.GetType();
+                    for (int y = 0; y < settings.Columns.Length + 1; y++)
+                    {
+                        td = new TagBuilder("td");
+                        if (y == 0)
+                        {
+                            if (settings.EnableEditing && settings.EditRowUrl != null)
+                            {
+                                var a = new TagBuilder("a");
+                                a.MergeAttribute("href", settings.EditRowUrl(model));
+                                a.MergeAttribute("data-toggle", "tooltip");
+                                a.MergeAttribute("title", "Редактировать");
+
+                                var link = new TagBuilder("i");
+                                link.AddCssClass("fa fa-pencil");
+                                a.InnerHtml += link;
+                                td.InnerHtml += a;
+                            }
+                            if(settings.ShowSelectedCheckbox)
+                            {
+                                var input = new TagBuilder("input");
+                                input.MergeAttribute("type", "checkbox");
+                                td.InnerHtml += input;
+                            }
+                            if(settings.EnableDeleting)
+                            {
+                                if (settings.DeleteRowUrl == null)
+                                    throw new ArgumentNullException("DeleteRowUrl");
+
+                                td.InnerHtml += "<a href=\""+settings.DeleteRowUrl(model) +"\" class=\"sx-gv__delete-btn\" data-toggle=\"tooltip\" title=\"Удалить\"><i class=\"fa fa-times\"></i></a>";
+                            }
+                        }
+                        else
+                        {
+                            column = settings.Columns[y - 1];
+
+                            if (column.Template != null)
+                                value = column.Template(model);
+                            else
+                                value = type.GetProperty(column.FieldName).GetValue(model);
+                            td.InnerHtml += value;
+
+                        }
+                        tr.InnerHtml += td;
+                    }
+
+                    tbody.InnerHtml += tr;
+                }
+            }
+            else
+            {
+                tr = new TagBuilder("tr");
+                td = new TagBuilder("td");
+                tr.InnerHtml += td;
+
+                td = new TagBuilder("td");
+                td.MergeAttribute("colspan", settings.Columns.Length.ToString());
+                var span = new TagBuilder("span");
+                span.AddCssClass("text-warning");
+                span.InnerHtml += "Отсутствуют данные для отображения";
+                td.InnerHtml += span;
+                tr.InnerHtml += td;
+                tbody.InnerHtml += tr;
+            }
+
+            return tbody;
+        }
+
+        private static TagBuilder getFilterRow<TModel>(HtmlHelper htmlHelper, SxGridViewSettings<TModel> settings)
+        {
+            var tr = new TagBuilder("tr");
+            tr.AddCssClass("sx-gv__filter-row");
+            TagBuilder td;
+            TagBuilder input;
+            SxGridViewColumn<TModel> column;
+            var filterProperties = new Dictionary<string, string>();
+            if (settings.Filter.WhereExpressionObject != null)
+            {
+                object propValue;
+                string propStringValue;
+                foreach (var prop in settings.Filter.WhereExpressionObject.GetType().GetProperties())
+                {
+                    propValue = prop.GetValue(settings.Filter.WhereExpressionObject);
+                    propStringValue = propValue != null ? propValue.ToString() : null;
+                    if (
+                        propStringValue != null
+                        && propStringValue != "0"
+                        && propStringValue!= "01.01.0001 0:00:00"
+                        && propStringValue!= "00000000-0000-0000-0000-000000000000"
+                        && propStringValue!="False"
+                        && propStringValue!= "Unknown"
+                        )
+                        filterProperties.Add(prop.Name, propStringValue);
+                }
+            }
+            for (int i = 0; i < settings.Columns.Length + 1; i++)
+            {
+                td = new TagBuilder("td");
+                if (i == 0)
+                {
+                    if (filterProperties.Count > 0)
+                    {
+                        var a = new TagBuilder("a");
+                        a.MergeAttribute("href", "javascript:void(0)");
+                        a.AddCssClass("sx-gv__clear-btn");
+                        var link = new TagBuilder("i");
+                        link.AddCssClass("fa fa-repeat");
+                        link.MergeAttribute("data-toggle", "tooltip");
+                        link.MergeAttribute("title", "Сбросить все");
+                        a.InnerHtml += link;
+                        td.InnerHtml += a;
+                    }
+                }
+                else
+                {
+                    column = settings.Columns[i - 1];
+                    input = new TagBuilder("input");
+                    input.MergeAttribute("type", "text");
+                    input.MergeAttribute("name", column.FieldName);
+                    input.MergeAttribute("autocomplete", "off");
+                    if (filterProperties.ContainsKey(column.FieldName) && filterProperties[column.FieldName].ToString() != "0")
+                        input.MergeAttribute("value", filterProperties[column.FieldName].ToString());
+                    td.InnerHtml += input;
+                }
+                tr.InnerHtml += td;
+            }
+
+            return tr;
+        }
+
+        private static TagBuilder getFooter<TModel>(HtmlHelper htmlHelper, SxGridViewSettings<TModel> settings)
+        {
+            var footer = new TagBuilder("tfoot");
+            var tr = new TagBuilder("tr");
+            TagBuilder td;
+
+            td = new TagBuilder("td");
+            if(settings.ShowSelectedCheckbox)
+            {
+                //var a = new TagBuilder("a");
+                //a.AddCssClass("sx-gv__add-from-chbx-btn");
+                //a.MergeAttribute("data-toggle", "tooltip");
+                //a.MergeAttribute("href", "javascript:void(0)");
+                //a.MergeAttribute("title", "Добавить выбранные");
+                //a.InnerHtml += "<i class=\"fa fa-plus-circle\" aria-hidden=\"true\"></i>";
+                //td.InnerHtml += a;
             }
             tr.InnerHtml += td;
 
-            tfoot.InnerHtml += tr;
-            //tfoot.InnerHtml += getGridViewPagerProgress(settings);
-            return tfoot;
+            td = new TagBuilder("td");
+            td.InnerHtml += htmlHelper.SxPager(settings.Filter.PagerInfo, htmlAttributes: new { @class = "list-unstyled list-inline sx-gv__pager" }, pageUrl: (x) => "/valutes?page=" + x, isAjax: true);
+            td.MergeAttribute("colspan", settings.Columns.Length.ToString());
+
+            tr.InnerHtml += td;
+            footer.InnerHtml += tr;
+
+            return footer;
         }
 
-        private static string[] getModelColumns(Type modelType)
+        //get sort direction arrow
+        private static TagBuilder getSortArrow(SortDirection sortDirection)
         {
-            return modelType.GetProperties().Select(x => x.Name).OrderBy(x => x).ToArray();
+            if (Equals(sortDirection, SortDirection.Unknown)) return null;
+
+            var i = new TagBuilder("i");
+            var directionCssClass = Equals(sortDirection, SortDirection.Asc) ? "asc" : "desc";
+            i.AddCssClass("sx-gv__sort-arow");
+            i.MergeAttribute("data-sort-direction", sortDirection.ToString());
+            i.AddCssClass("fa fa-sort-" + directionCssClass);
+            return i;
         }
 
         public enum SortDirection : byte
@@ -490,13 +380,6 @@ namespace SX.WebCore.HtmlHelpers
             Unknown=0,
             Asc=1,
             Desc=2
-        }
-
-        public enum SxGridViewMode : byte
-        {
-            Unknown = 0,
-            View = 1,
-            Lookup = 2
         }
     }
 }

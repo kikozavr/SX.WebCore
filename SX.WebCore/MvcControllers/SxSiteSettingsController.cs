@@ -2,6 +2,7 @@
 using SX.WebCore.Repositories;
 using SX.WebCore.Resources;
 using SX.WebCore.ViewModels;
+using System;
 using System.Text;
 using System.Web.Mvc;
 
@@ -12,10 +13,21 @@ namespace SX.WebCore.MvcControllers
     {
         private const string __notSetSettingValue = "Настройка не определена";
         private static SxRepoSiteSetting<TDbContext> _repo;
+        private static SxRepoPicture<TDbContext> _repoPicture;
         public SxSiteSettingsController()
         {
             if(_repo==null)
                 _repo = new SxRepoSiteSetting<TDbContext>();
+            if (_repoPicture == null)
+                _repoPicture = new SxRepoPicture<TDbContext>();
+        }
+
+        protected static SxRepoPicture<TDbContext> RepoPicture
+        {
+            get
+            {
+                return _repoPicture;
+            }
         }
 
         [AllowAnonymous]
@@ -57,6 +69,24 @@ namespace SX.WebCore.MvcControllers
             viewModel.OldSiteName = viewModel.SiteName;
             viewModel.OldSiteBgPath = viewModel.SiteBgPath;
             viewModel.OldSiteFaveiconPath = viewModel.SiteFaveiconPath;
+
+            Guid guid;
+            Guid.TryParse(settings[Settings.siteDomain].ToString(), out guid);
+            if (guid != Guid.Empty)
+                ViewData["SiteDomainCaption"] = _repoPicture.GetByKey(guid).Caption;
+            Guid.TryParse(settings[Settings.siteLogoPath].ToString(), out guid);
+            if (guid != Guid.Empty)
+                ViewData["LogoPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+            Guid.TryParse(settings[Settings.siteName].ToString(), out guid);
+            if (guid != Guid.Empty)
+                ViewData["SiteNameCaption"] = _repoPicture.GetByKey(guid).Caption;
+            Guid.TryParse(settings[Settings.siteBgPath].ToString(), out guid);
+            if (guid != Guid.Empty)
+                ViewData["SiteBgPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+            Guid.TryParse(settings[Settings.siteFaveiconPath].ToString(), out guid);
+            if (guid != Guid.Empty)
+                ViewData["SiteFaveiconPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+
             return View(viewModel);
         }
 

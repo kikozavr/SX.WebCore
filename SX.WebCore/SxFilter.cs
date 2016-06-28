@@ -21,6 +21,7 @@ namespace SX.WebCore
         public int? MaterialId { get; set; }
         public ModelCoreType ModelCoreType { get; set; }
         public dynamic WhereExpressionObject { get; set; }
+        public object[] AddintionalInfo { get; set; }
         public SxOrder Order { get; set; }
         public bool OnlyShow { get; set; }
     }

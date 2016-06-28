@@ -4,6 +4,6 @@
     {
         public int Id { get; set; }
         public string Value { get; set; }
-        public int SeoInfoId { get; set; }
+        public int SeoTagsId { get; set; }
     }
 }

@@ -56,15 +56,15 @@ namespace SX.WebCore.Repositories
         {
             param = null;
             string query = null;
-            query += " WHERE (dsk.SeoInfoId=@siid)";
+            query += " WHERE (dsk.SeoTagsId=@stid)";
             query += " AND (dsk.Value LIKE '%'+@val+'%' OR @val IS NULL)";
 
             var val = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Value != null ? (string)filter.WhereExpressionObject.Value : null;
-            var siid = filter.WhereExpressionObject != null && filter.WhereExpressionObject.SeoInfoId != null ? (int?)filter.WhereExpressionObject.SeoInfoId : null;
+            var stid = filter.AddintionalInfo != null && filter.AddintionalInfo[0] != null ? filter.AddintionalInfo[0] : null;
 
             param = new
             {
-                siid = siid,
+                stid = stid,
                 val = val
             };
 

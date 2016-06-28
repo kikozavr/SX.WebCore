@@ -17,10 +17,10 @@ namespace SX.WebCore.MvcControllers
 
         private static readonly int _pageSize = 10;
         [HttpGet]
-        public virtual PartialViewResult Index(int sid, int page = 1)
+        public virtual PartialViewResult Index(int stid, int page = 1)
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
-            var filter = new SxFilter(page, _pageSize) { WhereExpressionObject = new SxSeoKeyword { SeoInfoId = sid }, Order=order };
+            var filter = new SxFilter(page, _pageSize) { Order=order, AddintionalInfo=new object[] { stid } };
             filter.PagerInfo.TotalItems = _repo.Count(filter);
 
             var viewModel = _repo.Query(filter)
@@ -28,16 +28,15 @@ namespace SX.WebCore.MvcControllers
                 .ToArray();
 
             ViewBag.Filter = filter;
-            ViewBag.SeoInfoId = sid;
+            ViewBag.SeoTagsId = stid;
 
             return PartialView("_GridView", viewModel);
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(int sid, SxVMSeoKeyword filterModel, SxOrder order, int page = 1)
+        public virtual PartialViewResult Index(int stid, SxVMSeoKeyword filterModel, SxOrder order, int page = 1)
         {
-            filterModel.SeoInfoId = sid;
-            var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
+            var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { stid } };
             filter.PagerInfo.TotalItems = _repo.Count(filter);
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
             ViewBag.PagerInfo = filter.PagerInfo;
@@ -47,7 +46,7 @@ namespace SX.WebCore.MvcControllers
                 .ToArray();
 
             ViewBag.Filter = filter;
-            ViewBag.SeoInfoId = sid;
+            ViewBag.SeoTagsId = stid;
 
             return PartialView("_GridView", viewModel);
         }
@@ -55,29 +54,29 @@ namespace SX.WebCore.MvcControllers
         [HttpPost, ValidateAntiForgeryToken]
         public virtual RedirectToRouteResult Edit(SxVMEditSeoKeyword model)
         {
-            var redactModel = Mapper.Map<SxVMEditSeoKeyword, SxSeoKeyword>(model);
             if (ModelState.IsValid)
             {
+                var redactModel = Mapper.Map<SxVMEditSeoKeyword, SxSeoKeyword>(model);
                 SxSeoKeyword newModel = null;
                 if (model.Id == 0)
                 {
-                    var exist = _repo.All.FirstOrDefault(x => x.SeoInfoId == model.SeoInfoId && x.Value == model.Value) != null;
+                    var exist = _repo.All.FirstOrDefault(x => x.SeoTagsId == model.SeoTagsId && x.Value == model.Value) != null;
                     if (!exist)
                         newModel = _repo.Create(redactModel);
                 }
                 else
-                    newModel = _repo.Update(redactModel, true, "SeoInfoId", "Value");
+                    newModel = _repo.Update(redactModel, true, "SeoTagsId", "Value");
             }
 
-            return RedirectToAction("index", new { controller="seokeywords", sid = model.SeoInfoId });
+            return RedirectToAction("index", new { controller="seokeywords", stid = model.SeoTagsId });
         }
 
         [HttpPost, ValidateAntiForgeryToken]
         public virtual RedirectToRouteResult Delete(SxVMEditSeoKeyword model)
         {
-            var seoInfoId = model.SeoInfoId;
+            var seoInfoId = model.SeoTagsId;
             _repo.Delete(model.Id);
-            return RedirectToAction("index", new { controller = "seokeywords", sid = model.SeoInfoId });
+            return RedirectToAction("index", new { controller = "seokeywords", stid = model.SeoTagsId });
         }
     }
 }

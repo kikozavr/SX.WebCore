@@ -1144,7 +1144,7 @@ END
 GO
 
 /*******************************************
- * Seo info страницы
+ * Seo теги страницы
  *******************************************/
 IF OBJECT_ID(N'dbo.get_page_seo_info', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_page_seo_info;
@@ -1154,8 +1154,27 @@ CREATE PROCEDURE dbo.get_page_seo_info
 AS
 BEGIN
 	SELECT TOP(1) *
-	FROM   D_SEO_INFO AS dsi
+	FROM   D_SEO_TAGS AS dsi
 	WHERE  dsi.RawUrl = @url
+END
+GO
+
+/*******************************************
+ *ќбновить Seo теги страницы
+ *******************************************/
+IF OBJECT_ID(N'dbo.update_material_seo_tags', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.update_material_seo_tags;
+GO
+CREATE PROCEDURE dbo.update_material_seo_tags
+	@mid INT,
+	@mct INT,
+	@stid INT
+AS
+BEGIN
+	UPDATE DV_MATERIAL
+	SET    SeoTagsId             = @stid
+	WHERE  Id                    = @mid
+	       AND ModelCoreType     = @mct
 END
 GO
 
@@ -1183,12 +1202,12 @@ IF OBJECT_ID(N'dbo.get_page_seo_info_keywords', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_page_seo_info_keywords;
 GO
 CREATE PROCEDURE dbo.get_page_seo_info_keywords
-	@seoInfoId INT
+	@seoTagsId INT
 AS
 BEGIN
 	SELECT *
 	FROM   D_SEO_KEYWORD AS dsk
-	WHERE  dsk.SeoInfoId = @seoInfoId
+	WHERE  dsk.SeoTagsId = @seoTagsId
 END
 GO
 

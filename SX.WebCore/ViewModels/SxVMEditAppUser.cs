@@ -13,7 +13,7 @@ namespace SX.WebCore.ViewModels
         public string Id { get; set; }
 
         public SxPicture Avatar { get; set; }
-        [Display(Name = "Аватар"), UIHint("EditImage")]
+        [Display(Name = "Аватар"), UIHint("PicturesLookupGrid")]
         public Guid? AvatarId { get; set; }
 
         public string Email { get; set; }

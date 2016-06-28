@@ -145,7 +145,7 @@ namespace SX.WebCore.MvcControllers
             ViewBag.Roles = allRoles;
             var viewModel = getEditUser(data, allRoles);
             if (viewModel.Avatar != null)
-                ViewBag.PictureCaption = viewModel.Avatar.Caption;
+                ViewBag.AvatarIdCaption = viewModel.Avatar.Caption;
 
             return View(viewModel);
         }

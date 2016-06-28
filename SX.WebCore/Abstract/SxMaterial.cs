@@ -37,8 +37,8 @@ namespace SX.WebCore.Abstract
         [MaxLength(128)]
         public string UserId { get; set; }
 
-        public virtual SxSeoTags SeoInfo { get; set; }
-        public int? SeoInfoId { get; set; }
+        public virtual SxSeoTags SeoTags { get; set; }
+        public int? SeoTagsId { get; set; }
 
         public virtual SxMaterialCategory Category { get; set; }
         public string CategoryId { get; set; }

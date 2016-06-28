@@ -101,10 +101,12 @@ namespace SX.WebCore.Repositories
 
         private static void checkLinkedVideosFilter(SxFilter filter)
         {
-            if (!filter.MaterialId.HasValue)
-                throw new ArgumentNullException("Фильт должен сожержать идентификатор материала");
-            if (filter.ModelCoreType == ModelCoreType.Unknown)
-                throw new ArgumentNullException("Фильт должен сожержать тип материала");
+            if(filter.AddintionalInfo==null)
+                throw new ArgumentNullException("AddintionalInfo");
+            if (filter.AddintionalInfo[0]==null)
+                throw new ArgumentNullException("AddintionalInfo.MaterialId");
+            if (filter.AddintionalInfo[1]==null)
+                throw new ArgumentNullException("AddintionalInfo.ModelCoreType");
         }
 
         private static string getLinkedVideoWhereString(SxFilter filter, bool forMaterial, out object param)
@@ -131,8 +133,8 @@ namespace SX.WebCore.Repositories
             {
                 title = title,
                 vid = vid,
-                mid = filter.MaterialId,
-                mct = (byte)filter.ModelCoreType
+                mid = filter.AddintionalInfo[0],
+                mct = filter.AddintionalInfo[1]
             };
 
             return query;

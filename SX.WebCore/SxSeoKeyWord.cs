@@ -1,11 +1,7 @@
 ﻿using SX.WebCore.Abstract;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SX.WebCore
 {
@@ -15,8 +11,8 @@ namespace SX.WebCore
         [MaxLength(50), Required]
         public string Value { get; set; }
 
-        public virtual SxSeoTags SeoInfo { get; set; }
-        public int SeoInfoId { get; set; }
+        public virtual SxSeoTags SeoTags { get; set; }
+        public int SeoTagsId { get; set; }
 
         internal bool Any()
         {

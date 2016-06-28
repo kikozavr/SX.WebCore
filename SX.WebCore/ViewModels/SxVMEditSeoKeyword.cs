@@ -9,7 +9,7 @@ namespace SX.WebCore.ViewModels
         public SxVMSeoTags SeoTags { get; set; }
 
         [Required]
-        public int SeoInfoId { get; set; }
+        public int SeoTagsId { get; set; }
 
         [MaxLength(50), Required, Display(Name = "Значение ключевого слова")]
         public string Value { get; set; }

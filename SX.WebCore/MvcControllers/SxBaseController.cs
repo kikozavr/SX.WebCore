@@ -72,7 +72,7 @@ namespace SX.WebCore.MvcControllers
             }
 
             //записываем теги seo
-            writePageSeoinfo();
+            writePageSeoTags();
 
             //пишем баннеры страницы
             writePageBanners();
@@ -99,27 +99,27 @@ namespace SX.WebCore.MvcControllers
             return redirect;
         }
 
-        private SxSeoTags getPageSeoInfo(CacheItemPolicy cip = null)
+        private SxSeoTags getPageSeoTags(CacheItemPolicy cip = null)
         {
-            var seoInfo = (SxSeoTags)SxApplication<TDbContext>.AppCache["CACHE_SEOINFO_" + SxRawUrl];
-            if(seoInfo==null)
+            var seoTags = (SxSeoTags)SxApplication<TDbContext>.AppCache["CACHE_SEOTAGS_" + SxRawUrl];
+            if(seoTags==null)
             {
-                seoInfo = new SxRepoSeoTags<TDbContext>().GetSeoTags(SxRawUrl);
-                SxApplication<TDbContext>.AppCache.Add("CACHE_SEOINFO_" + SxRawUrl, seoInfo, cip);
+                seoTags = new SxRepoSeoTags<TDbContext>().GetSeoTags(SxRawUrl);
+                SxApplication<TDbContext>.AppCache.Add("CACHE_SEOTAGS_" + SxRawUrl, seoTags, cip);
             }
-            return seoInfo;
+            return seoTags;
         }
-        private void writePageSeoinfo()
+        private void writePageSeoTags()
         {
-            var seoInfo = getPageSeoInfo();
-            if (seoInfo == null || seoInfo.SeoTitle == null) return;
+            var seoTags = getPageSeoTags();
+            if (seoTags == null || seoTags.SeoTitle == null) return;
 
-            ViewBag.Title = seoInfo.SeoTitle;
-            ViewBag.Description = seoInfo.SeoDescription;
-            if(seoInfo.Keywords.Any())
+            ViewBag.Title = seoTags.SeoTitle;
+            ViewBag.Description = seoTags.SeoDescription;
+            if(seoTags.Keywords.Any())
             {
                 var sb = new StringBuilder();
-                foreach (var k in seoInfo.Keywords)
+                foreach (var k in seoTags.Keywords)
                 {
                     sb.AppendFormat(",{0}", k.Value);
                 }
@@ -127,8 +127,8 @@ namespace SX.WebCore.MvcControllers
 
                 ViewBag.Keywords = sb.ToString();
             }
-            ViewBag.H1 = seoInfo.H1;
-            ViewBag.H1CssClass = seoInfo.H1CssClass;
+            ViewBag.H1 = seoTags.H1;
+            ViewBag.H1CssClass = seoTags.H1CssClass;
         }
 
         private void writeRequestInfo()

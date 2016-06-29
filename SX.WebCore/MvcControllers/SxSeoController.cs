@@ -69,6 +69,7 @@ namespace SX.WebCore.MvcControllers
             return View(model);
         }
 
+        [AllowAnonymous]
         [OutputCache(Duration = 900)]
         public virtual ContentResult Robotstxt()
         {

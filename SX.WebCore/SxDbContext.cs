@@ -48,8 +48,6 @@ namespace SX.WebCore
 
         public DbSet<SxSeoKeyword> SeoKeyWords { get; set; }
 
-        public DbSet<SxSitePartner> SitePartners { get; set; }
-
         public DbSet<SxSiteSetting> SiteSettings { get; set; }
 
         public DbSet<SxSiteTest> SiteTests { get; set; }

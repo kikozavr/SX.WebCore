@@ -1137,9 +1137,9 @@ CREATE PROCEDURE dbo.get_all_seo_info
 AS
 BEGIN
 	SELECT *
-	FROM   D_SEO_INFO AS dsi
+	FROM   D_SEO_TAGS AS dst
 	ORDER BY
-	       dsi.RawUrl
+	       dst.RawUrl
 END
 GO
 
@@ -1190,8 +1190,8 @@ CREATE PROCEDURE dbo.get_material_seo_info
 AS
 BEGIN
 	SELECT TOP(1) *
-	FROM   D_SEO_INFO AS dsi
-	WHERE  (dsi.MaterialId = @mid AND dsi.ModelCoreType = @mct)
+	FROM   D_SEO_TAGS AS dst
+	WHERE  (dst.MaterialId = @mid AND dst.ModelCoreType = @mct)
 END
 GO
 
@@ -1220,7 +1220,7 @@ GO
 IF TYPE_ID(N'SiteTestStep') IS NOT NULL
     DROP TYPE SiteTestStep
  
- CREATE TYPE SiteTestStep AS TABLE 
+ CREATE TYPE dbo.SiteTestStep AS TABLE 
 (QuestionText NVARCHAR(200), IsCorrect BIT, [Order] INT)
  GO
 

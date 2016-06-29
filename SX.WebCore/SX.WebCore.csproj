@@ -277,7 +277,6 @@
     <Compile Include="SxEmployee.cs" />
     <Compile Include="SxOrder.cs" />
     <Compile Include="SxLike.cs" />
-    <Compile Include="SxSitePartner.cs" />
     <Compile Include="SxSiteTestBlock.cs" />
     <Compile Include="SxSiteTestQuestion.cs" />
     <Compile Include="SxSiteTestStep.cs" />

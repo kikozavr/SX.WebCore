@@ -128,6 +128,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public PartialViewResult UsersOnSite()
         {
             var emails = SxApplication<TDbContext>.UsersOnSite.Select(x => x.Value).Distinct().ToArray();

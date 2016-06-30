@@ -219,6 +219,7 @@ namespace SX.WebCore.HtmlHelpers
                             if (settings.EnableEditing && settings.EditRowUrl != null)
                             {
                                 var a = new TagBuilder("a");
+                                a.AddCssClass("sx-gv__edit-btn");
                                 a.MergeAttribute("href", settings.EditRowUrl(model));
                                 a.MergeAttribute("data-toggle", "tooltip");
                                 a.MergeAttribute("title", "Редактировать");

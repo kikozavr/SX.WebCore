@@ -1,7 +1,202 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 27.06.2016 13:41:10
+ * Time: 30.06.2016 16:16:24
  ************************************************************/
+
+/*******************************************
+ * clear html tags
+ *******************************************/
+IF OBJECT_ID(N'dbo.func_strip_html', N'FN') IS NOT NULL
+    DROP FUNCTION dbo.func_strip_html;
+GO 
+CREATE FUNCTION dbo.func_strip_html
+(
+	@HTMLText NVARCHAR(MAX)
+)
+RETURNS NVARCHAR(MAX)
+AS
+BEGIN
+	DECLARE @Start INT
+	DECLARE @End INT
+	DECLARE @Length INT
+	
+	-- Replace the HTML entity &amp; with the '&' character (this needs to be done first, as
+	-- '&' might be double encoded as '&amp;amp;')
+	SET @Start = CHARINDEX('&amp;', @HTMLText)
+	SET @End = @Start + 4
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, '&')
+	    SET @Start = CHARINDEX('&amp;', @HTMLText)
+	    SET @End = @Start + 4
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace the HTML entity &ndash; with the ' - ' character
+	SET @Start = CHARINDEX('&ndash;', @HTMLText)
+	SET @End = @Start + 6
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, ' - ')
+	    SET @Start = CHARINDEX('&ndash;', @HTMLText)
+	    SET @End = @Start + 6
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace the HTML entity &laquo; with the ' " ' character
+	SET @Start = CHARINDEX('&laquo;', @HTMLText)
+	SET @End = @Start + 6
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, '"')
+	    SET @Start = CHARINDEX('&laquo;', @HTMLText)
+	    SET @End = @Start + 6
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace the HTML entity &raquo; with the ' " ' character
+	SET @Start = CHARINDEX('&raquo;', @HTMLText)
+	SET @End = @Start + 6
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, '"')
+	    SET @Start = CHARINDEX('&raquo;', @HTMLText)
+	    SET @End = @Start + 6
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace the HTML entity &lt; with the '<' character
+	SET @Start = CHARINDEX('&lt;', @HTMLText)
+	SET @End = @Start + 3
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, '<')
+	    SET @Start = CHARINDEX('&lt;', @HTMLText)
+	    SET @End = @Start + 3
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace the HTML entity &gt; with the '>' character
+	SET @Start = CHARINDEX('&gt;', @HTMLText)
+	SET @End = @Start + 3
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, '>')
+	    SET @Start = CHARINDEX('&gt;', @HTMLText)
+	    SET @End = @Start + 3
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace the HTML entity &amp; with the '&' character
+	SET @Start = CHARINDEX('&amp;amp;', @HTMLText)
+	SET @End = @Start + 4
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, '&')
+	    SET @Start = CHARINDEX('&amp;amp;', @HTMLText)
+	    SET @End = @Start + 4
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace the HTML entity &nbsp; with the ' ' character
+	SET @Start = CHARINDEX('&nbsp;', @HTMLText)
+	SET @End = @Start + 5
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, ' ')
+	    SET @Start = CHARINDEX('&nbsp;', @HTMLText)
+	    SET @End = @Start + 5
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace the HTML entity &quot; with the '"' character
+	SET @Start = CHARINDEX('&quot;', @HTMLText)
+	SET @End = @Start + 5
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, '"')
+	    SET @Start = CHARINDEX('&quot;', @HTMLText)
+	    SET @End = @Start + 5
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace any <br> tags with a newline
+	SET @Start = CHARINDEX('<br>', @HTMLText)
+	SET @End = @Start + 3
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, CHAR(13) + CHAR(10))
+	    --CHAR(13) + CHAR(10)
+	    SET @Start = CHARINDEX('<br>', @HTMLText)
+	    SET @End = @Start + 3
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace any <br/> tags with a newline
+	SET @Start = CHARINDEX('<br/>', @HTMLText)
+	SET @End = @Start + 4
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, CHAR(13) + CHAR(10))
+	    --CHAR(13) + CHAR(10)
+	    SET @Start = CHARINDEX('<br/>', @HTMLText)
+	    SET @End = @Start + 4
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Replace any <br /> tags with a newline
+	SET @Start = CHARINDEX('<br />', @HTMLText)
+	SET @End = @Start + 5
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, CHAR(13) + CHAR(10))
+	    --CHAR(13) + CHAR(10)
+	    SET @Start = CHARINDEX('<br />', @HTMLText)
+	    SET @End = @Start + 5
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	-- Remove anything between <whatever> tags
+	SET @Start = CHARINDEX('<', @HTMLText)
+	SET @End = CHARINDEX('>', @HTMLText, CHARINDEX('<', @HTMLText))
+	SET @Length = (@End - @Start) + 1
+	
+	WHILE (@Start > 0 AND @End > 0 AND @Length > 0)
+	BEGIN
+	    SET @HTMLText = STUFF(@HTMLText, @Start, @Length, '')
+	    SET @Start = CHARINDEX('<', @HTMLText)
+	    SET @End = CHARINDEX('>', @HTMLText, CHARINDEX('<', @HTMLText))
+	    SET @Length = (@End - @Start) + 1
+	END
+	
+	RETURN LTRIM(RTRIM(@HTMLText))
+END
+GO
+
 
 /*******************************************
  * Превью материалов
@@ -276,6 +471,7 @@ GO
 
 
 
+
 /*******************************************
  * добавить комментарии материала
  *******************************************/
@@ -416,7 +612,6 @@ BEGIN
 END
 GO
 
-   
 /*******************************************
 * получить страницу афоризма
 *******************************************/
@@ -1103,11 +1298,49 @@ CREATE PROCEDURE dbo.get_site_test_matrix
 	@testId INT
 AS
 BEGIN
-	SELECT *
-	FROM   D_SITE_TEST_QUESTION    AS dstq
-	       JOIN D_SITE_TEST_BLOCK  AS dstb
-	            ON  dstb.Id = dstq.BlockId
-	            AND dstb.TestId = @testId
+	DECLARE @x         NVARCHAR(MAX) = '',
+	        @title     NVARCHAR(400)
+	
+	DECLARE c CURSOR  
+	FOR
+	    SELECT dsts.Title
+	    FROM   D_SITE_TEST_SUBJECT AS dsts
+	    WHERE  dsts.TestId = @testId
+	    GROUP BY
+	           dsts.Title
+	
+	OPEN c
+	FETCH NEXT FROM c INTO @title
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+	    SET @x = @x + ',[' + @title + ']'
+	    FETCH NEXT FROM c INTO @title
+	END
+	CLOSE c
+	DEALLOCATE c
+	
+	SET @x = RIGHT(@x, LEN(@x) -1)
+	
+	EXEC (
+	         'SELECT *
+FROM   (
+           SELECT dsts.Title,
+                  dstq.[Text],
+                  dsta.IsCorrect
+           FROM   D_SITE_TEST_SUBJECT AS dsts
+                  JOIN D_SITE_TEST_QUESTION AS dstq
+                       ON  dstq.TestId = ' + @testId +
+	         '
+                  LEFT JOIN D_SITE_TEST_ANSWER AS dsta
+                       ON  dsta.SubjectId = dsts.Id
+                       AND dsta.QuestionId = dstq.Id
+           WHERE  dsts.TestId = ' + @testId +
+	         '
+       ) t
+       PIVOT(
+           SUM(IsCorrect) FOR t.Title IN (' + @x + ')
+       ) p'
+	     )
 END
 GO
 
@@ -1323,8 +1556,344 @@ CREATE PROCEDURE dbo.get_users_by_emails
 AS
 BEGIN
 	EXEC (
-	         'SELECT*FROM AspNetUsers AS anu WHERE anu.Email IN (' + @emails + 
+	         'SELECT*FROM AspNetUsers AS anu WHERE anu.Email IN (' + @emails +
 	         ')'
 	     )
 END
+GO
+
+/*******************************************
+ * get picture
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_picture', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_picture;
+GO
+CREATE PROCEDURE dbo.get_picture
+	@pictureId UNIQUEIDENTIFIER
+AS
+BEGIN
+	SELECT TOP(1) *
+	FROM   D_PICTURE dp
+	WHERE  dp.ID = @pictureId
+END
+GO
+
+/*******************************************
+ * delete picture
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_picture', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_picture;
+GO
+CREATE PROCEDURE dbo.del_picture
+	@pictureId UNIQUEIDENTIFIER
+AS
+	BEGIN TRANSACTION
+	
+	UPDATE DV_MATERIAL
+	SET    FrontPictureId = NULL
+	WHERE  FrontPictureId = @pictureId
+	
+	UPDATE AspNetUsers
+	SET    AvatarId = NULL
+	WHERE  AvatarId = @pictureId
+	
+	UPDATE D_MATERIAL_CATEGORY
+	SET    FrontPictureId = NULL
+	WHERE  FrontPictureId = @pictureId
+	
+	UPDATE D_AUTHOR_APHORISM
+	SET    PictureId = NULL
+	WHERE  PictureId = @pictureId
+	
+	UPDATE D_SITE_TEST_SUBJECT
+	SET    PictureId = NULL
+	WHERE  PictureId = @pictureId
+	
+	DELETE 
+	FROM   D_PICTURE
+	WHERE  Id = @pictureId
+	
+	COMMIT TRANSACTION
+GO
+
+/*******************************************
+ * add client request
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_request', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_request;
+GO
+CREATE PROCEDURE dbo.add_request
+	@id UNIQUEIDENTIFIER,
+	@browser VARCHAR(150),
+	@clientIP VARCHAR(150),
+	@rawUrl VARCHAR(255),
+	@requestType VARCHAR(20),
+	@urlRef VARCHAR(MAX),
+	@sessionId VARCHAR(128),
+	@userAgent VARCHAR(150)
+AS
+BEGIN
+	INSERT INTO D_REQUEST
+	  (
+	    Id,
+	    SessionId,
+	    UrlRef,
+	    Browser,
+	    ClientIP,
+	    UserAgent,
+	    RequestType,
+	    DateCreate,
+	    RawUrl
+	  )
+	VALUES
+	  (
+	    @id,
+	    @sessionId,
+	    @urlRef,
+	    @browser,
+	    @clientIP,
+	    @userAgent,
+	    @requestType,
+	    GETDATE(),
+	    @rawUrl
+	  )
+END
+GO
+
+/*******************************************
+ * add site test
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_site_test', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_site_test;
+GO
+CREATE PROCEDURE dbo.add_site_test
+	@title NVARCHAR(200),
+	@desc NVARCHAR(1000),
+	@titleUrl VARCHAR(255)
+AS
+BEGIN
+	IF NOT EXISTS (
+	       SELECT TOP(1) *
+	       FROM   D_SITE_TEST AS dst
+	       WHERE  dst.TitleUrl = @titleUrl
+	   )
+	BEGIN
+	    INSERT INTO D_SITE_TEST
+	      (
+	        Title,
+	        [Description],
+	        DateUpdate,
+	        DateCreate,
+	        TitleUrl
+	      )
+	    VALUES
+	      (
+	        @title,
+	        @desc,
+	        GETDATE(),
+	        GETDATE(),
+	        @titleUrl
+	      )
+	    
+	    DECLARE @id INT
+	    SET @id = @@identity
+	    SELECT TOP(1) *
+	    FROM   D_SITE_TEST AS dst
+	    WHERE  dst.Id = @id
+	END
+END
+GO	
+ 
+/*******************************************
+ * delete site test
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_site_test', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_site_test;
+GO
+CREATE PROCEDURE dbo.del_site_test
+	@testId INT
+AS
+	DELETE 
+	FROM   D_SITE_TEST
+	WHERE  Id = @testId
+GO
+
+/*******************************************
+ * add site test block
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_site_test_block', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_site_test_block;
+GO
+CREATE PROCEDURE dbo.add_site_test_block
+	@testId INT,
+	@title NVARCHAR(200),
+	@desc NVARCHAR(1000)
+AS
+BEGIN
+	IF NOT EXISTS (
+	       SELECT TOP(1) *
+	       FROM   D_SITE_TEST_BLOCK AS dstb
+	       WHERE  dstb.TestId = @testId
+	              AND dstb.Title = @title
+	   )
+	BEGIN
+	    INSERT INTO D_SITE_TEST_BLOCK
+	      (
+	        TestId,
+	        Title,
+	        [Description],
+	        DateUpdate,
+	        DateCreate
+	      )
+	    VALUES
+	      (
+	        @testId,
+	        @title,
+	        @desc,
+	        GETDATE(),
+	        GETDATE()
+	      )
+	    
+	    DECLARE @id INT
+	    SET @id = @@identity
+	    
+	    SELECT TOP(1) *
+	    FROM   D_SITE_TEST_BLOCK AS dstb
+	    WHERE  dstb.Id = @id
+	END
+END
+GO
+ 
+ /*******************************************
+ * delete site test block
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_site_test_block', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_site_test_block;
+GO
+CREATE PROCEDURE dbo.del_site_test_block
+	@blockId INT
+AS
+	DELETE 
+	FROM   D_SITE_TEST_BLOCK
+	WHERE  Id = @blockId
+GO
+
+ /*******************************************
+ * add site test question
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_site_test_question', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_site_test_question;
+GO
+CREATE PROCEDURE dbo.add_site_test_question
+	@testId INT,
+	@text NVARCHAR(400)
+AS
+BEGIN
+	IF NOT EXISTS (
+	       SELECT TOP(1) *
+	       FROM   D_SITE_TEST_QUESTION AS dstq
+	       WHERE  dstq.TestId = @testId
+	              AND dstq.[Text] = @text
+	   )
+	BEGIN
+	    INSERT INTO D_SITE_TEST_QUESTION
+	      (
+	        TestId,
+	        [Text],
+	        DateUpdate,
+	        DateCreate
+	      )
+	    VALUES
+	      (
+	        @testId,
+	        @text,
+	        GETDATE(),
+	        GETDATE()
+	      )
+	    
+	    DECLARE @id INT
+	    SET @id = @@identity
+	    
+	    SELECT TOP(1) *
+	    FROM   D_SITE_TEST_QUESTION AS dstq
+	    WHERE  dstq.Id = @id
+	END
+END
+GO
+
+ /*******************************************
+ * add site test subject
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_site_test_subject', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_site_test_subject;
+GO
+CREATE PROCEDURE dbo.add_site_test_subject
+	@testId INT,
+	@title NVARCHAR(200),
+	@desc NVARCHAR(MAX),
+	@pictureId UNIQUEIDENTIFIER
+AS
+BEGIN
+	IF NOT EXISTS (
+	       SELECT TOP(1) *
+	       FROM   D_SITE_TEST_SUBJECT AS dsts
+	       WHERE  dsts.TestId = @testId
+	              AND dsts.Title = @title
+	   )
+	BEGIN
+	    INSERT INTO D_SITE_TEST_SUBJECT
+	      (
+	        Title,
+	        [Description],
+	        TestId,
+	        DateUpdate,
+	        DateCreate,
+	        PictureId
+	      )
+	    VALUES
+	      (
+	        @title,
+	        @desc,
+	        @testId,
+	        GETDATE(),
+	        GETDATE(),
+	        @pictureId
+	      )
+	    
+	    DECLARE @id INT
+	    SET @id = @@identity
+	    
+	    SELECT TOP(1) *
+	    FROM   D_SITE_TEST_SUBJECT AS dsts
+	    WHERE  dsts.Id = @id
+	END
+END
+GO
+
+ /*******************************************
+ * delete site test question
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_site_test_question', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_site_test_question;
+GO
+CREATE PROCEDURE dbo.del_site_test_question
+	@questionId INT
+AS
+	DELETE 
+	FROM   D_SITE_TEST_QUESTION
+	WHERE  Id = @questionId
+GO
+
+ /*******************************************
+ * delete site test subject
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_site_test_subject', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_site_test_subject;
+GO
+CREATE PROCEDURE dbo.del_site_test_subject
+	@subjectId INT
+AS
+	DELETE 
+	FROM   D_SITE_TEST_SUBJECT
+	WHERE  Id = @subjectId
 GO

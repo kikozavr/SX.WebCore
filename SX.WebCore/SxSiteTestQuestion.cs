@@ -7,12 +7,10 @@ namespace SX.WebCore
     [Table("D_SITE_TEST_QUESTION")]
     public class SxSiteTestQuestion : SxDbUpdatedModel<int>
     {
-        public virtual SxSiteTestBlock Block { get; set; }
-        public int BlockId { get; set; }
-
-        [Required, MaxLength(400)]
+        [Required, MaxLength(400), Index]
         public string Text { get; set; }
 
-        public bool IsCorrect { get; set; }
+        public virtual SxSiteTest Test { get; set; }
+        public int TestId { get; set; }
     }
 }

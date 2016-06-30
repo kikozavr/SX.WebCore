@@ -11,15 +11,7 @@ namespace SX.WebCore.ViewModels
         [Required, Display(Name = "Тест"), UIHint("SiteTestsLookupGrid")]
         public int TestId { get; set; }
 
-        public SxVMSiteTestBlock Block { get; set; }
-
-        [Required, Display(Name = "Блок"), UIHint("SiteTestBlocksLookupGrid")]
-        public int BlockId { get; set; }
-
-        [Required, MaxLength(400), DataType(DataType.MultilineText), Display(Name = "Вопрос")]
+        [Required, MaxLength(400), Display(Name = "Вопрос")]
         public string Text { get; set; }
-
-        [Required, Display(Name = "Пометить правильным")]
-        public bool IsCorrect { get; set; }
     }
 }

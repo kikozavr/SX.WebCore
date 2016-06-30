@@ -125,52 +125,8 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual PartialViewResult TestMatrix(int testId)
         {
-            var data = _repo.GetMatrix(testId).Select(x => Mapper.Map<SxSiteTestQuestion, SxVMSiteTestQuestion>(x)).ToArray();
+            var data = _repo.GetMatrix(testId);
             return PartialView("_Matrix", data);
-        }
-
-        [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult LoadTestFromFile(HttpPostedFileBase file)
-        {
-            var blocksRepo = new SxRepoSiteTestBlock<TDbContext>();
-            var questionRepo = new SxRepoSiteTestQuestion<TDbContext>();
-            var data = _repo.LoadFromFile(file);
-            data.TestType = SxSiteTest.SiteTestType.GuessYesNo;
-
-            SxSiteTest test = null;
-            SxSiteTestBlock block = null;
-            SxSiteTestQuestion question = null;
-
-            test = _repo.All.SingleOrDefault(x => x.Title == data.Title);
-            if (test != null)
-                _repo.Delete(test.Id);
-            var testId = createTest(data, _repo, blocksRepo, questionRepo, ref test, ref block, ref question);
-
-            return RedirectToAction("edit", new { controller="sitetests", id= testId });
-        }
-        private static int createTest(SxSiteTest data, SxRepoSiteTest<TDbContext> testRepo, SxRepoSiteTestBlock<TDbContext> blocksRepo, SxRepoSiteTestQuestion<TDbContext> questionRepo, ref SxSiteTest test, ref SxSiteTestBlock block, ref SxSiteTestQuestion question)
-        {
-            test = new SxSiteTest { Title = data.Title, Description = data.Description, TestType = data.TestType };
-            test = testRepo.Create(test);
-
-            if (test != null)
-            {
-                foreach (var b in data.Blocks)
-                {
-                    block = new SxSiteTestBlock { TestId = test.Id, Title = b.Title, Description = b.Description };
-                    block = blocksRepo.Create(block);
-                    if (block != null)
-                    {
-                        foreach (var q in b.Questions)
-                        {
-                            question = new SxSiteTestQuestion { BlockId = block.Id, Text = q.Text, IsCorrect = q.IsCorrect };
-                            question = questionRepo.Create(question);
-                        }
-                    }
-                }
-            }
-
-            return test.Id;
         }
     }
 }

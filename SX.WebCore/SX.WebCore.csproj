@@ -187,8 +187,8 @@
     <Compile Include="MvcControllers\SxSeoTagsController.cs" />
     <Compile Include="MvcControllers\SxSeoWordCounterController.cs" />
     <Compile Include="MvcControllers\SxSiteSettingsController.cs" />
-    <Compile Include="MvcControllers\SxSiteTestBlocksController.cs" />
     <Compile Include="MvcControllers\SxSiteTestController.cs" />
+    <Compile Include="MvcControllers\SxSiteTestSubjectsController.cs" />
     <Compile Include="MvcControllers\SxSiteTestQuestionsController.cs" />
     <Compile Include="MvcControllers\SxStatisticsController.cs" />
     <Compile Include="MvcControllers\SxUserRolesController.cs" />
@@ -198,6 +198,7 @@
     <Compile Include="Repositories\SxRepoAppUser.cs" />
     <Compile Include="Repositories\SxRepoMaterialTag.cs" />
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
+    <Compile Include="Repositories\SxRepoSiteTestSubject.cs" />
     <Compile Include="SxFilter.cs" />
     <Compile Include="Abstract\SxMaterial.cs" />
     <Compile Include="Abstract\SxPerson.cs" />
@@ -240,7 +241,6 @@
     <Compile Include="Repositories\SxRepoSeoTags.cs" />
     <Compile Include="Repositories\SxRepoSiteSetting.cs" />
     <Compile Include="Repositories\SxRepoSiteTestQuestion.cs" />
-    <Compile Include="Repositories\SxRepoSiteTestBlock.cs" />
     <Compile Include="Repositories\SxRepoSiteTest.cs" />
     <Compile Include="Repositories\SxRepoVideo.cs" />
     <Compile Include="Repositories\SxRepoBannerGroup.cs" />
@@ -277,7 +277,8 @@
     <Compile Include="SxEmployee.cs" />
     <Compile Include="SxOrder.cs" />
     <Compile Include="SxLike.cs" />
-    <Compile Include="SxSiteTestBlock.cs" />
+    <Compile Include="SxSiteTestAnswer.cs" />
+    <Compile Include="SxSiteTestSubject.cs" />
     <Compile Include="SxSiteTestQuestion.cs" />
     <Compile Include="SxSiteTestStep.cs" />
     <Compile Include="SxStatisticUserLogin.cs" />
@@ -315,9 +316,9 @@
     <Compile Include="ViewModels\SxVMEditSeoKeyword.cs" />
     <Compile Include="ViewModels\SxVMEditSeoTags.cs" />
     <Compile Include="ViewModels\SxVMEditSiteTest.cs" />
-    <Compile Include="ViewModels\SxVMEditSiteTestBlock.cs" />
     <Compile Include="ViewModels\SxVMEditSiteTestQuestion.cs" />
     <Compile Include="ViewModels\SxVMEditAppUser.cs" />
+    <Compile Include="ViewModels\SxVMEditSiteTestSubject.cs" />
     <Compile Include="ViewModels\SxVMEditVideo.cs" />
     <Compile Include="ViewModels\SxVMEmployee.cs" />
     <Compile Include="ViewModels\SxVMFAQ.cs" />
@@ -327,9 +328,9 @@
     <Compile Include="ViewModels\SxVMSeoTags.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />
     <Compile Include="ViewModels\SxVMSiteTest.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestBlock.cs" />
     <Compile Include="ViewModels\SxVMSiteTestQuestion.cs" />
     <Compile Include="ViewModels\SxVMSiteTestStep.cs" />
+    <Compile Include="ViewModels\SxVMSiteTestSubject.cs" />
     <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />
     <Compile Include="ViewModels\SxVMValute.cs" />
     <Compile Include="ViewModels\SxVMMaterialTag.cs" />
@@ -368,12 +369,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Sql\createArchitect.sql" />
-    <Content Include="Sql\requests.sql" />
-    <Content Include="Sql\pictures.sql" />
-    <Content Include="Sql\siteTests.sql" />
-    <Content Include="Sql\html.sql" />
-    <Content Include="Sql\sitePartners.sql" />
-    <Content Include="Sql\places.sql" />
     <Content Include="Sql\sql.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

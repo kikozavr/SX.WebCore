@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -13,7 +14,7 @@ namespace SX.WebCore.MvcControllers
         private static SxRepoSiteTest<TDbContext> _repo;
         public SxSiteTestController()
         {
-            if(_repo==null)
+            if (_repo == null)
                 _repo = new SxRepoSiteTest<TDbContext>();
         }
 
@@ -127,6 +128,16 @@ namespace SX.WebCore.MvcControllers
         {
             var data = _repo.GetMatrix(testId);
             return PartialView("_Matrix", data);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public virtual JsonResult RevertMatrixValue(string subjectTitle, string questionText, int value)
+        {
+            Task.Run(() =>
+            {
+                _repo.RevertMatrixValue(subjectTitle, questionText, value);
+            });
+            return Json(value == 0 ? 1 : 0);
         }
     }
 }

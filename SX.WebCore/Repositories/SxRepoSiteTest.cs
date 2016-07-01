@@ -109,6 +109,18 @@ namespace SX.WebCore.Repositories
             return result;
         }
 
+        public void RevertMatrixValue(string subjectTitle, string questionText, int value)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                conn.Execute("revert_site_test_matrix_value @subjectTitle, @questionText, @value", new {
+                    subjectTitle = subjectTitle,
+                    questionText = questionText,
+                    value = value == 0 ? 1 : 0
+                });
+            }
+        }
+
         //public SxSiteTest LoadFromFile(HttpPostedFileBase file)
         //{
         //    var test = new SxSiteTest();

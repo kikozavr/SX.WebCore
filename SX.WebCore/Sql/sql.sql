@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 30.06.2016 16:16:24
+ * Time: 30.06.2016 22:47:38
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,9 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
+
 
 
 /*******************************************
@@ -397,6 +400,9 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
+
 
 
 
@@ -1345,6 +1351,31 @@ END
 GO
 
 /*******************************************
+ * Ревет значения матрицы теста 
+ *******************************************/
+IF OBJECT_ID(N'dbo.revert_site_test_matrix_value', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.revert_site_test_matrix_value;
+GO
+CREATE PROCEDURE dbo.revert_site_test_matrix_value
+	@subjectTitle NVARCHAR(200),
+	@questionText NVARCHAR(400),
+	@value INT
+AS
+BEGIN
+	UPDATE D_SITE_TEST_ANSWER
+	SET    IsCorrect = @value
+	WHERE  Id IN (SELECT dsta.Id
+	              FROM   D_SITE_TEST_ANSWER AS dsta
+	                     JOIN D_SITE_TEST_QUESTION AS dstq
+	                          ON  dstq.Id = dsta.QuestionId
+	                          AND dstq.[Text] = @questionText
+	                     JOIN D_SITE_TEST_SUBJECT AS dsts
+	                          ON  dsts.Id = dsta.SubjectId
+	                          AND dsts.Title = @subjectTitle)
+END
+GO
+
+/*******************************************
  * Все редиректы сайта
  *******************************************/
 IF OBJECT_ID(N'dbo.get_redirect', N'P') IS NOT NULL
@@ -1814,6 +1845,15 @@ BEGIN
 	    DECLARE @id INT
 	    SET @id = @@identity
 	    
+	    INSERT INTO D_SITE_TEST_ANSWER
+	    SELECT @id,
+	           dsts.Id,
+	           GETDATE(),
+	           GETDATE(),
+	           0
+	    FROM   D_SITE_TEST_SUBJECT AS dsts
+	    WHERE  dsts.TestId = @testId
+	    
 	    SELECT TOP(1) *
 	    FROM   D_SITE_TEST_QUESTION AS dstq
 	    WHERE  dstq.Id = @id
@@ -1863,6 +1903,15 @@ BEGIN
 	    DECLARE @id INT
 	    SET @id = @@identity
 	    
+	    INSERT INTO D_SITE_TEST_ANSWER
+	    SELECT dstq.Id,
+	           @id,
+	           GETDATE(),
+	           GETDATE(),
+	           0
+	    FROM   D_SITE_TEST_QUESTION AS dstq
+	    WHERE  dstq.TestId = @testId
+	    
 	    SELECT TOP(1) *
 	    FROM   D_SITE_TEST_SUBJECT AS dsts
 	    WHERE  dsts.Id = @id
@@ -1879,9 +1928,17 @@ GO
 CREATE PROCEDURE dbo.del_site_test_question
 	@questionId INT
 AS
+	BEGIN TRANSACTION
+	
+	DELETE 
+	FROM   D_SITE_TEST_ANSWER
+	WHERE  QuestionId = @questionId
+	
 	DELETE 
 	FROM   D_SITE_TEST_QUESTION
 	WHERE  Id = @questionId
+	
+	COMMIT TRANSACTION
 GO
 
  /*******************************************
@@ -1893,7 +1950,15 @@ GO
 CREATE PROCEDURE dbo.del_site_test_subject
 	@subjectId INT
 AS
+	BEGIN TRANSACTION
+	
+	DELETE 
+	FROM   D_SITE_TEST_ANSWER
+	WHERE  SubjectId = @subjectId
+	
 	DELETE 
 	FROM   D_SITE_TEST_SUBJECT
 	WHERE  Id = @subjectId
+	
+	COMMIT TRANSACTION
 GO

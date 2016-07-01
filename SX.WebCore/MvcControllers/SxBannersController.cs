@@ -153,11 +153,12 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public async virtual Task AddShow(Guid bannerId)
+        public async virtual Task<JsonResult> AddShow(Guid bannerId)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 _repo.AddShows(new Guid[] { bannerId });
+                return Json(null);
             });
         }
     }

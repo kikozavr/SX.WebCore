@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -11,7 +13,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoSiteTest<TDbContext> : SxDbRepository<int, SxSiteTest, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxVMSiteTest[] Query<SxVMSiteTest>(SxFilter filter)
+        public override SxSiteTest[] Query(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString();
             query += " FROM D_SITE_TEST AS dst ";
@@ -26,7 +28,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxVMSiteTest>(query, param: param);
+                var data = conn.Query<SxSiteTest>(query, param: param);
                 return data.ToArray();
             }
         }
@@ -51,6 +53,7 @@ namespace SX.WebCore.Repositories
             string query = null;
             query += " WHERE (dst.Title LIKE '%'+@title+'%' OR @title IS NULL) ";
             query += " AND (dst.Description LIKE '%'+@desc+'%' OR @desc IS NULL) ";
+            query += " AND (dst.Show=@show OR @show IS NULL) ";
 
             var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Title != null ? (string)filter.WhereExpressionObject.Title : null;
             var desc = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Description != null ? (string)filter.WhereExpressionObject.Description : null;
@@ -58,7 +61,8 @@ namespace SX.WebCore.Repositories
             param = new
             {
                 title = title,
-                desc = desc
+                desc = desc,
+                show= filter.OnlyShow
             };
 
             return query;
@@ -80,6 +84,7 @@ namespace SX.WebCore.Repositories
             {
                 var data = conn.Query<SxSiteTestQuestion, SxSiteTest, SxSiteTestQuestion>("get_site_test_page @titleUrl", (q, t) =>
                 {
+                    q.Test = t;
                     return q;
                 }, new { titleUrl = titleUrl }, splitOn: "Id").SingleOrDefault();
 
@@ -95,15 +100,23 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public DataTable GetMatrix(int testId)
+        public DataTable GetMatrix(int testId, out int count, int page=1, int pageSize=10)
         {
             var result=new DataTable();
             using (var conn = new SqlConnection(ConnectionString))
             {
-                using (SqlDataAdapter adp = new SqlDataAdapter("get_site_test_matrix @testId", conn))
+                using (SqlDataAdapter adp = new SqlDataAdapter("get_site_test_matrix @testId, @page, @pageSize, @count OUTPUT", conn))
                 {
                     adp.SelectCommand.Parameters.AddWithValue("testId", testId);
+                    adp.SelectCommand.Parameters.AddWithValue("page", page);
+                    adp.SelectCommand.Parameters.AddWithValue("pageSize", pageSize);
+
+                    var par = new SqlParameter { ParameterName= "count", DbType=DbType.Int32, Direction=ParameterDirection.Output };
+                    adp.SelectCommand.Parameters.Add(par);
+
                     adp.Fill(result);
+
+                    count = Convert.ToInt32(par.Value);
                 }
             }
             return result;
@@ -121,78 +134,6 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        //public SxSiteTest LoadFromFile(HttpPostedFileBase file)
-        //{
-        //    var test = new SxSiteTest();
-        //    var testBlocks = new List<SxSiteTestBlock>();
-        //    var blockQuestions = new SxSiteTestQuestion[0];
-
-        //    using (ExcelPackage pck = new ExcelPackage(file.InputStream))
-        //    {
-        //        var ws = pck.Workbook.Worksheets["test"];
-
-        //        var range = ws.Cells["A1"];
-        //        test.Title = range.Value.ToString();
-
-        //        range = ws.Cells["A2"];
-        //        test.Description = range.Value.ToString();
-
-        //        //100 вопросов
-        //        range = ws.Cells["C6:CX6"];
-        //        var qList = new List<SxSiteTestQuestion>();
-        //        foreach (var cell in range)
-        //        {
-        //            if (cell.Value != null)
-        //                qList.Add(new SxSiteTestQuestion
-        //                {
-        //                    Text = cell.Value.ToString()
-        //                });
-        //            else
-        //                break;
-        //        }
-        //        blockQuestions = qList.ToArray();
-
-        //        range = ws.Cells["A7"];
-        //        fillBlocksFromRows(testBlocks, blockQuestions, ws, range);
-        //        test.Blocks = testBlocks;
-
-        //        return test;
-        //    }
-
-        //}
-        //private static void fillBlocksFromRows(List<SxSiteTestBlock> testBlocks, SxSiteTestQuestion[] blockQuestions, ExcelWorksheet ws, ExcelRange range)
-        //{
-        //    var block = new SxSiteTestBlock();
-        //    block.Title = range.Value.ToString();
-
-        //    var startRow = range.Start.Row;
-
-        //    range = ws.Cells["B" + startRow];
-        //    if (range.Value != null)
-        //        block.Description = range.Value.ToString();
-
-        //    var cells = ws.Cells["C" + startRow + ":CX" + startRow].ToArray();
-        //    SxSiteTestQuestion q;
-        //    object value = null;
-        //    var questions = new List<SxSiteTestQuestion>();
-        //    for (int i = 0; i < blockQuestions.Length; i++)
-        //    {
-        //        q = blockQuestions[i];
-        //        value = cells[i].Value;
-        //        questions.Add(new SxSiteTestQuestion
-        //        {
-        //            Text = q.Text,
-        //            IsCorrect = value != null ? Convert.ToBoolean(value) : false
-        //        });
-        //    }
-        //    block.Questions = questions;
-        //    testBlocks.Add(block);
-
-        //    range = ws.Cells["A" + (startRow + 1)];
-        //    if (range.Value != null)
-        //        fillBlocksFromRows(testBlocks, blockQuestions, ws, range);
-        //}
-
         public override SxSiteTest Create(SxSiteTest model)
         {
             using (var conn = new SqlConnection(ConnectionString))
@@ -208,31 +149,28 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public SxSiteTestQuestion GetGuessYesNoStep(string ttu, List<SxSiteTestStep> pastQ, out int blocksCount)
+        public SxSiteTestQuestion GetNextStep(int testId, List<SxVMSiteTestStep> steps)
         {
             var table = new DataTable();
-            table.Columns.Add(new DataColumn { Caption = "QuestionText" });
-            table.Columns.Add(new DataColumn { Caption = "IsCorrect" });
-            table.Columns.Add(new DataColumn { Caption = "Order" });
-            foreach (var item in pastQ)
-            {
-                //table.Rows.Add(item.Question.Text, item.Question.IsCorrect, item.Order);
-            }
+            table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
+            table.Columns.Add(new DataColumn { ColumnName = "IsCorrect" });
+            steps.ForEach(x=> {
+                table.Rows.Add(x.QuestionId, x.IsCorrect);
+            });
+
+            var p = new DynamicParameters();
+            p.Add("testId", testId);
+            p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStep"));
+            p.Add("count", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var p = new DynamicParameters();
-                p.Add("ttu", ttu);
-                p.Add("pastQ", table.AsTableValuedParameter("dbo.SiteTestStep"));
-                p.Add("blocksCount", dbType: DbType.Int32, direction: ParameterDirection.Output );
-
-                var data = conn.Query<SxSiteTestQuestion, SxSiteTest, SxSiteTestQuestion>("get_guess_yes_no_step", (q, t) =>
-                {
+                var data = conn.Query<SxSiteTestQuestion, SxSiteTest, SxSiteTestQuestion>("get_site_test_next_step", (q,t)=> {
+                    q.Test = t;
                     return q;
-                }, p, splitOn: "Id", commandType: CommandType.StoredProcedure).SingleOrDefault();
+                }, p, commandType: CommandType.StoredProcedure).SingleOrDefault();
 
-                blocksCount = p.Get<int>("blocksCount");
-
+                var count = p.Get<int>("count");
                 return data;
             }
         }

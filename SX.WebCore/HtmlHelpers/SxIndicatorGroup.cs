@@ -8,10 +8,8 @@ namespace SX.WebCore.HtmlHelpers
     {
         public sealed class SxIndicatorGroupSettings<TModel>
         {
-            /// <summary>
-            /// Название итема
-            /// </summary>
             public Func<TModel, string> FuncGetLabel { get; set; }
+            public Func<TModel, string> FuncGetId { get; set; }
         }
 
         public static MvcHtmlString SxIndicatorGroup<TModel>(this HtmlHelper htmlHelper, TModel[] collection, SxIndicatorGroupSettings<TModel> settings)
@@ -40,6 +38,7 @@ namespace SX.WebCore.HtmlHelpers
                 span = new TagBuilder("span");
                 span.AddCssClass("sx-indicator-txt");
                 span.InnerHtml += settings.FuncGetLabel(item);
+                span.MergeAttribute("data-id", settings.FuncGetId(item));
                 li.InnerHtml += span;
 
                 ul.InnerHtml += li;

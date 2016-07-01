@@ -23,6 +23,6 @@ namespace SX.WebCore
         public dynamic WhereExpressionObject { get; set; }
         public object[] AddintionalInfo { get; set; }
         public SxOrder Order { get; set; }
-        public bool OnlyShow { get; set; }
+        public bool? OnlyShow { get; set; }
     }
 }

@@ -187,7 +187,7 @@
     <Compile Include="MvcControllers\SxSeoTagsController.cs" />
     <Compile Include="MvcControllers\SxSeoWordCounterController.cs" />
     <Compile Include="MvcControllers\SxSiteSettingsController.cs" />
-    <Compile Include="MvcControllers\SxSiteTestController.cs" />
+    <Compile Include="MvcControllers\SxSiteTestsController.cs" />
     <Compile Include="MvcControllers\SxSiteTestSubjectsController.cs" />
     <Compile Include="MvcControllers\SxSiteTestQuestionsController.cs" />
     <Compile Include="MvcControllers\SxStatisticsController.cs" />
@@ -329,7 +329,6 @@
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />
     <Compile Include="ViewModels\SxVMSiteTest.cs" />
     <Compile Include="ViewModels\SxVMSiteTestQuestion.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestStep.cs" />
     <Compile Include="ViewModels\SxVMSiteTestSubject.cs" />
     <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />
     <Compile Include="ViewModels\SxVMValute.cs" />
@@ -349,6 +348,7 @@
     <Compile Include="ViewModels\SxVMAppUser.cs" />
     <Compile Include="ViewModels\SxVMEditEmployee.cs" />
     <Compile Include="ViewModels\SxVMVideo.cs" />
+    <Compile Include="ViewModels\SxVMSiteTestStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

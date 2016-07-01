@@ -2,7 +2,7 @@
 {
     public sealed class SxVMSiteTestStep
     {
-        public SxVMSiteTestQuestion Question { get; set; }
-        public int Order { get; set; }
+        public int QuestionId { get; set; }
+        public bool IsCorrect { get; set; }
     }
 }

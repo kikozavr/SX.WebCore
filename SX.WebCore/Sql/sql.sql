@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 30.06.2016 22:47:38
+ * Time: 01.07.2016 15:59:46
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,8 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
 
 
 
@@ -400,6 +402,8 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
 
 
 
@@ -1274,34 +1278,16 @@ END
 GO
 
 /*******************************************
- * Страницы прохождения теста
- *******************************************/
-IF OBJECT_ID(N'dbo.get_site_test_page', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.get_site_test_page;
-GO
-CREATE PROCEDURE dbo.get_site_test_page
-	@titleUrl VARCHAR(255)
-AS
-BEGIN
-	SELECT TOP(1) *
-	FROM   D_SITE_TEST_QUESTION    AS dstq
-	       JOIN D_SITE_TEST_BLOCK  AS dstb
-	            ON  dstb.Id = dstq.BlockId
-	       JOIN D_SITE_TEST        AS dst
-	            ON  dst.Id = dstb.TestId
-	            AND dst.TitleUrl = @titleUrl
-	            AND dst.Show = 1
-END
-GO
-
-/*******************************************
- * Матрица ответов для тестов типа GuessYesNo 
+ * Матрица ответов для тестов
  *******************************************/
 IF OBJECT_ID(N'dbo.get_site_test_matrix', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_site_test_matrix;
 GO
 CREATE PROCEDURE dbo.get_site_test_matrix
-	@testId INT
+	@testId INT,
+	@page INT = 1,
+	@pageSize INT = 10,
+	@count INT OUTPUT
 AS
 BEGIN
 	DECLARE @x         NVARCHAR(MAX) = '',
@@ -1344,9 +1330,18 @@ FROM   (
 	         '
        ) t
        PIVOT(
-           SUM(IsCorrect) FOR t.Title IN (' + @x + ')
-       ) p'
+           SUM(IsCorrect) FOR t.Title IN (' + @x +
+	         ')
+       ) p ORDER BY p.[Text] OFFSET ' + @page + ' ROWS FETCH NEXT ' + @pageSize 
+	         +
+	         ' ROWS ONLY'
 	     )
+	
+	SELECT @count = COUNT(1)
+	FROM   D_SITE_TEST_QUESTION AS dstq
+	WHERE  dstq.TestId = @testId
+	
+	RETURN
 END
 GO
 
@@ -1472,107 +1467,6 @@ BEGIN
 	SELECT *
 	FROM   D_SEO_KEYWORD AS dsk
 	WHERE  dsk.SeoTagsId = @seoTagsId
-END
-GO
-
-/*******************************************
- * site test step type
- *******************************************/
-IF OBJECT_ID(N'dbo.get_guess_yes_no_step', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.get_guess_yes_no_step;
-GO
-IF TYPE_ID(N'SiteTestStep') IS NOT NULL
-    DROP TYPE SiteTestStep
- 
- CREATE TYPE dbo.SiteTestStep AS TABLE 
-(QuestionText NVARCHAR(200), IsCorrect BIT, [Order] INT)
- GO
-
-/*******************************************
- * get_guess_yes_no_step
- *******************************************/
-CREATE PROCEDURE dbo.get_guess_yes_no_step
-	@ttu VARCHAR(255),
-	@pastQ SiteTestStep READONLY,
-	@blocksCount INT OUTPUT
-AS
-BEGIN
-	DECLARE @temp TABLE (BlockId INT)
-	DECLARE @blocks TABLE (BlockId INT)
-	DECLARE @count INT = 0
-	DECLARE @text          NVARCHAR(200),
-	        @isCorrect     BIT
-	
-	DECLARE c CURSOR  
-	FOR
-	    SELECT p.QuestionText,
-	           p.IsCorrect
-	    FROM   @pastQ AS p
-	    ORDER BY
-	           p.[Order]
-	
-	OPEN c 
-	FETCH NEXT FROM c INTO @text, @isCorrect
-	WHILE @@FETCH_STATUS = 0
-	BEGIN
-	    SET @count = @count + 1
-	    DELETE 
-	    FROM   @blocks
-	    
-	    INSERT INTO @blocks
-	    SELECT dstb.Id
-	    FROM   D_SITE_TEST_QUESTION    AS dstq
-	           JOIN D_SITE_TEST_BLOCK  AS dstb
-	                ON  dstb.Id = dstq.BlockId
-	           JOIN D_SITE_TEST        AS dst
-	                ON  dst.Id = dstb.TestId
-	                AND dst.Show = 1
-	                AND dst.TitleUrl = @ttu
-	    WHERE  dstq.[Text] = @text
-	           AND dstq.IsCorrect = @isCorrect
-	    
-	    IF (@count = 1)
-	    BEGIN
-	        INSERT INTO @temp
-	        SELECT b.BlockId
-	        FROM   @blocks AS b
-	    END
-	    ELSE
-	    BEGIN
-	        IF (@isCorrect = 1)
-	        BEGIN
-	            IF EXISTS (
-	                   SELECT *
-	                   FROM   @temp AS t
-	                   WHERE  t.BlockId IN (SELECT b.BlockId
-	                                        FROM   @blocks AS b)
-	               )
-	            BEGIN
-	                DELETE 
-	                FROM   @temp
-	                WHERE  BlockId NOT IN (SELECT b.BlockId
-	                                       FROM   @blocks AS b)
-	            END
-	        END
-	    END
-	    FETCH NEXT FROM c INTO @text, @isCorrect
-	END
-	CLOSE c
-	DEALLOCATE c
-	
-	SELECT @blocksCount = COUNT(1)
-	FROM   @temp AS t
-	
-	SELECT TOP(1) *
-	FROM   D_SITE_TEST_QUESTION    AS dstq
-	       JOIN D_SITE_TEST_BLOCK  AS dstb
-	            ON  dstb.Id = dstq.BlockId
-	       JOIN D_SITE_TEST        AS dst
-	            ON  dst.Id = dstb.TestId
-	            AND dst.Show = 1
-	            AND dst.TitleUrl = @ttu
-	WHERE  dstq.[Text] NOT IN (SELECT p.QuestionText
-	                           FROM   @pastQ AS p)
 END
 GO
 
@@ -1744,9 +1638,19 @@ GO
 CREATE PROCEDURE dbo.del_site_test
 	@testId INT
 AS
+	BEGIN TRANSACTION
+	
+	DELETE 
+	FROM   D_SITE_TEST_ANSWER
+	WHERE  SubjectId IN (SELECT dsts.Id
+	                     FROM   D_SITE_TEST_SUBJECT AS dsts
+	                     WHERE  dsts.TestId = @testId)
+	
 	DELETE 
 	FROM   D_SITE_TEST
 	WHERE  Id = @testId
+	
+	COMMIT TRANSACTION
 GO
 
 /*******************************************
@@ -1961,4 +1865,63 @@ AS
 	WHERE  Id = @subjectId
 	
 	COMMIT TRANSACTION
+GO
+
+/*******************************************
+ * Страницы прохождения теста
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_test_page', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_test_page;
+GO
+CREATE PROCEDURE dbo.get_site_test_page
+	@titleUrl VARCHAR(255)
+AS
+BEGIN
+	SELECT TOP(1) *
+	FROM   D_SITE_TEST_QUESTION  AS dstq
+	       JOIN D_SITE_TEST      AS dst
+	            ON  dst.Id = dstq.TestId
+	            AND dst.Show = 1
+	            AND dst.TitleUrl = @titleUrl
+END
+GO
+
+/*******************************************
+ * Тип для предыдущих ответов теста
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_test_next_step', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_test_next_step;
+GO
+
+IF TYPE_ID(N'dbo.OldSiteTestStep') IS NOT NULL
+    DROP TYPE dbo.OldSiteTestStep
+GO
+
+CREATE TYPE dbo.OldSiteTestStep AS TABLE 
+(QuestionId INT, IsCorrect BIT);  
+GO  
+
+/*******************************************
+ * Следующий вопрос теста
+ *******************************************/
+CREATE PROCEDURE dbo.get_site_test_next_step
+	@testId INT,
+	@oldSteps dbo.OldSiteTestStep READONLY,
+	@count INT OUTPUT
+AS
+BEGIN
+	SELECT @count = COUNT(1)
+	FROM   D_SITE_TEST_QUESTION AS dstq
+	WHERE  dstq.TestId = @testId
+	       AND dstq.Id NOT IN (SELECT os.QuestionId
+	                           FROM   @oldSteps AS os)
+	
+	SELECT TOP(1) *
+	FROM   D_SITE_TEST_QUESTION  AS dstq
+	       JOIN D_SITE_TEST      AS dst
+	            ON  dst.Id = dstq.TestId
+	            AND dst.Id = @testId
+	WHERE  dstq.Id NOT IN (SELECT os.QuestionId
+	                       FROM   @oldSteps AS os)
+END
 GO

@@ -78,14 +78,16 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public SxSiteTestQuestion GetSiteTestPage(string titleUrl)
+        public SxSiteTestAnswer GetSiteTestPage(string titleUrl)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestQuestion, SxSiteTest, SxSiteTestQuestion>("get_site_test_page @titleUrl", (q, t) =>
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_page @titleUrl", (a, q, s, t) =>
                 {
+                    a.Question = q;
                     q.Test = t;
-                    return q;
+                    a.Subject = s;
+                    return a;
                 }, new { titleUrl = titleUrl }, splitOn: "Id").SingleOrDefault();
 
                 return data;
@@ -149,28 +151,31 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public SxSiteTestQuestion GetNextStep(int testId, List<SxVMSiteTestStep> steps)
+        public SxSiteTestAnswer GetStep(List<SxVMSiteTestStep> steps, out int subjectsCount)
         {
             var table = new DataTable();
             table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
             table.Columns.Add(new DataColumn { ColumnName = "IsCorrect" });
+            table.Columns.Add(new DataColumn { ColumnName = "Order" });
             steps.ForEach(x=> {
-                table.Rows.Add(x.QuestionId, x.IsCorrect);
+                table.Rows.Add(x.QuestionId, x.IsCorrect, x.Order);
             });
 
             var p = new DynamicParameters();
-            p.Add("testId", testId);
             p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStep"));
-            p.Add("count", dbType: DbType.Int32, direction: ParameterDirection.Output);
+            p.Add("subjectsCount", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestQuestion, SxSiteTest, SxSiteTestQuestion>("get_site_test_next_step", (q,t)=> {
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_next_step", (a,q,s,t)=> {
+                    a.Question = q;
                     q.Test = t;
-                    return q;
+                    a.Subject = s;
+                    return a;
                 }, p, commandType: CommandType.StoredProcedure).SingleOrDefault();
 
-                var count = p.Get<int>("count");
+                subjectsCount = p.Get<int>("subjectsCount");
+
                 return data;
             }
         }

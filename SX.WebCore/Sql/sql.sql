@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 01.07.2016 15:59:46
+ * Time: 05.07.2016 14:32:33
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,19 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -402,6 +415,19 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1878,11 +1904,15 @@ CREATE PROCEDURE dbo.get_site_test_page
 AS
 BEGIN
 	SELECT TOP(1) *
-	FROM   D_SITE_TEST_QUESTION  AS dstq
-	       JOIN D_SITE_TEST      AS dst
+	FROM   D_SITE_TEST_ANSWER         AS dsta
+	       JOIN D_SITE_TEST_QUESTION  AS dstq
+	            ON  dstq.Id = dsta.QuestionId
+	       JOIN D_SITE_TEST_SUBJECT   AS dsts
+	            ON  dsts.Id = dsta.SubjectId
+	       JOIN D_SITE_TEST           AS dst
 	            ON  dst.Id = dstq.TestId
-	            AND dst.Show = 1
 	            AND dst.TitleUrl = @titleUrl
+	            AND dst.Show = 1
 END
 GO
 
@@ -1898,30 +1928,96 @@ IF TYPE_ID(N'dbo.OldSiteTestStep') IS NOT NULL
 GO
 
 CREATE TYPE dbo.OldSiteTestStep AS TABLE 
-(QuestionId INT, IsCorrect BIT);  
+(QuestionId INT, IsCorrect BIT, [Order] INT);  
 GO  
 
 /*******************************************
  * Следующий вопрос теста
  *******************************************/
 CREATE PROCEDURE dbo.get_site_test_next_step
-	@testId INT,
 	@oldSteps dbo.OldSiteTestStep READONLY,
-	@count INT OUTPUT
+	@subjectsCount INT OUTPUT
 AS
 BEGIN
-	SELECT @count = COUNT(1)
-	FROM   D_SITE_TEST_QUESTION AS dstq
-	WHERE  dstq.TestId = @testId
-	       AND dstq.Id NOT IN (SELECT os.QuestionId
-	                           FROM   @oldSteps AS os)
+	DECLARE @subjects TABLE (SubjectId INT)
+	DECLARE @questions TABLE (QuestionId INT)
 	
-	SELECT TOP(1) *
-	FROM   D_SITE_TEST_QUESTION  AS dstq
-	       JOIN D_SITE_TEST      AS dst
-	            ON  dst.Id = dstq.TestId
-	            AND dst.Id = @testId
-	WHERE  dstq.Id NOT IN (SELECT os.QuestionId
-	                       FROM   @oldSteps AS os)
+	BEGIN
+		DECLARE @questionId     INT,
+		        @isCorrect      INT
+		
+		DECLARE c CURSOR FORWARD_ONLY LOCAL READ_ONLY 
+		FOR
+		    SELECT os.QuestionId,
+		           os.IsCorrect
+		    FROM   @oldSteps AS os
+		    ORDER BY
+		           os.[Order]
+		
+		OPEN c
+		FETCH NEXT FROM c INTO @questionId, @isCorrect
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+		    INSERT INTO @subjects
+		    SELECT DISTINCT dsta.SubjectId
+		    FROM   D_SITE_TEST_ANSWER AS dsta
+		    WHERE  dsta.QuestionId = @questionId
+		           AND dsta.IsCorrect = @isCorrect
+		           AND (
+		                   dsta.SubjectId IN (SELECT s.SubjectId
+		                                      FROM   @subjects AS s)
+		                   OR (
+		                          SELECT COUNT(1)
+		                          FROM   @subjects
+		                      ) = 0
+		               )
+		    
+		    DELETE 
+		    FROM   @subjects
+		    WHERE  SubjectId IN (SELECT DISTINCT dsta.SubjectId
+		                         FROM   D_SITE_TEST_ANSWER AS dsta
+		                         WHERE  dsta.QuestionId = @questionId
+		                                AND dsta.IsCorrect <> @isCorrect)
+		    
+		    FETCH NEXT FROM c INTO @questionId, @isCorrect
+		END
+		CLOSE c
+		DEALLOCATE c
+	END
+	
+	INSERT INTO @questions
+	SELECT dsta.QuestionId
+	FROM   D_SITE_TEST_ANSWER  AS dsta
+	       JOIN @subjects      AS s
+	            ON  s.SubjectId = dsta.SubjectId
+	WHERE  dsta.QuestionId NOT IN (SELECT os.QuestionId
+	                               FROM   @oldSteps AS os)
+	       AND dsta.IsCorrect = 1
+	
+	SELECT @subjectsCount = COUNT(DISTINCT s.SubjectId)
+	FROM   @subjects AS s
+	
+	IF (@subjectsCount > 1)
+	    SELECT TOP(1) *
+	    FROM   D_SITE_TEST_ANSWER         AS dsta
+	           JOIN @questions            AS q
+	                ON  q.QuestionId = dsta.QuestionId
+	           JOIN D_SITE_TEST_QUESTION  AS dstq
+	                ON  dstq.Id = dsta.QuestionId
+	           JOIN D_SITE_TEST_SUBJECT   AS dsts
+	                ON  dsts.Id = dsta.SubjectId
+	           JOIN D_SITE_TEST           AS dst
+	                ON  dst.Id = dstq.TestId
+	ELSE
+	    SELECT TOP(1) * 
+	    FROM   D_SITE_TEST_ANSWER         AS dsta
+	           JOIN D_SITE_TEST_QUESTION  AS dstq
+	                ON  dstq.Id = dsta.QuestionId
+	           JOIN D_SITE_TEST_SUBJECT   AS dsts
+	                ON  dsts.Id = dsta.SubjectId
+	                AND dsts.Id IN (SELECT s.SubjectId
+	                                FROM   @subjects AS s)
+	           JOIN D_SITE_TEST           AS dst
+	                ON  dst.Id = dstq.TestId
 END
 GO

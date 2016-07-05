@@ -328,6 +328,7 @@
     <Compile Include="ViewModels\SxVMSeoTags.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />
     <Compile Include="ViewModels\SxVMSiteTest.cs" />
+    <Compile Include="ViewModels\SxVMSiteTestAnswer.cs" />
     <Compile Include="ViewModels\SxVMSiteTestQuestion.cs" />
     <Compile Include="ViewModels\SxVMSiteTestSubject.cs" />
     <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />

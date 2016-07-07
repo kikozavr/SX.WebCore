@@ -27,35 +27,13 @@ namespace SX.WebCore.Providers
             return "SELECT " + s.Substring(1);
         }
 
-        [Obsolete]
-        public static string GetOrderString(string dc, SortDirection dsd, IDictionary<string, SortDirection> orders = null)
-        {
-            var orderCount = orders!=null? orders.Where(x => x.Value != SortDirection.Unknown).Count():0;
-            var sb = new StringBuilder();
-            if (orders == null || orderCount==0)
-            {
-                sb.AppendFormat(",{0} {1}", dc, dsd.ToString().ToUpper());
-            }
-            else
-            {
-                foreach (var order in orders.Where(x=>x.Value!=SortDirection.Unknown))
-                {
-                    sb.AppendFormat(",{0} {1}", order.Key, order.Value.ToString().ToUpper());
-                }
-            }
-
-            var s = sb.ToString();
-
-            return "ORDER BY " + s.Substring(1);
-        }
-
-        public static string GetOrderString(SxOrder defaultOrder, SxOrder order=null)
+        public static string GetOrderString(SxOrder defaultOrder, SxOrder order=null, Dictionary<string, string> replaceList=null)
         {
             var sb = new StringBuilder();
             if (order==null || order.FieldName==null)
                 sb.AppendFormat(",{0} {1}", defaultOrder.FieldName, defaultOrder.Direction.ToString().ToUpper());
             else
-                sb.AppendFormat(",{0} {1}", order.FieldName, order.Direction.ToString().ToUpper());
+                sb.AppendFormat(",{0} {1}", replaceList!=null && replaceList.ContainsKey(order.FieldName) ? replaceList[order.FieldName]: order.FieldName, order.Direction.ToString().ToUpper());
 
             sb.Remove(0, 1);
             return "ORDER BY "+sb.ToString();

@@ -173,6 +173,9 @@
     <Compile Include="Abstract\SxDbUpdatedModel.cs" />
     <Compile Include="Attrubutes\NotEqualAttribute.cs" />
     <Compile Include="HtmlHelpers\SxGridLookup.cs" />
+    <Compile Include="HtmlHelpers\SxLikeButtons.cs" />
+    <Compile Include="MvcControllers\SxLikeButtonsController.cs" />
+    <Compile Include="MvcControllers\SxNetsController.cs" />
     <Compile Include="MvcControllers\Sx301RedirectsController.cs" />
     <Compile Include="MvcControllers\SxBannedUrlsController.cs" />
     <Compile Include="MvcControllers\SxBannerGroupsController.cs" />
@@ -195,6 +198,8 @@
     <Compile Include="MvcControllers\SxUsersController.cs" />
     <Compile Include="MvcControllers\SxVideoLinksController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
+    <Compile Include="Repositories\SxRepoLikeButton.cs" />
+    <Compile Include="Repositories\SxRepoNet.cs" />
     <Compile Include="Repositories\SxRepoAppUser.cs" />
     <Compile Include="Repositories\SxRepoMaterialTag.cs" />
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
@@ -275,6 +280,8 @@
     <Compile Include="SxDbContext.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="SxEmployee.cs" />
+    <Compile Include="SxLikeButton.cs" />
+    <Compile Include="SxNet.cs" />
     <Compile Include="SxOrder.cs" />
     <Compile Include="SxLike.cs" />
     <Compile Include="SxSiteTestAnswer.cs" />
@@ -310,6 +317,7 @@
     <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMEditBanner.cs" />
     <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />
+    <Compile Include="ViewModels\SxVMEditLikeButton.cs" />
     <Compile Include="ViewModels\SxVMEditMaterialTag.cs" />
     <Compile Include="ViewModels\SxVMEditPicture.cs" />
     <Compile Include="ViewModels\SxVMEditProjectStep.cs" />
@@ -322,6 +330,8 @@
     <Compile Include="ViewModels\SxVMEditVideo.cs" />
     <Compile Include="ViewModels\SxVMEmployee.cs" />
     <Compile Include="ViewModels\SxVMFAQ.cs" />
+    <Compile Include="ViewModels\SxVMLikeButton.cs" />
+    <Compile Include="ViewModels\SxVMNet.cs" />
     <Compile Include="ViewModels\SxVMPicture.cs" />
     <Compile Include="ViewModels\SxVMProjectStep.cs" />
     <Compile Include="ViewModels\SxVMSeoKeyword.cs" />
@@ -370,6 +380,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Sql\createArchitect.sql" />
+    <Content Include="Sql\nets.sql" />
     <Content Include="Sql\sql.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

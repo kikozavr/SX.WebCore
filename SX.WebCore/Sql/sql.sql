@@ -197,25 +197,6 @@ BEGIN
 END
 GO
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*******************************************
  * Превью материалов
  *******************************************/
@@ -233,6 +214,7 @@ BEGIN
 	       dm.Title,
 	       dm.TitleUrl,
 	       dm.DateCreate,
+	       dm.ModelCoreType,
 	       dm.DateOfPublication,
 	       dm.ViewsCount,
 	       dbo.get_comments_count(dm.Id, dm.ModelCoreType) AS CommentsCount,
@@ -2021,3 +2003,45 @@ BEGIN
 	                ON  dst.Id = dstq.TestId
 END
 GO
+
+/*******************************************
+ * Обновить кнопку лайков
+ *******************************************/
+IF OBJECT_ID(N'dbo.update_like_button', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.update_like_button;
+GO
+CREATE PROCEDURE dbo.update_like_button
+	@id INT,
+	@show BIT,
+	@showCounter BIT
+AS
+BEGIN
+	UPDATE D_LIKE_BUTTON
+	SET    Show = @show,
+	       ShowCounter = @showCounter,
+	       DateUpdate = GETDATE()
+	WHERE  Id = @id
+	
+	SELECT TOP(1) *
+	FROM   D_LIKE_BUTTON  AS dlb
+	       JOIN D_NET     AS dn
+	            ON  dn.Id = dlb.NetId
+	WHERE  dlb.Id = @id
+END
+GO
+
+/*******************************************
+ * Список кнопок лайков
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_like_buttons_list', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_like_buttons_list;
+GO
+CREATE PROCEDURE dbo.get_like_buttons_list
+AS
+BEGIN
+	SELECT *
+	FROM   D_LIKE_BUTTON  AS dlb
+	       JOIN D_NET     AS dn
+	            ON  dn.Id = dlb.NetId
+	WHERE  dlb.Show = 1
+END

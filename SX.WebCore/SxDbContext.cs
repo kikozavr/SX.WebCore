@@ -34,6 +34,10 @@ namespace SX.WebCore
 
         public DbSet<SxEmployee> Employees { get; set; }
 
+        public DbSet<SxLikeButton> LikeButtons { get; set; }
+
+        public DbSet<SxNet> Nets { get; set; }
+
         public DbSet<SxNews> News { get; set; }
 
         public DbSet<SxPicture> Pictures { get; set; }

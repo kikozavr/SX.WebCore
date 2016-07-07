@@ -122,6 +122,20 @@ namespace SX.WebCore.MvcApplication
             return data;
         }
 
+        public static SxLikeButton[] LikeButtons
+        {
+            get
+            {
+                var list = (SxLikeButton[])_appCache.Get("CACHE_LIKE_BUTTONS");
+                if(list==null)
+                {
+                    list = new SxRepoLikeButton<TDbContext>().LikeButtonsList;
+                    _appCache.Add("CACHE_LIKE_BUTTONS", list, _defaultPolicy15Min);
+                }
+                return list;
+            }
+        }
+
         protected virtual void Application_Start(object sender, EventArgs e)
         {
             _appCache = new MemoryCache("APPLICATION_CACHE");

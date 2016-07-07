@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SX.WebCore
 {
-    [Table("D_LIKE_BUTTON")]
-    public class SxLikeButton : SxDbUpdatedModel<int>
+    [Table("D_SHARE_BUTTON")]
+    public class SxShareButton : SxDbUpdatedModel<int>
     {
         public virtual SxNet Net { get; set; }
         public int NetId { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace SX.WebCore.ViewModels
 {
-    public sealed class SxVMLikeButton
+    public sealed class SxVMShareButton
     {
         public int Id { get; set; }
 

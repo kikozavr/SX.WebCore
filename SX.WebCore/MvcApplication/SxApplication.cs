@@ -122,14 +122,14 @@ namespace SX.WebCore.MvcApplication
             return data;
         }
 
-        public static SxLikeButton[] LikeButtons
+        public static SxShareButton[] ShareButtons
         {
             get
             {
-                var list = (SxLikeButton[])_appCache.Get("CACHE_LIKE_BUTTONS");
+                var list = (SxShareButton[])_appCache.Get("CACHE_LIKE_BUTTONS");
                 if(list==null)
                 {
-                    list = new SxRepoLikeButton<TDbContext>().LikeButtonsList;
+                    list = new SxRepoShareButton<TDbContext>().ShareButtonsList;
                     _appCache.Add("CACHE_LIKE_BUTTONS", list, _defaultPolicy15Min);
                 }
                 return list;

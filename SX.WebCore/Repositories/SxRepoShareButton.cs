@@ -9,16 +9,16 @@ using System.Collections.Generic;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoLikeButton<TDbContext> : SxDbRepository<int, SxLikeButton, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoShareButton<TDbContext> : SxDbRepository<int, SxShareButton, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxLikeButton[] Query(SxFilter filter)
+        public override SxShareButton[] Query(SxFilter filter)
         {
             var query = SxQueryProvider.GetSelectString();
-            query += @" FROM D_LIKE_BUTTON AS dlb
+            query += @" FROM D_SHARE_BUTTON AS dlb
 JOIN D_NET AS dn ON dn.Id = dlb.NetId ";
 
             object param = null;
-            query += getLikeButtonsWhereString(filter, out param);
+            query += getShareButtonsWhereString(filter, out param);
 
             var defaultOrder = new SxOrder { FieldName = "NetName", Direction = SortDirection.Asc };
             query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order ?? defaultOrder, new Dictionary<string, string> {
@@ -29,7 +29,7 @@ JOIN D_NET AS dn ON dn.Id = dlb.NetId ";
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxLikeButton, SxNet, SxLikeButton>(query, (b,n)=> {
+                var data = conn.Query<SxShareButton, SxNet, SxShareButton>(query, (b,n)=> {
                     b.Net = n;
                     return b;
                 }, param: param, splitOn:"Id");
@@ -39,11 +39,11 @@ JOIN D_NET AS dn ON dn.Id = dlb.NetId ";
 
         public override int Count(SxFilter filter)
         {
-            var query = @"SELECT COUNT(1) FROM D_LIKE_BUTTON AS dlb
+            var query = @"SELECT COUNT(1) FROM D_SHARE_BUTTON AS dlb
 JOIN D_NET AS dn ON dn.Id = dlb.NetId ";
 
             object param = null;
-            query += getLikeButtonsWhereString(filter, out param);
+            query += getShareButtonsWhereString(filter, out param);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
@@ -51,7 +51,7 @@ JOIN D_NET AS dn ON dn.Id = dlb.NetId ";
             }
         }
 
-        private static string getLikeButtonsWhereString(SxFilter filter, out object param)
+        private static string getShareButtonsWhereString(SxFilter filter, out object param)
         {
             param = null;
             string query = null;
@@ -67,16 +67,16 @@ JOIN D_NET AS dn ON dn.Id = dlb.NetId ";
             return query;
         }
 
-        public override SxLikeButton Create(SxLikeButton model)
+        public override SxShareButton Create(SxShareButton model)
         {
             throw new NotImplementedException("Создание сети не поддерживается");
         }
 
-        public override SxLikeButton Update(SxLikeButton model, bool changeDateUpdate = true, params string[] propertiesForChange)
+        public override SxShareButton Update(SxShareButton model, bool changeDateUpdate = true, params string[] propertiesForChange)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxLikeButton, SxNet, SxLikeButton>("dbo.update_like_button @id, @show, @showCounter", (b, n) => {
+                var data = conn.Query<SxShareButton, SxNet, SxShareButton>("dbo.update_share_button @id, @show, @showCounter", (b, n) => {
                     b.Net = n;
                     return b;
                 }, new {
@@ -94,13 +94,13 @@ JOIN D_NET AS dn ON dn.Id = dlb.NetId ";
             throw new NotImplementedException("Удаление сети не поддерживается");
         }
 
-        public SxLikeButton[] LikeButtonsList
+        public SxShareButton[] ShareButtonsList
         {
             get
             {
                 using (var conn = new SqlConnection(ConnectionString))
                 {
-                    var data = conn.Query<SxLikeButton, SxNet, SxLikeButton>("dbo.get_like_buttons_list", (b, n) => {
+                    var data = conn.Query<SxShareButton, SxNet, SxShareButton>("dbo.get_share_buttons_list", (b, n) => {
                         b.Net = n;
                         return b;
                     }, splitOn: "Id");

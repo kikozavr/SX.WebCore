@@ -662,6 +662,7 @@ BEGIN
 	       x.Title,
 	       x.TitleUrl,
 	       x.Html,
+	       x.Foreword,
 	       x.CategoryId,
 	       dmc.Title,
 	       dmc.Id,
@@ -719,6 +720,7 @@ BEGIN
 	       x.Title,
 	       x.TitleUrl,
 	       x.Html,
+	       x.Foreword,
 	       x.CategoryId,
 	       x.AuthorId,
 	       x.Flag,
@@ -2005,25 +2007,25 @@ END
 GO
 
 /*******************************************
- * Обновить кнопку лайков
+ * Обновить кнопку шар
  *******************************************/
-IF OBJECT_ID(N'dbo.update_like_button', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.update_like_button;
+IF OBJECT_ID(N'dbo.update_share_button', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.update_share_button;
 GO
-CREATE PROCEDURE dbo.update_like_button
+CREATE PROCEDURE dbo.update_share_button
 	@id INT,
 	@show BIT,
 	@showCounter BIT
 AS
 BEGIN
-	UPDATE D_LIKE_BUTTON
+	UPDATE D_SHARE_BUTTON
 	SET    Show = @show,
 	       ShowCounter = @showCounter,
 	       DateUpdate = GETDATE()
 	WHERE  Id = @id
 	
 	SELECT TOP(1) *
-	FROM   D_LIKE_BUTTON  AS dlb
+	FROM   D_SHARE_BUTTON  AS dlb
 	       JOIN D_NET     AS dn
 	            ON  dn.Id = dlb.NetId
 	WHERE  dlb.Id = @id
@@ -2033,14 +2035,14 @@ GO
 /*******************************************
  * Список кнопок лайков
  *******************************************/
-IF OBJECT_ID(N'dbo.get_like_buttons_list', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.get_like_buttons_list;
+IF OBJECT_ID(N'dbo.get_share_buttons_list', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_share_buttons_list;
 GO
-CREATE PROCEDURE dbo.get_like_buttons_list
+CREATE PROCEDURE dbo.get_share_buttons_list
 AS
 BEGIN
 	SELECT *
-	FROM   D_LIKE_BUTTON  AS dlb
+	FROM   D_SHARE_BUTTON  AS dlb
 	       JOIN D_NET     AS dn
 	            ON  dn.Id = dlb.NetId
 	WHERE  dlb.Show = 1

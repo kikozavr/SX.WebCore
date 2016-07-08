@@ -764,24 +764,41 @@ GO
 IF OBJECT_ID(N'dbo.get_aphorism_categories', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_aphorism_categories;
 GO
-CREATE PROCEDURE dbo.get_aphorism_categories(@curCat VARCHAR(100))
+CREATE PROCEDURE dbo.get_aphorism_categories(@cur NVARCHAR(100))
 AS
 BEGIN
-	SELECT dmc.Id,
-	       dmc.Title,
-	       CASE 
-	            WHEN dmc.Id = @curCat THEN 1
-	            ELSE 0
-	       END                       AS IsCurrent
-	FROM   D_APHORISM                AS da
-	       JOIN DV_MATERIAL          AS dm
-	            ON  dm.Id = da.Id
-	            AND dm.ModelCoreType = da.ModelCoreType
-	       JOIN D_MATERIAL_CATEGORY  AS dmc
-	            ON  dmc.Id = dm.CategoryId
-	GROUP BY
-	       dmc.Id,
-	       dmc.Title
+	WITH c(Id, Title, [Ref]) AS (
+	         SELECT dmc.Id               AS Id,
+	                dmc.Title,
+	                NULL                 AS [Ref]
+	         FROM   D_MATERIAL_CATEGORY  AS dmc
+	                JOIN DV_MATERIAL     AS dm
+	                     ON  dm.CategoryId = dmc.Id
+	                JOIN D_APHORISM      AS da
+	                     ON  da.ModelCoreType = dm.ModelCoreType
+	                     AND da.Id = dm.Id
+	         GROUP BY
+	                dmc.Id,
+	                dmc.Title
+	         UNION ALL
+	         SELECT daa.TitleUrl           AS Id,
+	                daa.Name,
+	                CategoryId         AS [Ref]
+	         FROM   D_AUTHOR_APHORISM  AS daa
+	                JOIN D_APHORISM    AS da
+	                     ON  da.AuthorId = daa.Id
+	                JOIN DV_MATERIAL   AS dm
+	                     ON  dm.Id = da.Id
+	                     AND dm.ModelCoreType = da.ModelCoreType
+	                     AND dm.CategoryId = CategoryId
+	         GROUP BY
+					daa.TitleUrl,
+	                daa.Name,
+	                CategoryId
+	     )
+	
+	SELECT *
+	FROM   c AS c
 END
 GO
 

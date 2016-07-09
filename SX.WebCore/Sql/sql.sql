@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 05.07.2016 14:32:33
+ * Time: 08.07.2016 21:34:22
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,9 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
+
 
 /*******************************************
  * Превью материалов
@@ -490,6 +493,9 @@ GO
 
 
 
+
+
+
 /*******************************************
  * добавить комментарии материала
  *******************************************/
@@ -664,11 +670,12 @@ BEGIN
 	       x.Html,
 	       x.Foreword,
 	       x.CategoryId,
-	       dmc.Title,
 	       dmc.Id,
-	       x.AuthorId,
+	       dmc.Title,
+	       x.AuthorId                   AS Id,
 	       daa.Name,
 	       daa.PictureId,
+	       daa.TitleUrl,
 	       COUNT(dc.Id)                 AS CommentsCount
 	FROM   (
 	           SELECT dm.*,
@@ -727,6 +734,7 @@ BEGIN
 	       dmc.Title,
 	       daa.Name,
 	       daa.PictureId,
+	       daa.TitleUrl,
 	       dmc.Id
 END
 GO
@@ -781,7 +789,7 @@ BEGIN
 	                dmc.Id,
 	                dmc.Title
 	         UNION ALL
-	         SELECT daa.TitleUrl           AS Id,
+	         SELECT daa.TitleUrl       AS Id,
 	                daa.Name,
 	                CategoryId         AS [Ref]
 	         FROM   D_AUTHOR_APHORISM  AS daa
@@ -792,7 +800,7 @@ BEGIN
 	                     AND dm.ModelCoreType = da.ModelCoreType
 	                     AND dm.CategoryId = CategoryId
 	         GROUP BY
-					daa.TitleUrl,
+	                daa.TitleUrl,
 	                daa.Name,
 	                CategoryId
 	     )
@@ -2010,7 +2018,7 @@ BEGIN
 	           JOIN D_SITE_TEST           AS dst
 	                ON  dst.Id = dstq.TestId
 	ELSE
-	    SELECT TOP(1) * 
+	    SELECT TOP(1) *
 	    FROM   D_SITE_TEST_ANSWER         AS dsta
 	           JOIN D_SITE_TEST_QUESTION  AS dstq
 	                ON  dstq.Id = dsta.QuestionId
@@ -2043,7 +2051,7 @@ BEGIN
 	
 	SELECT TOP(1) *
 	FROM   D_SHARE_BUTTON  AS dlb
-	       JOIN D_NET     AS dn
+	       JOIN D_NET      AS dn
 	            ON  dn.Id = dlb.NetId
 	WHERE  dlb.Id = @id
 END
@@ -2060,7 +2068,56 @@ AS
 BEGIN
 	SELECT *
 	FROM   D_SHARE_BUTTON  AS dlb
-	       JOIN D_NET     AS dn
+	       JOIN D_NET      AS dn
 	            ON  dn.Id = dlb.NetId
 	WHERE  dlb.Show = 1
 END
+GO
+
+/*******************************************
+ * Карта сайта
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_map', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_map;
+GO
+CREATE PROCEDURE dbo.get_site_map
+AS
+BEGIN
+	SELECT dm.TitleUrl,
+	       dm.DateCreate,
+	       dm.DateUpdate,
+	       dm.ModelCoreType,
+	       dm.CategoryId
+	FROM   DV_MATERIAL  AS dm
+	       JOIN D_NEWS  AS dn
+	            ON  dn.Id = dm.Id
+	            AND dn.ModelCoreType = dm.ModelCoreType
+	WHERE  dm.Show = 1
+	       AND dm.DateOfPublication <= GETDATE()
+	UNION ALL
+	SELECT dm.TitleUrl,
+	       dm.DateCreate,
+	       dm.DateUpdate,
+	       dm.ModelCoreType,
+	       dm.CategoryId
+	FROM   DV_MATERIAL     AS dm
+	       JOIN D_ARTICLE  AS da
+	            ON  da.Id = dm.Id
+	            AND da.ModelCoreType = dm.ModelCoreType
+	WHERE  dm.Show = 1
+	       AND dm.DateOfPublication <= GETDATE()
+	UNION ALL
+	SELECT dm.TitleUrl,
+	       dm.DateCreate,
+	       dm.DateUpdate,
+	       dm.ModelCoreType,
+	       dm.CategoryId
+	FROM   D_APHORISM        AS da
+	       JOIN DV_MATERIAL  AS dm
+	            ON  dm.Id = da.Id
+	            AND dm.ModelCoreType = da.ModelCoreType
+	WHERE  dm.Show = 1
+	ORDER BY
+	       dm.DateUpdate DESC
+END
+GO

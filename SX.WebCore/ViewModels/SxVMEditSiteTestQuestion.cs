@@ -11,7 +11,7 @@ namespace SX.WebCore.ViewModels
         [Required, Display(Name = "Тест"), UIHint("SiteTestsLookupGrid")]
         public int TestId { get; set; }
 
-        [Required, MaxLength(400), Display(Name = "Вопрос")]
+        [Required, MaxLength(400), Display(Name = "Вопрос"), DataType(DataType.MultilineText)]
         public string Text { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace SX.WebCore.ViewModels
         [Required, MaxLength(200), Display(Name = "Заголовок")]
         public string Title { get; set; }
 
-        [Required, MaxLength(255), Display(Name = "Строковый ключ"), RegularExpression(@"^[A-Za-z0-9]([-]*[A-Za-z0-9])*$", ErrorMessage = "Поле должно содержать только буквы латинского алфавита и тире")]
+        [MaxLength(255), Display(Name = "Строковый ключ"), RegularExpression(@"^[A-Za-z0-9]([-]*[A-Za-z0-9])*$", ErrorMessage = "Поле должно содержать только буквы латинского алфавита и тире")]
         public string TitleUrl { get; set; }
 
         [Required, MaxLength(1000), Display(Name = "Описание"), DataType(DataType.MultilineText), AllowHtml]

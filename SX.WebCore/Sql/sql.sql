@@ -1327,6 +1327,8 @@ AS
 BEGIN
 	DECLARE @x         NVARCHAR(MAX) = '',
 	        @title     NVARCHAR(400)
+	        
+	        SET @page=(@page-1)*@pageSize
 	
 	DECLARE c CURSOR  
 	FOR
@@ -1345,6 +1347,8 @@ BEGIN
 	END
 	CLOSE c
 	DEALLOCATE c
+	
+	
 	
 	SET @x = RIGHT(@x, LEN(@x) -1)
 	

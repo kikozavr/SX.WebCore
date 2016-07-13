@@ -6,6 +6,11 @@ namespace SX.WebCore.ViewModels
 {
     public sealed class SxVMAppUser
     {
+        public SxVMAppUser()
+        {
+            Roles = new SxVMAppRole[0];
+        }
+
         public string Id { get; set; }
         public string NikName { get; set; }
         public string Email { get; set; }

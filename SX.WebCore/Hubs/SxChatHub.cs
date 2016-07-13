@@ -2,7 +2,8 @@
 
 namespace SX.WebCore.Hubs
 {
-    public sealed class SxChatHub : Hub
+    public sealed class SxChatHub: Hub
     {
+        
     }
 }

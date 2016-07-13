@@ -22,11 +22,11 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public ActionResult OnlineUsers()
         {
-            //if (!Request.IsAjaxRequest())
-            //    return new HttpNotFoundResult();
+            if (!Request.IsAjaxRequest())
+                return new HttpNotFoundResult();
 
             var data = _repo.OnlineUsers;
-            return Json(data, JsonRequestBehavior.AllowGet);
+            return PartialView("_OnlineUsers", data);
         }
     }
 }

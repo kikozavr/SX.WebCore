@@ -64,7 +64,7 @@ namespace SX.WebCore.Repositories
             {
                 title = title,
                 desc = desc,
-                show= filter.OnlyShow
+                show = filter.OnlyShow
             };
 
             return query;
@@ -92,6 +92,11 @@ namespace SX.WebCore.Repositories
                     return a;
                 }, new { titleUrl = titleUrl }, splitOn: "Id").SingleOrDefault();
 
+                if (Equals(data.Question.Test.Type, SxSiteTest.SiteTestType.Normal))
+                {
+                    data.Question.Test.Questions = conn.Query<SxSiteTestQuestion>("dbo.get_site_test_normal_questions @testId, @subjectId, @amount", new { testId = data.Question.TestId, subjectId = data.SubjectId, amount = 3 }).ToArray();
+                }
+
                 return data;
             }
         }
@@ -104,9 +109,9 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public DataTable GetMatrix(int testId, out int count, int page=1, int pageSize=10)
+        public DataTable GetMatrix(int testId, out int count, int page = 1, int pageSize = 10)
         {
-            var result=new DataTable();
+            var result = new DataTable();
             using (var conn = new SqlConnection(ConnectionString))
             {
                 using (SqlDataAdapter adp = new SqlDataAdapter("get_site_test_matrix @testId, @page, @pageSize, @count OUTPUT", conn))
@@ -115,7 +120,7 @@ namespace SX.WebCore.Repositories
                     adp.SelectCommand.Parameters.AddWithValue("page", page);
                     adp.SelectCommand.Parameters.AddWithValue("pageSize", pageSize);
 
-                    var par = new SqlParameter { ParameterName= "count", DbType=DbType.Int32, Direction=ParameterDirection.Output };
+                    var par = new SqlParameter { ParameterName = "count", DbType = DbType.Int32, Direction = ParameterDirection.Output };
                     adp.SelectCommand.Parameters.Add(par);
 
                     adp.Fill(result);
@@ -130,7 +135,8 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("revert_site_test_matrix_value @subjectTitle, @questionText, @value", new {
+                conn.Execute("revert_site_test_matrix_value @subjectTitle, @questionText, @value", new
+                {
                     subjectTitle = subjectTitle,
                     questionText = questionText,
                     value = value == 0 ? 1 : 0
@@ -147,21 +153,23 @@ namespace SX.WebCore.Repositories
                     title = model.Title,
                     desc = model.Description,
                     titleUrl = UrlHelperExtensions.SeoFriendlyUrl(model.Title),
-                    type= model.Type
+                    type = model.Type
                 }).SingleOrDefault();
 
                 return data;
             }
         }
 
-        public SxSiteTestAnswer GetStep(List<SxVMSiteTestStep> steps, out int subjectsCount)
+        public SxSiteTestAnswer GetGuessStep(List<SxVMSiteTestStep> steps, out int subjectsCount)
         {
             var table = new DataTable();
             table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
+            table.Columns.Add(new DataColumn { ColumnName = "SubjectId" });
             table.Columns.Add(new DataColumn { ColumnName = "IsCorrect" });
             table.Columns.Add(new DataColumn { ColumnName = "Order" });
-            steps.ForEach(x=> {
-                table.Rows.Add(x.QuestionId, x.IsCorrect, x.Order);
+            steps.ForEach(x =>
+            {
+                table.Rows.Add(x.QuestionId, 0, x.IsCorrect, x.Order);
             });
 
             var p = new DynamicParameters();
@@ -170,7 +178,8 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_next_step", (a,q,s,t)=> {
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_next_guess_step", (a, q, s, t) =>
+                {
                     a.Question = q;
                     q.Test = t;
                     a.Subject = s;
@@ -178,6 +187,42 @@ namespace SX.WebCore.Repositories
                 }, p, commandType: CommandType.StoredProcedure).SingleOrDefault();
 
                 subjectsCount = p.Get<int>("subjectsCount");
+
+                return data;
+            }
+        }
+
+        public SxSiteTestAnswer GetNormalStep(List<SxVMSiteTestStep> steps, out int subjectsCount, out int allSubjectsCount)
+        {
+            var table = new DataTable();
+            table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
+            table.Columns.Add(new DataColumn { ColumnName = "SubjectId" });
+            table.Columns.Add(new DataColumn { ColumnName = "IsCorrect" });
+            table.Columns.Add(new DataColumn { ColumnName = "Order" });
+            steps.ForEach(x =>
+            {
+                table.Rows.Add(x.QuestionId, x.SubjectId, x.IsCorrect, x.Order);
+            });
+
+            var p = new DynamicParameters();
+            p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStep"));
+            p.Add("subjectsCount", dbType: DbType.Int32, direction: ParameterDirection.Output);
+            p.Add("allSubjectsCount", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_next_normal_step", (a, q, s, t) =>
+                {
+                    a.Question = q;
+                    q.Test = t;
+                    a.Subject = s;
+                    return a;
+                }, p, commandType: CommandType.StoredProcedure).SingleOrDefault();
+
+                data.Question.Test.Questions = conn.Query<SxSiteTestQuestion>("dbo.get_site_test_normal_questions @testId, @subjectId, @amount", new { testId = data.Question.TestId, subjectId = data.SubjectId, amount = 3 }).ToArray();
+
+                subjectsCount = p.Get<int>("subjectsCount");
+                allSubjectsCount = p.Get<int>("allSubjectsCount");
 
                 return data;
             }

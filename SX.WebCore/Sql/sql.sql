@@ -1929,14 +1929,19 @@ BEGIN
 	            ON  dst.Id = dstq.TestId
 	            AND dst.TitleUrl = @titleUrl
 	            AND dst.Show = 1
+	ORDER BY NEWID()
 END
 GO
 
 /*******************************************
  * Тип для предыдущих ответов теста
  *******************************************/
-IF OBJECT_ID(N'dbo.get_site_test_next_step', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.get_site_test_next_step;
+IF OBJECT_ID(N'dbo.get_site_test_next_guess_step', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_test_next_guess_step;
+GO
+
+IF OBJECT_ID(N'dbo.get_site_test_next_normal_step', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_test_next_normal_step;
 GO
 
 IF TYPE_ID(N'dbo.OldSiteTestStep') IS NOT NULL
@@ -1944,13 +1949,13 @@ IF TYPE_ID(N'dbo.OldSiteTestStep') IS NOT NULL
 GO
 
 CREATE TYPE dbo.OldSiteTestStep AS TABLE 
-(QuestionId INT, IsCorrect BIT, [Order] INT);  
+(QuestionId INT, SubjectId INT, IsCorrect BIT, [Order] INT);  
 GO  
 
 /*******************************************
- * Следующий вопрос теста
+ * Следующий вопрос теста Guess
  *******************************************/
-CREATE PROCEDURE dbo.get_site_test_next_step
+CREATE PROCEDURE dbo.get_site_test_next_guess_step
 	@oldSteps dbo.OldSiteTestStep READONLY,
 	@subjectsCount INT OUTPUT
 AS
@@ -2035,6 +2040,60 @@ BEGIN
 	                                FROM   @subjects AS s)
 	           JOIN D_SITE_TEST           AS dst
 	                ON  dst.Id = dstq.TestId
+END
+GO
+
+/*******************************************
+ * Следующий вопрос теста Normal
+ *******************************************/
+CREATE PROCEDURE dbo.get_site_test_next_normal_step
+	@oldSteps dbo.OldSiteTestStep READONLY,
+	@subjectsCount INT OUTPUT,
+	@allSubjectsCount INT OUTPUT
+AS
+BEGIN
+	DECLARE @testId INT
+	SELECT TOP(1) @testId= dsts.TestId FROM D_SITE_TEST_SUBJECT AS dsts
+	JOIN @oldSteps AS os ON os.SubjectId=dsts.Id
+	
+	SELECT @allSubjectsCount= COUNT(DISTINCT dsts.Id) FROM D_SITE_TEST_SUBJECT AS dsts WHERE dsts.TestId=@testId
+	
+	SELECT @subjectsCount=COUNT(DISTINCT dsts.Id) FROM D_SITE_TEST_SUBJECT AS dsts WHERE dsts.Id NOT IN(SELECT os.SubjectId FROM @oldSteps AS os) AND dsts.TestId=@testId
+	
+	SELECT TOP 1 * FROM D_SITE_TEST_ANSWER AS dsta
+	JOIN D_SITE_TEST_QUESTION AS dstq ON dstq.Id = dsta.QuestionId
+	JOIN D_SITE_TEST_SUBJECT AS dsts ON dsts.Id = dsta.SubjectId
+	JOIN D_SITE_TEST AS dst ON dst.Id = dstq.TestId AND dst.Show=1 AND dst.Id=@testId
+	WHERE dsts.Id NOT IN(SELECT os.SubjectId FROM @oldSteps AS os)
+	ORDER BY NEWID()
+END
+GO
+
+/*******************************************
+ * Вопросы к объекту теста normal
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_test_normal_questions', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_test_normal_questions;
+GO
+CREATE PROCEDURE dbo.get_site_test_normal_questions
+	@testId INT,
+	@subjectId INT,
+	@amount INT=3
+AS
+BEGIN
+	
+	DECLARE @trueQuestionId INT
+	SELECT @trueQuestionId=dsta.QuestionId FROM D_SITE_TEST_ANSWER AS dsta
+	WHERE dsta.SubjectId=@subjectId AND dsta.IsCorrect=1
+	
+	SELECT NEWID(), x.* FROM (
+	SELECT TOP(@amount) dstq.*
+	FROM D_SITE_TEST_QUESTION AS dstq
+	JOIN D_SITE_TEST AS dst ON dst.Id = dstq.TestId AND dst.Id=@testId AND dst.Show=1
+	ORDER BY NEWID()
+	UNION ALL
+	SELECT TOP 1 * FROM D_SITE_TEST_QUESTION AS dstq WHERE dstq.Id=@trueQuestionId) x
+	ORDER BY 1
 END
 GO
 

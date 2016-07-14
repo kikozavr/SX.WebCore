@@ -7,7 +7,6 @@ namespace SX.WebCore.ViewModels
         public int Id { get; set; }
 
         public SxVMSiteTest Test { get; set; }
-        
 
         public string Text { get; set; }
 

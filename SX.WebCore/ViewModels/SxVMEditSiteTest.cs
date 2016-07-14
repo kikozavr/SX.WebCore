@@ -18,5 +18,8 @@ namespace SX.WebCore.ViewModels
 
         [Display(Name = "Показывать")]
         public bool Show { get; set; }
+
+        [Display(Name ="Тип теста")]
+        public SxSiteTest.SiteTestType Type { get; set; }
     }
 }

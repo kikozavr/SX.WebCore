@@ -1633,7 +1633,8 @@ GO
 CREATE PROCEDURE dbo.add_site_test
 	@title NVARCHAR(200),
 	@desc NVARCHAR(1000),
-	@titleUrl VARCHAR(255)
+	@titleUrl VARCHAR(255),
+	@type INT
 AS
 BEGIN
 	IF NOT EXISTS (
@@ -1648,7 +1649,8 @@ BEGIN
 	        [Description],
 	        DateUpdate,
 	        DateCreate,
-	        TitleUrl
+	        TitleUrl,
+	        [Type]
 	      )
 	    VALUES
 	      (
@@ -1656,7 +1658,8 @@ BEGIN
 	        @desc,
 	        GETDATE(),
 	        GETDATE(),
-	        @titleUrl
+	        @titleUrl,
+	        @type
 	      )
 	    
 	    DECLARE @id INT

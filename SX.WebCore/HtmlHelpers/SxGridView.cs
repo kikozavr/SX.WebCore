@@ -18,6 +18,7 @@ namespace SX.WebCore.HtmlHelpers
                 };
             }
 
+            public bool ShowPagerInfo { get; set; } = false;
             public string GridId { get; set; }
             public SxGridViewColumn<TModel>[] Columns { get; set; }
             public bool HasRow { get; set; }
@@ -361,7 +362,7 @@ namespace SX.WebCore.HtmlHelpers
             tr.InnerHtml += td;
 
             td = new TagBuilder("td");
-            td.InnerHtml += htmlHelper.SxPager(settings.Filter.PagerInfo, htmlAttributes: new { @class = "list-unstyled list-inline sx-gv__pager" }, pageUrl: (x) => "/valutes?page=" + x, isAjax: true);
+            td.InnerHtml += htmlHelper.SxPager(settings.Filter.PagerInfo, htmlAttributes: new { @class = "list-unstyled list-inline sx-gv__pager" }, pageUrl: (x) => "/valutes?page=" + x, isAjax: true, showInfo: settings.ShowPagerInfo);
             td.MergeAttribute("colspan", settings.Columns.Length.ToString());
 
             tr.InnerHtml += td;

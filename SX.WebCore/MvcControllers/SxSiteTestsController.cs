@@ -108,9 +108,9 @@ namespace SX.WebCore.MvcControllers
                     if (old != null)
                         ModelState.AddModelError(isArchitect ? "TitleUrl" : "Title", "Модель с таким текстовым ключем уже существует");
                     if (isArchitect)
-                        newModel = _repo.Update(redactModel, true, "Title", "Description", "TestType", "TitleUrl", "Show");
+                        newModel = _repo.Update(redactModel, true, "Title", "Description", "Type", "TitleUrl", "Show");
                     else
-                        newModel = _repo.Update(redactModel, true, "Title", "Description", "TestType", "Show");
+                        newModel = _repo.Update(redactModel, true, "Title", "Description", "Show");
                 }
                 return RedirectToAction("index");
             }

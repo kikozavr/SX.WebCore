@@ -142,11 +142,12 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTest>("add_site_test @title, @desc, @titleUrl", new
+                var data = conn.Query<SxSiteTest>("add_site_test @title, @desc, @titleUrl, @type", new
                 {
                     title = model.Title,
                     desc = model.Description,
-                    titleUrl = UrlHelperExtensions.SeoFriendlyUrl(model.Title)
+                    titleUrl = UrlHelperExtensions.SeoFriendlyUrl(model.Title),
+                    type= model.Type
                 }).SingleOrDefault();
 
                 return data;

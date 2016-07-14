@@ -6,10 +6,11 @@ namespace SX.WebCore.HtmlHelpers
 {
     public static partial class SxExtantions
     {
-        public static MvcHtmlString SxPager(this HtmlHelper htmlHelper, SxPagerInfo pagerinfo, Func<int, string> pageUrl = null, bool isAjax = true, object htmlAttributes = null)
+        public static MvcHtmlString SxPager(this HtmlHelper htmlHelper, SxPagerInfo pagerinfo, Func<int, string> pageUrl = null, bool isAjax = true, object htmlAttributes = null, bool showInfo=false)
         {
             if (pagerinfo.TotalPages == 1) return null;
 
+            var div = new TagBuilder("div");
             var ul = new TagBuilder("ul");
             if (htmlAttributes != null)
             {
@@ -53,7 +54,12 @@ namespace SX.WebCore.HtmlHelpers
                 ul.InnerHtml += getPagerItem(pagerinfo, SxPagerItemType.Last, isAjax, pageUrl);
             }
 
-            return MvcHtmlString.Create(ul.ToString());
+            div.InnerHtml += ul;
+
+            if (showInfo)
+                div.InnerHtml += "<span class=\"pull-right text-muted\">Всего: " + pagerinfo.TotalItems + "</span>";
+
+            return MvcHtmlString.Create(div.ToString());
         }
 
         private static TagBuilder getPagerItem(SxPagerInfo pagerinfo, SxPagerItemType itemType, bool isAjax, Func<int, string> pageUrl = null, int? number = null)

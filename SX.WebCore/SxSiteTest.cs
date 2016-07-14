@@ -21,5 +21,20 @@ namespace SX.WebCore
 
         public virtual ICollection<SxSiteTestQuestion> Questions { get; set; } 
         public virtual ICollection<SxSiteTestSubject> Answers { get; set; }
+
+        public SiteTestType Type { get; set; }
+
+        public enum SiteTestType : byte
+        {
+            /// <summary>
+            /// Угадыватель
+            /// </summary>
+            Guess=0,
+
+            /// <summary>
+            /// Обычный тест (один воспро - несколько вариантов ответов)
+            /// </summary>
+            Normal=1
+        }
     }
 }

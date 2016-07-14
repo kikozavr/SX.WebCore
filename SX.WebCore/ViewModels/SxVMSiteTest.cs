@@ -10,5 +10,6 @@ namespace SX.WebCore.ViewModels
         public DateTime DateCreate { get; set; }
         public string Description { get; set; }
         public bool Show { get; set; }
+        public SxSiteTest.SiteTestType Type { get; set; }
     }
 }

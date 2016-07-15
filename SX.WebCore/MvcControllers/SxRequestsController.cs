@@ -1,5 +1,6 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -40,6 +41,19 @@ namespace SX.WebCore.MvcControllers
             ViewBag.Filter = filter;
 
             return PartialView("_GridView", viewModel);
+        }
+
+        [HttpGet]
+#if !DEBUG
+        [OutputCache(Duration = 3600)]
+#endif
+        public async Task<JsonResult> DateStatistic()
+        {
+            return await Task.Run(() =>
+            {
+                var data = _repo.DateStatistic();
+                return Json(data, JsonRequestBehavior.AllowGet);
+            });
         }
     }
 }

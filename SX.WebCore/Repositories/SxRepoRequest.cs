@@ -102,5 +102,14 @@ namespace SX.WebCore.Repositories
 
             return query;
         }
+
+        public SxDateStatistic[] DateStatistic()
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxDateStatistic>("dbo.get_request_date_statistic");
+                return data.ToArray();
+            }
+        }
     }
 }

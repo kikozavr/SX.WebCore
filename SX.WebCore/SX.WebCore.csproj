@@ -180,6 +180,7 @@
     <Compile Include="HtmlHelpers\SxShareButtons.cs" />
     <Compile Include="Hubs\SxChatHub.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
+    <Compile Include="MvcControllers\SxMaterialsController.cs" />
     <Compile Include="MvcControllers\SxShareButtonsController.cs" />
     <Compile Include="MvcControllers\SxNetsController.cs" />
     <Compile Include="MvcControllers\Sx301RedirectsController.cs" />
@@ -204,6 +205,7 @@
     <Compile Include="MvcControllers\SxUsersController.cs" />
     <Compile Include="MvcControllers\SxVideoLinksController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
+    <Compile Include="Repositories\SxRepoMaterial.cs" />
     <Compile Include="Repositories\SxRepoShareButton.cs" />
     <Compile Include="Repositories\SxRepoNet.cs" />
     <Compile Include="Repositories\SxRepoAppUser.cs" />
@@ -287,6 +289,7 @@
     <Compile Include="SxDbContext.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="SxEmployee.cs" />
+    <Compile Include="SxDateStatistic.cs" />
     <Compile Include="SxShareButton.cs" />
     <Compile Include="SxNet.cs" />
     <Compile Include="SxOrder.cs" />

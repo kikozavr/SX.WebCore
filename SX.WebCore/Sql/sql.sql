@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 08.07.2016 21:34:22
+ * Time: 15.07.2016 11:39:01
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,13 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
+
+
+
+
+
 
 
 
@@ -400,6 +407,13 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
+
+
+
+
+
 
 
 
@@ -1327,8 +1341,8 @@ AS
 BEGIN
 	DECLARE @x         NVARCHAR(MAX) = '',
 	        @title     NVARCHAR(400)
-	        
-	        SET @page=(@page-1)*@pageSize
+	
+	SET @page = (@page -1) * @pageSize
 	
 	DECLARE c CURSOR  
 	FOR
@@ -1929,7 +1943,8 @@ BEGIN
 	            ON  dst.Id = dstq.TestId
 	            AND dst.TitleUrl = @titleUrl
 	            AND dst.Show = 1
-	ORDER BY NEWID()
+	ORDER BY
+	       NEWID()
 END
 GO
 
@@ -2053,19 +2068,35 @@ CREATE PROCEDURE dbo.get_site_test_next_normal_step
 AS
 BEGIN
 	DECLARE @testId INT
-	SELECT TOP(1) @testId= dsts.TestId FROM D_SITE_TEST_SUBJECT AS dsts
-	JOIN @oldSteps AS os ON os.SubjectId=dsts.Id
+	SELECT TOP(1) @testId = dsts.TestId
+	FROM   D_SITE_TEST_SUBJECT  AS dsts
+	       JOIN @oldSteps       AS os
+	            ON  os.SubjectId = dsts.Id
 	
-	SELECT @allSubjectsCount= COUNT(DISTINCT dsts.Id) FROM D_SITE_TEST_SUBJECT AS dsts WHERE dsts.TestId=@testId
+	SELECT @allSubjectsCount = COUNT(DISTINCT dsts.Id)
+	FROM   D_SITE_TEST_SUBJECT AS dsts
+	WHERE  dsts.TestId = @testId
 	
-	SELECT @subjectsCount=COUNT(DISTINCT dsts.Id) FROM D_SITE_TEST_SUBJECT AS dsts WHERE dsts.Id NOT IN(SELECT os.SubjectId FROM @oldSteps AS os) AND dsts.TestId=@testId
+	SELECT @subjectsCount = COUNT(DISTINCT dsts.Id)
+	FROM   D_SITE_TEST_SUBJECT AS dsts
+	WHERE  dsts.Id NOT IN (SELECT os.SubjectId
+	                       FROM   @oldSteps AS os)
+	       AND dsts.TestId = @testId
 	
-	SELECT TOP 1 * FROM D_SITE_TEST_ANSWER AS dsta
-	JOIN D_SITE_TEST_QUESTION AS dstq ON dstq.Id = dsta.QuestionId
-	JOIN D_SITE_TEST_SUBJECT AS dsts ON dsts.Id = dsta.SubjectId
-	JOIN D_SITE_TEST AS dst ON dst.Id = dstq.TestId AND dst.Show=1 AND dst.Id=@testId
-	WHERE dsts.Id NOT IN(SELECT os.SubjectId FROM @oldSteps AS os)
-	ORDER BY NEWID()
+	SELECT TOP 1 *
+	FROM   D_SITE_TEST_ANSWER         AS dsta
+	       JOIN D_SITE_TEST_QUESTION  AS dstq
+	            ON  dstq.Id = dsta.QuestionId
+	       JOIN D_SITE_TEST_SUBJECT   AS dsts
+	            ON  dsts.Id = dsta.SubjectId
+	       JOIN D_SITE_TEST           AS dst
+	            ON  dst.Id = dstq.TestId
+	            AND dst.Show = 1
+	            AND dst.Id = @testId
+	WHERE  dsts.Id NOT IN (SELECT os.SubjectId
+	                       FROM   @oldSteps AS os)
+	ORDER BY
+	       NEWID()
 END
 GO
 
@@ -2078,22 +2109,33 @@ GO
 CREATE PROCEDURE dbo.get_site_test_normal_questions
 	@testId INT,
 	@subjectId INT,
-	@amount INT=3
+	@amount INT = 3
 AS
 BEGIN
-	
 	DECLARE @trueQuestionId INT
-	SELECT @trueQuestionId=dsta.QuestionId FROM D_SITE_TEST_ANSWER AS dsta
-	WHERE dsta.SubjectId=@subjectId AND dsta.IsCorrect=1
+	SELECT @trueQuestionId = dsta.QuestionId
+	FROM   D_SITE_TEST_ANSWER AS dsta
+	WHERE  dsta.SubjectId = @subjectId
+	       AND dsta.IsCorrect = 1
 	
-	SELECT NEWID(), x.* FROM (
-	SELECT TOP(@amount) dstq.*
-	FROM D_SITE_TEST_QUESTION AS dstq
-	JOIN D_SITE_TEST AS dst ON dst.Id = dstq.TestId AND dst.Id=@testId AND dst.Show=1
-	ORDER BY NEWID()
-	UNION ALL
-	SELECT TOP 1 * FROM D_SITE_TEST_QUESTION AS dstq WHERE dstq.Id=@trueQuestionId) x
-	ORDER BY 1
+	SELECT NEWID(),
+	       x.*
+	FROM   (
+	           SELECT TOP(@amount) dstq.*
+	           FROM   D_SITE_TEST_QUESTION AS dstq
+	                  JOIN D_SITE_TEST AS dst
+	                       ON  dst.Id = dstq.TestId
+	                       AND dst.Id = @testId
+	                       AND dst.Show = 1
+	           ORDER BY
+	                  NEWID()
+	           UNION ALL
+	           SELECT TOP 1 *
+	           FROM   D_SITE_TEST_QUESTION AS dstq
+	           WHERE  dstq.Id = @trueQuestionId
+	       ) x
+	ORDER BY
+	       1
 END
 GO
 
@@ -2187,3 +2229,54 @@ BEGIN
 	       dm.DateUpdate DESC
 END
 GO
+
+/*******************************************
+ * Статистика материалов по дате
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_material_date_statistic', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_material_date_statistic;
+GO
+CREATE PROCEDURE dbo.get_material_date_statistic
+	@mct INT
+AS
+BEGIN
+	SELECT COUNT(DISTINCT dm.Id)         AS [Count],
+	       CONVERT(DATE, dm.DateCreate)  AS DateCreate
+	FROM   DV_MATERIAL                   AS dm
+	       LEFT JOIN D_ARTICLE           AS da
+	            ON  da.ModelCoreType = dm.ModelCoreType
+	            AND da.Id = dm.Id
+	       LEFT JOIN D_NEWS              AS dn
+	            ON  dn.Id = dm.Id
+	            AND dn.ModelCoreType = dm.ModelCoreType
+	WHERE  dm.ModelCoreType = @mct
+	GROUP BY
+	       CONVERT(DATE, dm.DateCreate)
+	ORDER BY
+	       2
+END
+GO
+
+/*******************************************
+* Статистика запросов
+*******************************************/
+IF OBJECT_ID(N'dbo.get_request_date_statistic', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_request_date_statistic;
+GO
+CREATE PROCEDURE dbo.get_request_date_statistic
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	DECLARE @date DATETIME = GETDATE()
+	
+	SELECT COUNT(DISTINCT dr.Id)         AS [Count],
+	       CONVERT(DATE, dr.DateCreate)  AS [DateCreate]
+	FROM   D_REQUEST                     AS dr
+	WHERE  YEAR(dr.DateCreate) = YEAR(@date)
+	       AND MONTH(dr.DateCreate) = MONTH(@date)
+	GROUP BY
+	       CONVERT(DATE, dr.DateCreate)
+	ORDER BY
+	       2
+END

@@ -143,22 +143,23 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_GroupBanners", viewModel);
         }
 
-        [HttpPost]
-        public async virtual Task AddClick(Guid bannerId)
+        [HttpPost, AllowAnonymous]
+        public virtual async Task<ActionResult> AddClick(Guid bannerId)
         {
-            await Task.Run(() =>
+            return await Task.Run(() =>
             {
                 _repo.AddClick(bannerId);
+                return new HttpStatusCodeResult(200);
             });
         }
 
-        [HttpPost]
-        public async virtual Task<JsonResult> AddShow(Guid bannerId)
+        [HttpPost, AllowAnonymous]
+        public async virtual Task<ActionResult> AddShow(Guid bannerId)
         {
             return await Task.Run(() =>
             {
                 _repo.AddShows(new Guid[] { bannerId });
-                return Json(null);
+                return new HttpStatusCodeResult(200);
             });
         }
     }

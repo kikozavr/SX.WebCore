@@ -9,20 +9,17 @@ namespace SX.WebCore.HtmlHelpers
         {
             if (banner == null) return null;
             var figure = new TagBuilder("figure");
+            figure.MergeAttribute("data-href", banner.Url);
+            figure.MergeAttribute("data-id", banner.Id.ToString().ToLower());
             figure.AddCssClass(string.Concat("th-banner ", banner.Place.ToString().ToLower()));
 
             var a = new TagBuilder("a");
-            a.MergeAttribute("href", banner.Url);
-            a.MergeAttribute("target", "_blank");
-            a.MergeAttribute("onclick", "bannerClick('"+ banner.Id+ "')");
+            a.MergeAttribute("href", "javascript:void(0)");
             a.MergeAttribute("rel", "nofollow");
 
             var img = new TagBuilder("img");
-            img.AddCssClass("lazy");
-            img.MergeAttribute("data-src", FuncBannerImgUrl(banner));
-            img.MergeAttribute("data-id", banner.Id.ToString().ToLower());
             img.MergeAttribute("alt", banner.Title);
-            img.MergeAttribute("src", "data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=");
+            img.MergeAttribute("src", FuncBannerImgUrl(banner));
             a.InnerHtml += img.ToString(TagRenderMode.SelfClosing);
 
             figure.InnerHtml += a;

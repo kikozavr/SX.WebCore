@@ -10,8 +10,16 @@ namespace SX.WebCore.MvcControllers
         where TModel : SxDbModel<int>
         where TDbContext : SxDbContext
     {
-        private ModelCoreType _mct;
-        public SxMaterialsController(ModelCoreType mct)
+        private static ModelCoreType _mct;
+        protected static ModelCoreType ModelCoreType
+        {
+            get
+            {
+                return _mct;
+            }
+        }
+
+        protected SxMaterialsController(ModelCoreType mct)
         {
             _mct = mct;
         }
@@ -38,7 +46,7 @@ namespace SX.WebCore.MvcControllers
         {
             return await Task.Run(() =>
             {
-                var data = (Repo as SxRepoMaterial<TModel, TDbContext>).DateStatistic(_mct);
+                var data = (Repo as SxRepoMaterial<TModel, TDbContext>).DateStatistic;
                 return Json(data, JsonRequestBehavior.AllowGet);
             });
         }

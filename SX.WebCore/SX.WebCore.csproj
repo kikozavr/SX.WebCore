@@ -37,7 +37,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Dapper, Version=1.50.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.50.1\lib\net451\Dapper.dll</HintPath>
+      <HintPath>..\..\ge\packages\Dapper.1.50.1\lib\net451\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -290,6 +290,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="SxEmployee.cs" />
     <Compile Include="SxDateStatistic.cs" />
+    <Compile Include="SxHumor.cs" />
     <Compile Include="SxShareButton.cs" />
     <Compile Include="SxNet.cs" />
     <Compile Include="SxOrder.cs" />
@@ -340,6 +341,7 @@
     <Compile Include="ViewModels\SxVMEditVideo.cs" />
     <Compile Include="ViewModels\SxVMEmployee.cs" />
     <Compile Include="ViewModels\SxVMFAQ.cs" />
+    <Compile Include="ViewModels\SxVMMaterial.cs" />
     <Compile Include="ViewModels\SxVMShareButton.cs" />
     <Compile Include="ViewModels\SxVMNet.cs" />
     <Compile Include="ViewModels\SxVMPicture.cs" />
@@ -350,6 +352,7 @@
     <Compile Include="ViewModels\SxVMSiteTest.cs" />
     <Compile Include="ViewModels\SxVMSiteTestAnswer.cs" />
     <Compile Include="ViewModels\SxVMSiteTestQuestion.cs" />
+    <Compile Include="ViewModels\SxVMSiteTestStepNormal.cs" />
     <Compile Include="ViewModels\SxVMSiteTestSubject.cs" />
     <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />
     <Compile Include="ViewModels\SxVMValute.cs" />
@@ -369,7 +372,7 @@
     <Compile Include="ViewModels\SxVMAppUser.cs" />
     <Compile Include="ViewModels\SxVMEditEmployee.cs" />
     <Compile Include="ViewModels\SxVMVideo.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestStep.cs" />
+    <Compile Include="ViewModels\SxVMSiteTestStepGuess.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

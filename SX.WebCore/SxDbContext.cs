@@ -34,7 +34,7 @@ namespace SX.WebCore
 
         public DbSet<SxEmployee> Employees { get; set; }
 
-        public DbSet<SxShareButton> ShareButtons { get; set; }
+        public DbSet<SxHumor> Humors { get; set; }
 
         public DbSet<SxNet> Nets { get; set; }
 
@@ -51,6 +51,8 @@ namespace SX.WebCore
         public DbSet<SxSeoTags> SeoInfo { get; set; }
 
         public DbSet<SxSeoKeyword> SeoKeyWords { get; set; }
+
+        public DbSet<SxShareButton> ShareButtons { get; set; }
 
         public DbSet<SxSiteSetting> SiteSettings { get; set; }
 

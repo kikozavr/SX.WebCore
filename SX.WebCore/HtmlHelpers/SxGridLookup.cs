@@ -10,6 +10,7 @@ namespace SX.WebCore.HtmlHelpers
             public string DataAjaxUrl { get; set; }
             public bool IsSingleMode { get; set; } = true;
             public string DefaulText { get; set; }
+            public string Placeholder { get; set; }
         }
 
         public static MvcHtmlString SxGridLookup<TModel>(this HtmlHelper htmlHelper, SxGridLookupSettings settings, TModel[] collection=null)
@@ -31,6 +32,8 @@ namespace SX.WebCore.HtmlHelpers
             var input = new TagBuilder("input");
             input.AddCssClass("form-control sx-gvl__input");
             input.MergeAttribute("value", settings.DefaulText);
+            if(settings.Placeholder!=null)
+                input.MergeAttribute("placeholder", settings.Placeholder);
             input.MergeAttribute("type", "text");
             group.InnerHtml += input;
 

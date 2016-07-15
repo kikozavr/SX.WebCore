@@ -160,7 +160,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public SxSiteTestAnswer GetGuessStep(List<SxVMSiteTestStep> steps, out int subjectsCount)
+        public SxSiteTestAnswer GetGuessStep(List<SxVMSiteTestStepGuess> steps, out int subjectsCount)
         {
             var table = new DataTable();
             table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
@@ -192,7 +192,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public SxSiteTestAnswer GetNormalStep(List<SxVMSiteTestStep> steps, out int subjectsCount, out int allSubjectsCount)
+        public SxSiteTestAnswer GetNormalStep(List<SxVMSiteTestStepNormal> steps, out int subjectsCount, out int allSubjectsCount)
         {
             var table = new DataTable();
             table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });

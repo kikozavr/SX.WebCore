@@ -144,22 +144,22 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, AllowAnonymous]
-        public virtual async Task<ActionResult> AddClick(Guid bannerId)
+        public virtual async Task<JsonResult> AddClick(Guid bannerId)
         {
             return await Task.Run(() =>
             {
                 _repo.AddClick(bannerId);
-                return new HttpStatusCodeResult(200);
+                return Json(new { Success=true});
             });
         }
 
         [HttpPost, AllowAnonymous]
-        public async virtual Task<ActionResult> AddShow(Guid bannerId)
+        public async virtual Task<JsonResult> AddShow(Guid bannerId)
         {
             return await Task.Run(() =>
             {
                 _repo.AddShows(new Guid[] { bannerId });
-                return new HttpStatusCodeResult(200);
+                return Json(new { Success = true });
             });
         }
     }

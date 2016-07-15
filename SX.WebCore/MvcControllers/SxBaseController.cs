@@ -26,6 +26,15 @@ namespace SX.WebCore.MvcControllers
 
         protected static IMapper Mapper { get; set; }
 
+        private static Action<SxBaseController<TDbContext>> _writeBreadcrumbs;
+        protected static Action<SxBaseController<TDbContext>> WriteBreadcrumbs
+        {
+            set
+            {
+                _writeBreadcrumbs = value;
+            }
+        }
+
         public SxBaseController()
         {
             if (Mapper == null)
@@ -41,9 +50,9 @@ namespace SX.WebCore.MvcControllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var routeDataValues = filterContext.RequestContext.RouteData.Values;
-            SxAreaName = (string)routeDataValues["area"];
-            SxControllerName = (string)routeDataValues["controller"];
-            SxActionName = (string)routeDataValues["action"];
+            SxAreaName = routeDataValues["area"].ToString().ToLower();
+            SxControllerName = routeDataValues["controller"].ToString().ToLower();
+            SxActionName = routeDataValues["action"].ToString().ToLower();
             var session = filterContext.RequestContext.HttpContext.Session;
             SxSessionId = session?.SessionID;
             SxRawUrl = Request.RawUrl.ToLower();
@@ -82,6 +91,10 @@ namespace SX.WebCore.MvcControllers
             {
                 writeRequestInfo();
             }
+
+            //пишем хлебные крошки
+            if (_writeBreadcrumbs!=null)
+                _writeBreadcrumbs(this);
 
             base.OnActionExecuting(filterContext);
         }

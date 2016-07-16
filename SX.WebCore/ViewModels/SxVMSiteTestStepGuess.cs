@@ -1,6 +1,6 @@
 ﻿namespace SX.WebCore.ViewModels
 {
-    public class SxVMSiteTestStepGuess
+    public sealed class SxVMSiteTestStepGuess
     {
         public int QuestionId { get; set; }
         public bool IsCorrect { get; set; }

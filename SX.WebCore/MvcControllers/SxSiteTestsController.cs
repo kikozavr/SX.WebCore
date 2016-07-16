@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml;
+using SX.WebCore.Attrubutes;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Collections.Generic;
@@ -20,6 +21,14 @@ namespace SX.WebCore.MvcControllers
                 _repo = new SxRepoSiteTest<TDbContext>();
         }
 
+        protected SxRepoSiteTest<TDbContext> Repo
+        {
+            get
+            {
+                return _repo;
+            }
+        }
+
         private static int _pageSize = 20;
 
         [HttpGet]
@@ -28,7 +37,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "Title", Direction = SortDirection.Asc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
             filter.PagerInfo.TotalItems = _repo.Count(filter);
-            var viewModel = _repo.Query(filter).Select(x=>Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
+            var viewModel = _repo.Query(filter).Select(x => Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -108,9 +117,9 @@ namespace SX.WebCore.MvcControllers
                     if (old != null)
                         ModelState.AddModelError(isArchitect ? "TitleUrl" : "Title", "Модель с таким текстовым ключем уже существует");
                     if (isArchitect)
-                        newModel = _repo.Update(redactModel, true, "Title", "Description", "Type", "TitleUrl", "Show");
+                        newModel = _repo.Update(redactModel, true, "Title", "Description", "Rules", "Type", "TitleUrl", "Show");
                     else
-                        newModel = _repo.Update(redactModel, true, "Title", "Description", "Show");
+                        newModel = _repo.Update(redactModel, true, "Title", "Description", "Rules", "Show");
                 }
                 return RedirectToAction("index");
             }
@@ -223,7 +232,7 @@ namespace SX.WebCore.MvcControllers
                     range = ws.Cells[startRow, startColumn];
                 }
 
-                var id=await writeSiteTestToDb(test);
+                var id = await writeSiteTestToDb(test);
                 return RedirectToAction("edit", new { id = id });
             }
         }
@@ -276,6 +285,30 @@ namespace SX.WebCore.MvcControllers
                 }
 
                 return testId;
+            });
+        }
+
+        [HttpPost, NotLogRequest, AllowAnonymous]
+        public virtual async Task<JsonResult> Rules(int siteTestId)
+        {
+            return await Task.Run(() =>
+            {
+                var data = _repo.GetSiteTestRules(siteTestId);
+                return Json(new
+                {
+                    Title = data.Title,
+                    Rules = data.Rules
+                });
+            });
+        }
+
+        [HttpPost, AllowAnonymous]
+        public async Task<JsonResult> NormalResults(List<SxVMSiteTestStepNormal> steps)
+        {
+            return await Task.Run(() =>
+            {
+                var data = _repo.GetNormalResults(steps);
+                return Json(data);
             });
         }
     }

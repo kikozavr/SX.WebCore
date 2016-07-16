@@ -1,4 +1,5 @@
-﻿using SX.WebCore.Repositories;
+﻿using SX.WebCore.Attrubutes;
+using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
 using System.Linq;
@@ -143,7 +144,7 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_GroupBanners", viewModel);
         }
 
-        [HttpPost, AllowAnonymous]
+        [HttpPost, AllowAnonymous, NotLogRequest]
         public virtual async Task<JsonResult> AddClick(Guid bannerId)
         {
             return await Task.Run(() =>
@@ -153,13 +154,26 @@ namespace SX.WebCore.MvcControllers
             });
         }
 
-        [HttpPost, AllowAnonymous]
+        [HttpPost, AllowAnonymous, NotLogRequest]
         public async virtual Task<JsonResult> AddShow(Guid bannerId)
         {
             return await Task.Run(() =>
             {
                 _repo.AddShows(new Guid[] { bannerId });
                 return Json(new { Success = true });
+            });
+        }
+
+        [HttpGet]
+#if !DEBUG
+        [OutputCache(Duration = 3600)]
+#endif
+        public async Task<JsonResult> DateStatistic()
+        {
+            return await Task.Run(() =>
+            {
+                var data = _repo.DateStatistic;
+                return Json(data, JsonRequestBehavior.AllowGet);
             });
         }
     }

@@ -213,6 +213,7 @@
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
     <Compile Include="Repositories\SxRepoSiteTestSubject.cs" />
     <Compile Include="Repositories\SxRepositoryChat.cs" />
+    <Compile Include="SxBannersStatistic.cs" />
     <Compile Include="SxFilter.cs" />
     <Compile Include="Abstract\SxMaterial.cs" />
     <Compile Include="Abstract\SxPerson.cs" />

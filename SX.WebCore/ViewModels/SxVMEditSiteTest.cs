@@ -21,5 +21,8 @@ namespace SX.WebCore.ViewModels
 
         [Display(Name ="Тип теста")]
         public SxSiteTest.SiteTestType Type { get; set; }
+
+        [Display(Name ="Правила"), AllowHtml, DataType(DataType.MultilineText)]
+        public string Rules { get; set; }
     }
 }

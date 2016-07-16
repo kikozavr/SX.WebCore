@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 15.07.2016 11:39:01
+ * Time: 16.07.2016 12:48:11
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,8 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
 
 
 
@@ -407,6 +409,8 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
 
 
 
@@ -1647,6 +1651,7 @@ GO
 CREATE PROCEDURE dbo.add_site_test
 	@title NVARCHAR(200),
 	@desc NVARCHAR(1000),
+	@rules NVARCHAR(MAX),
 	@titleUrl VARCHAR(255),
 	@type INT
 AS
@@ -1661,6 +1666,7 @@ BEGIN
 	      (
 	        Title,
 	        [Description],
+	        Rules,
 	        DateUpdate,
 	        DateCreate,
 	        TitleUrl,
@@ -1670,6 +1676,7 @@ BEGIN
 	      (
 	        @title,
 	        @desc,
+	        @rules,
 	        GETDATE(),
 	        GETDATE(),
 	        @titleUrl,
@@ -1684,6 +1691,23 @@ BEGIN
 	END
 END
 GO	
+
+/*******************************************
+ * Правила теста
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_test_rules', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_test_rules;
+GO
+CREATE PROCEDURE dbo.get_site_test_rules
+	@testId INT
+AS
+BEGIN
+	SELECT TOP 1 dst.Title,
+	       dst.Rules
+	FROM   D_SITE_TEST AS dst
+	WHERE  dst.Id = @testId
+END
+GO
  
 /*******************************************
  * delete site test
@@ -1955,23 +1979,19 @@ IF OBJECT_ID(N'dbo.get_site_test_next_guess_step', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_site_test_next_guess_step;
 GO
 
-IF OBJECT_ID(N'dbo.get_site_test_next_normal_step', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.get_site_test_next_normal_step;
+IF TYPE_ID(N'dbo.OldSiteTestStepGuess') IS NOT NULL
+    DROP TYPE dbo.OldSiteTestStepGuess
 GO
 
-IF TYPE_ID(N'dbo.OldSiteTestStep') IS NOT NULL
-    DROP TYPE dbo.OldSiteTestStep
-GO
-
-CREATE TYPE dbo.OldSiteTestStep AS TABLE 
-(QuestionId INT, SubjectId INT, IsCorrect BIT, [Order] INT);  
+CREATE TYPE dbo.OldSiteTestStepGuess AS TABLE 
+(QuestionId INT, IsCorrect BIT, [Order] INT);  
 GO  
 
 /*******************************************
  * Следующий вопрос теста Guess
  *******************************************/
 CREATE PROCEDURE dbo.get_site_test_next_guess_step
-	@oldSteps dbo.OldSiteTestStep READONLY,
+	@oldSteps dbo.OldSiteTestStepGuess READONLY,
 	@subjectsCount INT OUTPUT
 AS
 BEGIN
@@ -2059,10 +2079,29 @@ END
 GO
 
 /*******************************************
+ * Тип для предыдущих ответов теста
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_test_next_normal_step', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_test_next_normal_step;
+GO
+
+IF OBJECT_ID(N'dbo.get_site_test_normal_results', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_test_normal_results;
+GO
+
+IF TYPE_ID(N'dbo.OldSiteTestStepNormal') IS NOT NULL
+    DROP TYPE dbo.OldSiteTestStepNormal
+GO
+
+CREATE TYPE dbo.OldSiteTestStepNormal AS TABLE 
+(QuestionId INT, SubjectId INT);  
+GO 
+
+/*******************************************
  * Следующий вопрос теста Normal
  *******************************************/
 CREATE PROCEDURE dbo.get_site_test_next_normal_step
-	@oldSteps dbo.OldSiteTestStep READONLY,
+	@oldSteps dbo.OldSiteTestStepNormal READONLY,
 	@subjectsCount INT OUTPUT,
 	@allSubjectsCount INT OUTPUT
 AS
@@ -2083,20 +2122,32 @@ BEGIN
 	                       FROM   @oldSteps AS os)
 	       AND dsts.TestId = @testId
 	
-	SELECT TOP 1 *
-	FROM   D_SITE_TEST_ANSWER         AS dsta
-	       JOIN D_SITE_TEST_QUESTION  AS dstq
-	            ON  dstq.Id = dsta.QuestionId
-	       JOIN D_SITE_TEST_SUBJECT   AS dsts
-	            ON  dsts.Id = dsta.SubjectId
-	       JOIN D_SITE_TEST           AS dst
-	            ON  dst.Id = dstq.TestId
-	            AND dst.Show = 1
-	            AND dst.Id = @testId
-	WHERE  dsts.Id NOT IN (SELECT os.SubjectId
-	                       FROM   @oldSteps AS os)
-	ORDER BY
-	       NEWID()
+	IF (@subjectsCount > 0)
+	    SELECT TOP 1 *
+	    FROM   D_SITE_TEST_ANSWER         AS dsta
+	           JOIN D_SITE_TEST_QUESTION  AS dstq
+	                ON  dstq.Id = dsta.QuestionId
+	           JOIN D_SITE_TEST_SUBJECT   AS dsts
+	                ON  dsts.Id = dsta.SubjectId
+	           JOIN D_SITE_TEST           AS dst
+	                ON  dst.Id = dstq.TestId
+	                AND dst.Show = 1
+	                AND dst.Id = @testId
+	    WHERE  dsts.Id NOT IN (SELECT os.SubjectId
+	                           FROM   @oldSteps AS os)
+	ELSE
+	    SELECT TOP 1 * 
+	    FROM   D_SITE_TEST_ANSWER         AS dsta
+	           JOIN D_SITE_TEST_QUESTION  AS dstq
+	                ON  dstq.Id = dsta.QuestionId
+	           JOIN D_SITE_TEST_SUBJECT   AS dsts
+	                ON  dsts.Id = dsta.SubjectId
+	           JOIN D_SITE_TEST           AS dst
+	                ON  dst.Id = dstq.TestId
+	                AND dst.Show = 1
+	                AND dst.Id = @testId
+	    ORDER BY
+	           NEWID()
 END
 GO
 
@@ -2127,6 +2178,9 @@ BEGIN
 	                       ON  dst.Id = dstq.TestId
 	                       AND dst.Id = @testId
 	                       AND dst.Show = 1
+	           WHERE  dstq.Id NOT IN (SELECT TOP 1 dstq.Id
+	                                  FROM   D_SITE_TEST_QUESTION AS dstq
+	                                  WHERE  dstq.Id = @trueQuestionId)
 	           ORDER BY
 	                  NEWID()
 	           UNION ALL
@@ -2136,6 +2190,30 @@ BEGIN
 	       ) x
 	ORDER BY
 	       1
+END
+GO
+
+/*******************************************
+ * Результаты теста Normal
+ *******************************************/
+CREATE PROCEDURE dbo.get_site_test_normal_results
+	@oldSteps dbo.OldSiteTestStepNormal READONLY
+AS
+BEGIN
+	SELECT
+		dsta.Id,
+		CASE WHEN os.SubjectId=dsts.Id AND os.QuestionId=dstq.Id THEN 1 ELSE 0 END AS IsCorrect,
+		dstq.Id,
+		dstq.[Text],
+		dsts.Id,
+		dsts.Title,
+		dsts.Id,
+		dsts.Title
+	FROM D_SITE_TEST_ANSWER AS dsta
+	JOIN D_SITE_TEST_QUESTION AS dstq ON dstq.Id = dsta.QuestionId
+	JOIN D_SITE_TEST_SUBJECT AS dsts ON dsts.Id = dsta.SubjectId
+	JOIN D_SITE_TEST AS dst ON dst.Id = dstq.TestId AND dst.Show=1
+	JOIN @oldSteps AS os ON os.SubjectId=dsts.id
 END
 GO
 
@@ -2280,3 +2358,28 @@ BEGIN
 	ORDER BY
 	       2
 END
+GO
+
+/*******************************************
+* Статистика просмотра баннеров
+*******************************************/
+IF OBJECT_ID(N'dbo.get_banners_statistic', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_banners_statistic;
+GO
+CREATE PROCEDURE dbo.get_banners_statistic
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	DECLARE @date DATETIME = GETDATE()
+	
+	SELECT SUM(db.ClicksCount)  AS ClicksCount,
+	       SUM(db.ShowsCount)   AS ShowsCount,
+	       db.[Url]
+	FROM   D_BANNER             AS db
+	GROUP BY
+	       db.[Url]
+	ORDER BY
+	       db.[Url]
+END
+GO

@@ -148,10 +148,11 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTest>("add_site_test @title, @desc, @titleUrl, @type", new
+                var data = conn.Query<SxSiteTest>("add_site_test @title, @desc, @rules, @titleUrl, @type", new
                 {
                     title = model.Title,
                     desc = model.Description,
+                    rules=model.Rules,
                     titleUrl = UrlHelperExtensions.SeoFriendlyUrl(model.Title),
                     type = model.Type
                 }).SingleOrDefault();
@@ -164,16 +165,15 @@ namespace SX.WebCore.Repositories
         {
             var table = new DataTable();
             table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
-            table.Columns.Add(new DataColumn { ColumnName = "SubjectId" });
             table.Columns.Add(new DataColumn { ColumnName = "IsCorrect" });
             table.Columns.Add(new DataColumn { ColumnName = "Order" });
             steps.ForEach(x =>
             {
-                table.Rows.Add(x.QuestionId, 0, x.IsCorrect, x.Order);
+                table.Rows.Add(x.QuestionId, x.IsCorrect, x.Order);
             });
 
             var p = new DynamicParameters();
-            p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStep"));
+            p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStepGuess"));
             p.Add("subjectsCount", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
             using (var conn = new SqlConnection(ConnectionString))
@@ -197,15 +197,13 @@ namespace SX.WebCore.Repositories
             var table = new DataTable();
             table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
             table.Columns.Add(new DataColumn { ColumnName = "SubjectId" });
-            table.Columns.Add(new DataColumn { ColumnName = "IsCorrect" });
-            table.Columns.Add(new DataColumn { ColumnName = "Order" });
             steps.ForEach(x =>
             {
-                table.Rows.Add(x.QuestionId, x.SubjectId, x.IsCorrect, x.Order);
+                table.Rows.Add(x.QuestionId, x.SubjectId);
             });
 
             var p = new DynamicParameters();
-            p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStep"));
+            p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStepNormal"));
             p.Add("subjectsCount", dbType: DbType.Int32, direction: ParameterDirection.Output);
             p.Add("allSubjectsCount", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
@@ -224,6 +222,41 @@ namespace SX.WebCore.Repositories
                 subjectsCount = p.Get<int>("subjectsCount");
                 allSubjectsCount = p.Get<int>("allSubjectsCount");
 
+                return data;
+            }
+        }
+        public SxSiteTestAnswer[] GetNormalResults(List<SxVMSiteTestStepNormal> steps)
+        {
+            var table = new DataTable();
+            table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
+            table.Columns.Add(new DataColumn { ColumnName = "SubjectId" });
+            steps.ForEach(x =>
+            {
+                table.Rows.Add(x.QuestionId, x.SubjectId);
+            });
+
+            var p = new DynamicParameters();
+            p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStepNormal"));
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_normal_results", (a, q, s, t) =>
+                {
+                    a.Question = q;
+                    q.Test = t;
+                    a.Subject = s;
+                    return a;
+                }, p, commandType: CommandType.StoredProcedure);
+
+                return data.ToArray();
+            }
+        }
+
+        public SxSiteTest GetSiteTestRules(int siteTestId)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxSiteTest>("dbo.get_site_test_rules @testId", new { testId = siteTestId }).SingleOrDefault();
                 return data;
             }
         }

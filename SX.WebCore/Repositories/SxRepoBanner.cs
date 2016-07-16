@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
+using SX.WebCore.Attrubutes;
 using SX.WebCore.Providers;
 using System;
 using System.Data.SqlClient;
@@ -168,6 +169,18 @@ namespace SX.WebCore.Repositories
             sb.Remove(0, 1);
 
             return sb.ToString();
+        }
+
+        public SxBannersStatistic[] DateStatistic
+        {
+            get
+            {
+                using (var conn = new SqlConnection(ConnectionString))
+                {
+                    var data = conn.Query<SxBannersStatistic>("dbo.get_banners_statistic");
+                    return data.ToArray();
+                }
+            }
         }
     }
 }

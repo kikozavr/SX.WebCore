@@ -19,6 +19,8 @@ namespace SX.WebCore
 
         public bool Show { get; set; }
 
+        public string Rules { get; set; }
+
         public virtual ICollection<SxSiteTestQuestion> Questions { get; set; } 
         public virtual ICollection<SxSiteTestSubject> Answers { get; set; }
 

@@ -14,7 +14,7 @@ namespace SX.WebCore
         public SxPicture Picture { get; set; }
         public Guid PictureId { get; set; }
 
-        [Required, MaxLength(255)]
+        [Required, MaxLength(255), Index]
         public string Url { get; set; }
 
         [MaxLength(50)]

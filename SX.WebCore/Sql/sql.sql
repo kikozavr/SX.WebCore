@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 16.07.2016 12:48:11
+ * Time: 31.07.2016 14:01:16
  ************************************************************/
 
 /*******************************************
@@ -209,6 +209,9 @@ GO
 
 
 
+
+
+
 /*******************************************
  * Превью материалов
  *******************************************/
@@ -279,12 +282,13 @@ CREATE PROCEDURE dbo.get_material_by_url(
 AS
 BEGIN
 	SELECT dm.*,
-	       dg.TitleUrl          AS GameTitleUrl,
+	       dh.UserName,
+	       dg.TitleUrl            AS GameTitleUrl,
 	       CASE 
 	            WHEN dm.Foreword IS NOT NULL THEN dm.Foreword
 	            ELSE SUBSTRING(dbo.FUNC_STRIP_HTML(dm.Html), 0, 200) +
 	                 '...'
-	       END                  AS Foreword,
+	       END                    AS Foreword,
 	       (
 	           SELECT ISNULL(SUM(1), 0)
 	           FROM   D_USER_CLICK  AS duc
@@ -293,7 +297,7 @@ BEGIN
 	           WHERE  duc.MaterialId = dm.Id
 	                  AND duc.ModelCoreType = dm.ModelCoreType
 	                  AND dl.Direction = 1
-	       )                    AS LikeUpCount,
+	       )                      AS LikeUpCount,
 	       (
 	           SELECT ISNULL(SUM(1), 0)
 	           FROM   D_USER_CLICK  AS duc
@@ -302,24 +306,27 @@ BEGIN
 	           WHERE  duc.MaterialId = dm.Id
 	                  AND duc.ModelCoreType = dm.ModelCoreType
 	                  AND dl.Direction = 2
-	       )                    AS LikeDownCount,
+	       )                      AS LikeDownCount,
 	       (
 	           SELECT COUNT(1)
 	           FROM   D_COMMENT AS dc
 	           WHERE  dc.MaterialId = dm.Id
 	                  AND dc.ModelCoreType = dm.ModelCoreType
-	       )                    AS CommentsCount,
-	       anu.NikName          AS UserNikName
-	FROM   DV_MATERIAL          AS dm
-	       LEFT JOIN D_ARTICLE  AS da
+	       )                      AS CommentsCount,
+	       anu.NikName            AS UserNikName
+	FROM   DV_MATERIAL            AS dm
+	       LEFT JOIN D_ARTICLE    AS da
 	            ON  da.ModelCoreType = dm.ModelCoreType
 	            AND da.Id = dm.Id
-	       LEFT JOIN D_NEWS     AS dn
+	       LEFT JOIN D_NEWS       AS dn
 	            ON  dn.Id = dm.Id
 	            AND dn.ModelCoreType = dm.ModelCoreType
-	       LEFT JOIN D_GAME     AS dg
+	       LEFT JOIN D_HUMOR      AS dh
+	            ON  dh.ModelCoreType = dm.ModelCoreType
+	            AND dh.Id = dm.Id
+	       LEFT JOIN D_GAME       AS dg
 	            ON  (dg.Id = da.GameId OR dg.Id = dn.GameId)
-	       JOIN AspNetUsers     AS anu
+	       LEFT JOIN AspNetUsers  AS anu
 	            ON  anu.Id = dm.UserId
 	WHERE  dm.TitleUrl = @title_url
 	       AND dm.Show = 1
@@ -409,6 +416,9 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
+
 
 
 
@@ -2136,7 +2146,7 @@ BEGIN
 	    WHERE  dsts.Id NOT IN (SELECT os.SubjectId
 	                           FROM   @oldSteps AS os)
 	ELSE
-	    SELECT TOP 1 * 
+	    SELECT TOP 1 *
 	    FROM   D_SITE_TEST_ANSWER         AS dsta
 	           JOIN D_SITE_TEST_QUESTION  AS dstq
 	                ON  dstq.Id = dsta.QuestionId
@@ -2200,20 +2210,27 @@ CREATE PROCEDURE dbo.get_site_test_normal_results
 	@oldSteps dbo.OldSiteTestStepNormal READONLY
 AS
 BEGIN
-	SELECT
-		dsta.Id,
-		CASE WHEN os.SubjectId=dsts.Id AND os.QuestionId=dstq.Id THEN 1 ELSE 0 END AS IsCorrect,
-		dstq.Id,
-		dstq.[Text],
-		dsts.Id,
-		dsts.Title,
-		dsts.Id,
-		dsts.Title
-	FROM D_SITE_TEST_ANSWER AS dsta
-	JOIN D_SITE_TEST_QUESTION AS dstq ON dstq.Id = dsta.QuestionId
-	JOIN D_SITE_TEST_SUBJECT AS dsts ON dsts.Id = dsta.SubjectId
-	JOIN D_SITE_TEST AS dst ON dst.Id = dstq.TestId AND dst.Show=1
-	JOIN @oldSteps AS os ON os.SubjectId=dsts.id
+	SELECT dsta.Id,
+	       CASE 
+	            WHEN os.SubjectId = dsts.Id AND os.QuestionId = dstq.Id THEN 1
+	            ELSE 0
+	       END                        AS IsCorrect,
+	       dstq.Id,
+	       dstq.[Text],
+	       dsts.Id,
+	       dsts.Title,
+	       dsts.Id,
+	       dsts.Title
+	FROM   D_SITE_TEST_ANSWER         AS dsta
+	       JOIN D_SITE_TEST_QUESTION  AS dstq
+	            ON  dstq.Id = dsta.QuestionId
+	       JOIN D_SITE_TEST_SUBJECT   AS dsts
+	            ON  dsts.Id = dsta.SubjectId
+	       JOIN D_SITE_TEST           AS dst
+	            ON  dst.Id = dstq.TestId
+	            AND dst.Show = 1
+	       JOIN @oldSteps             AS os
+	            ON  os.SubjectId = dsts.id
 END
 GO
 
@@ -2346,13 +2363,15 @@ AS
 BEGIN
 	SET NOCOUNT ON
 	
-	DECLARE @date DATETIME = GETDATE()
+	DECLARE @dateEnd       DATETIME = GETDATE(),
+	        @dateStart     DATETIME
+	
+	SET @dateStart = DATEADD(MONTH, -1, @dateEnd)
 	
 	SELECT COUNT(DISTINCT dr.Id)         AS [Count],
 	       CONVERT(DATE, dr.DateCreate)  AS [DateCreate]
 	FROM   D_REQUEST                     AS dr
-	WHERE  YEAR(dr.DateCreate) = YEAR(@date)
-	       AND MONTH(dr.DateCreate) = MONTH(@date)
+	WHERE  dr.DateCreate BETWEEN @dateStart AND @dateEnd
 	GROUP BY
 	       CONVERT(DATE, dr.DateCreate)
 	ORDER BY
@@ -2381,5 +2400,48 @@ BEGIN
 	       db.[Url]
 	ORDER BY
 	       db.[Url]
+END
+GO
+
+/*******************************************
+ * Категории материалов
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_material_categories_by_mct', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_material_categories_by_mct;
+GO
+CREATE PROCEDURE dbo.get_material_categories_by_mct
+	@mct INT
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	SELECT dmc.Id,
+	       dmc.Title
+	FROM   D_MATERIAL_CATEGORY AS dmc
+	WHERE  dmc.ModelCoreType = @mct
+END
+GO
+
+/*******************************************
+ * Проверка существования материала по TitleUrl
+ *******************************************/
+IF OBJECT_ID(N'dbo.exists_material_by_title_url', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.exists_material_by_title_url;
+GO
+CREATE PROCEDURE dbo.exists_material_by_title_url
+	@titleUrl NVARCHAR(255)
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	DECLARE @result BIT = 0
+	IF EXISTS(
+	       SELECT TOP 1 dm.Id
+	       FROM   DV_MATERIAL AS dm
+	       WHERE  dm.TitleUrl = @titleUrl
+	   )
+	    SET @result = 1
+	
+	SELECT @result
 END
 GO

@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using Dapper;
 using SX.WebCore.Providers;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
+using static SX.WebCore.Enums;
 
 namespace SX.WebCore.Repositories
 {
@@ -94,6 +95,15 @@ COMMIT TRANSACTION";
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Execute("del_material_category @catId", new { catId= key });
+            }
+        }
+
+        public virtual SxMaterialCategory[] GetByModelCoreType(ModelCoreType mct)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxMaterialCategory>("dbo.get_material_categories_by_mct @mct", new { mct = mct });
+                return data.ToArray();
             }
         }
     }

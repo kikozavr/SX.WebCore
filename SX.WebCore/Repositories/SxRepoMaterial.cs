@@ -40,6 +40,15 @@ namespace SX.WebCore.Repositories
             }
         }
 
+        public bool ExistsMaterialByTitleUrl(string titleUrl)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<bool>("dbo.exists_material_by_title_url @titleUrl", new { titleUrl = titleUrl }).SingleOrDefault();
+                return data;
+            }
+        }
+
         public void AddUserView(int mid, ModelCoreType mct)
         {
             using (var conn = new SqlConnection(ConnectionString))

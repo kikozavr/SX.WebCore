@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using static SX.WebCore.Enums;
 
 namespace SX.WebCore.HtmlHelpers
 {
@@ -29,7 +31,18 @@ namespace SX.WebCore.HtmlHelpers
             public string Image { get; set; }
         }
 
-        public static MvcHtmlString SxShareButtons(this HtmlHelper htmlHelper, SxShareButton[] buttons, Dictionary<string, SxShareButtonsSettings> settings = null)
+        public class SxLikeButtonsSettings
+        {
+            public Func<int> LikeUpCount { get; set; }
+
+            public Func<int> LikeDownCount { get; set; }
+
+            public Func<int> MaterialId { get; set; }
+
+            public ModelCoreType ModelCoreType { get; set; }
+        }
+
+        public static MvcHtmlString SxShareButtons(this HtmlHelper htmlHelper, SxShareButton[] buttons, Dictionary<string, SxShareButtonsSettings> settings = null, SxLikeButtonsSettings lbSettings=null )
         {
             if (buttons == null || !buttons.Any()) return null;
 
@@ -39,13 +52,46 @@ namespace SX.WebCore.HtmlHelpers
             SxShareButton button;
             TagBuilder li;
             TagBuilder btn;
+
+            if(lbSettings!=null)
+            {
+                if (lbSettings.LikeUpCount == null)
+                    throw new ArgumentNullException("Не задана функция получения количества положительных лайков");
+                if (lbSettings.LikeDownCount == null)
+                    throw new ArgumentNullException("Не задана функция получения количества отрицательных лайков");
+                if (lbSettings.MaterialId == null)
+                    throw new ArgumentNullException("Не задана функция получения идентификатора материала");
+                if (lbSettings.ModelCoreType == ModelCoreType.Unknown)
+                    throw new ArgumentNullException("Не задана функция получения типа материала");
+
+                li = new TagBuilder("li");
+                li.MergeAttribute("onclick", string.Format("sendLikeButtonClick(this, {0}, '{1}', '{2}', '{3}')", lbSettings.MaterialId(), lbSettings.ModelCoreType, UserClickType.Like, LikeDirection.Up));
+                li.AddCssClass("share-buttons__like-btn");
+                btn = new TagBuilder("button");
+                btn.AddCssClass("btn btn-sm btn-info");
+                btn.InnerHtml += "<span class=\"share-buttons__icon\"><i class=\"fa fa-thumbs-o-up text-success\"></i></span>";
+                btn.InnerHtml += "<span class=\"badge share-buttons__counter\">"+ lbSettings.LikeUpCount() + "</span>";
+                li.InnerHtml += btn;
+                ul.InnerHtml += li;
+
+                li = new TagBuilder("li");
+                li.MergeAttribute("onclick", string.Format("sendLikeButtonClick(this, {0}, '{1}', '{2}', '{3}')", lbSettings.MaterialId(), lbSettings.ModelCoreType, UserClickType.Like, LikeDirection.Down));
+                li.AddCssClass("share-buttons__like-btn");
+                btn = new TagBuilder("button");
+                btn.AddCssClass("btn btn-sm btn-info");
+                btn.InnerHtml += "<span class=\"share-buttons__icon\"><i class=\"fa fa-thumbs-o-down text-danger\"></i></span>";
+                btn.InnerHtml += "<span class=\"badge share-buttons__counter\">"+ lbSettings.LikeDownCount() + "</span>";
+                li.InnerHtml += btn;
+                ul.InnerHtml += li;
+            }
+
             for (int i = 0; i < buttons.Length; i++)
             {
                 button = buttons[i];
 
                 li = new TagBuilder("li");
                 li.MergeAttribute("data-type", button.Net.Code);
-                if(settings!=null && settings.ContainsKey(button.Net.Code))
+                if (settings != null && settings.ContainsKey(button.Net.Code))
                 {
                     var set = settings[button.Net.Code];
                     if (!string.IsNullOrEmpty(set.Url))

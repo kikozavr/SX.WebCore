@@ -175,7 +175,7 @@ namespace SX.WebCore.MvcControllers
                 test.Title = range.Value.ToString().Trim();
 
                 range = ws.Cells["B1"];
-                test.Desc = range.Value.ToString().Trim();
+                test.Desc = range.Value?.ToString().Trim();
 
                 //questions
                 range = ws.Cells["C1"];
@@ -303,12 +303,37 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, AllowAnonymous]
-        public async Task<JsonResult> NormalResults(List<SxVMSiteTestStepNormal> steps)
+        public async Task<PartialViewResult> ResultNormal(List<SxVMSiteTestStepNormal> steps)
         {
             return await Task.Run(() =>
             {
-                var data = _repo.GetNormalResults(steps);
-                return Json(data);
+                SxSiteTestAnswer answer;
+                SxVMSiteTestStepNormal userAnswer;
+                var result = new SXVMSiteTestResult<SxVMSiteTestResultNormal>();
+                var data = _repo.GetNormalResults(steps.First().SubjectId);
+                var test = data.First().Question.Test;
+                result.SiteTestTitle = test.Title;
+                result.SiteTestUrl = Url.Action("Details","SiteTests", new { titleUrl=test.TitleUrl});
+                result.Results = new SxVMSiteTestResultNormal[steps.Count];
+
+                for (int i = 0; i < steps.Count; i++)
+                {
+                    userAnswer = steps[i];
+                    answer = data.First(x=>x.SubjectId== userAnswer.SubjectId);
+
+                    result.Results[i] = new SxVMSiteTestResultNormal
+                    {
+                        SubjectTitle = answer.Subject.Title,
+                        QuestionText = data.First(x => x.QuestionId == userAnswer.QuestionId).Question.Text,
+                        IsCorrect = answer.QuestionId == userAnswer.QuestionId,
+                        Step= userAnswer
+                    };
+
+                    result.BallsCount += userAnswer.BallsSubjectShow + (answer.QuestionId == userAnswer.QuestionId ? userAnswer.BallsGoodRead : 0) + userAnswer.BallsBadRead;
+                }
+
+
+                return PartialView("_ResultNormal", result);
             });
         }
     }

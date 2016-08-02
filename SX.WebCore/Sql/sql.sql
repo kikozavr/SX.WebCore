@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 31.07.2016 14:01:16
+ * Time: 02.08.2016 14:24:41
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,7 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
 
 
 
@@ -416,6 +417,7 @@ BEGIN
 	RETURN @res
 END
 GO
+
 
 
 
@@ -1322,13 +1324,13 @@ BEGIN
 	       dst.Title,
 	       dst.TitleUrl,
 	       dst.[Description],
-	       COUNT(DISTINCT(dstb.Id))   AS StepsCount,
+	       COUNT(DISTINCT(dsts.Id))   AS StepsCount,
 	       COUNT(DISTINCT(dstq.Id))   AS QuestionsCount
 	FROM   D_SITE_TEST                AS dst
-	       JOIN D_SITE_TEST_BLOCK     AS dstb
-	            ON  dstb.TestId = dst.Id
+	       JOIN D_SITE_TEST_SUBJECT   AS dsts
+	            ON  dsts.TestId = dst.Id
 	       JOIN D_SITE_TEST_QUESTION  AS dstq
-	            ON  dstq.BlockId = dstb.Id
+	            ON  dstq.TestId = dst.Id
 	WHERE  Show = 1
 	GROUP BY
 	       dst.Id,
@@ -1376,12 +1378,12 @@ BEGIN
 	CLOSE c
 	DEALLOCATE c
 	
-	
-	
-	SET @x = RIGHT(@x, LEN(@x) -1)
-	
-	EXEC (
-	         'SELECT *
+	IF (@x <> '')
+	BEGIN
+	    SET @x = RIGHT(@x, LEN(@x) -1)
+	    
+	    EXEC (
+	             'SELECT *
 FROM   (
            SELECT dsts.Title,
                   dstq.[Text],
@@ -1389,20 +1391,21 @@ FROM   (
            FROM   D_SITE_TEST_SUBJECT AS dsts
                   JOIN D_SITE_TEST_QUESTION AS dstq
                        ON  dstq.TestId = ' + @testId +
-	         '
+	             '
                   LEFT JOIN D_SITE_TEST_ANSWER AS dsta
                        ON  dsta.SubjectId = dsts.Id
                        AND dsta.QuestionId = dstq.Id
            WHERE  dsts.TestId = ' + @testId +
-	         '
+	             '
        ) t
        PIVOT(
            SUM(IsCorrect) FOR t.Title IN (' + @x +
-	         ')
+	             ')
        ) p ORDER BY p.[Text] OFFSET ' + @page + ' ROWS FETCH NEXT ' + @pageSize 
-	         +
-	         ' ROWS ONLY'
-	     )
+	             +
+	             ' ROWS ONLY'
+	         )
+	END
 	
 	SELECT @count = COUNT(1)
 	FROM   D_SITE_TEST_QUESTION AS dstq
@@ -1419,8 +1422,8 @@ IF OBJECT_ID(N'dbo.revert_site_test_matrix_value', N'P') IS NOT NULL
     DROP PROCEDURE dbo.revert_site_test_matrix_value;
 GO
 CREATE PROCEDURE dbo.revert_site_test_matrix_value
-	@subjectTitle NVARCHAR(200),
-	@questionText NVARCHAR(400),
+	@subjectTitle NVARCHAR(400),
+	@questionText NVARCHAR(500),
 	@value INT
 AS
 BEGIN
@@ -1743,66 +1746,6 @@ AS
 	COMMIT TRANSACTION
 GO
 
-/*******************************************
- * add site test block
- *******************************************/
-IF OBJECT_ID(N'dbo.add_site_test_block', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.add_site_test_block;
-GO
-CREATE PROCEDURE dbo.add_site_test_block
-	@testId INT,
-	@title NVARCHAR(200),
-	@desc NVARCHAR(1000)
-AS
-BEGIN
-	IF NOT EXISTS (
-	       SELECT TOP(1) *
-	       FROM   D_SITE_TEST_BLOCK AS dstb
-	       WHERE  dstb.TestId = @testId
-	              AND dstb.Title = @title
-	   )
-	BEGIN
-	    INSERT INTO D_SITE_TEST_BLOCK
-	      (
-	        TestId,
-	        Title,
-	        [Description],
-	        DateUpdate,
-	        DateCreate
-	      )
-	    VALUES
-	      (
-	        @testId,
-	        @title,
-	        @desc,
-	        GETDATE(),
-	        GETDATE()
-	      )
-	    
-	    DECLARE @id INT
-	    SET @id = @@identity
-	    
-	    SELECT TOP(1) *
-	    FROM   D_SITE_TEST_BLOCK AS dstb
-	    WHERE  dstb.Id = @id
-	END
-END
-GO
- 
- /*******************************************
- * delete site test block
- *******************************************/
-IF OBJECT_ID(N'dbo.del_site_test_block', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.del_site_test_block;
-GO
-CREATE PROCEDURE dbo.del_site_test_block
-	@blockId INT
-AS
-	DELETE 
-	FROM   D_SITE_TEST_BLOCK
-	WHERE  Id = @blockId
-GO
-
  /*******************************************
  * add site test question
  *******************************************/
@@ -1811,7 +1754,7 @@ IF OBJECT_ID(N'dbo.add_site_test_question', N'P') IS NOT NULL
 GO
 CREATE PROCEDURE dbo.add_site_test_question
 	@testId INT,
-	@text NVARCHAR(400)
+	@text NVARCHAR(500)
 AS
 BEGIN
 	IF NOT EXISTS (
@@ -1863,7 +1806,7 @@ IF OBJECT_ID(N'dbo.add_site_test_subject', N'P') IS NOT NULL
 GO
 CREATE PROCEDURE dbo.add_site_test_subject
 	@testId INT,
-	@title NVARCHAR(200),
+	@title NVARCHAR(400),
 	@desc NVARCHAR(MAX),
 	@pictureId UNIQUEIDENTIFIER
 AS
@@ -2206,21 +2149,33 @@ GO
 /*******************************************
  * Результаты теста Normal
  *******************************************/
+--CREATE PROCEDURE dbo.get_site_test_normal_results
+--	@oldSteps dbo.OldSiteTestStepNormal READONLY
+--AS
+--BEGIN
+--	SELECT *
+--	FROM   D_SITE_TEST_ANSWER         AS dsta
+--	       JOIN D_SITE_TEST_QUESTION  AS dstq
+--	            ON  dstq.Id = dsta.QuestionId
+--	       JOIN D_SITE_TEST_SUBJECT   AS dsts
+--	            ON  dsts.Id = dsta.SubjectId
+--	       JOIN D_SITE_TEST           AS dst
+--	            ON  dst.Id = dstq.TestId
+--	WHERE  dsts.Id IN (SELECT os.SubjectId
+--	                   FROM   @oldSteps AS os)
+--	       AND dsta.IsCorrect = 1
+--END
+--GO
 CREATE PROCEDURE dbo.get_site_test_normal_results
-	@oldSteps dbo.OldSiteTestStepNormal READONLY
+	@subjectId INT
 AS
 BEGIN
-	SELECT dsta.Id,
-	       CASE 
-	            WHEN os.SubjectId = dsts.Id AND os.QuestionId = dstq.Id THEN 1
-	            ELSE 0
-	       END                        AS IsCorrect,
-	       dstq.Id,
-	       dstq.[Text],
-	       dsts.Id,
-	       dsts.Title,
-	       dsts.Id,
-	       dsts.Title
+	DECLARE @testId INT
+	SELECT TOP 1 @testId = dsts.TestId
+	FROM   D_SITE_TEST_SUBJECT AS dsts
+	WHERE  dsts.Id = @subjectId
+	
+	SELECT *
 	FROM   D_SITE_TEST_ANSWER         AS dsta
 	       JOIN D_SITE_TEST_QUESTION  AS dstq
 	            ON  dstq.Id = dsta.QuestionId
@@ -2228,9 +2183,8 @@ BEGIN
 	            ON  dsts.Id = dsta.SubjectId
 	       JOIN D_SITE_TEST           AS dst
 	            ON  dst.Id = dstq.TestId
-	            AND dst.Show = 1
-	       JOIN @oldSteps             AS os
-	            ON  os.SubjectId = dsts.id
+	            AND dst.Id = @testId
+	WHERE dsta.IsCorrect=1
 END
 GO
 

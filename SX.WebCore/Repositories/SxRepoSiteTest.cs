@@ -225,28 +225,17 @@ namespace SX.WebCore.Repositories
                 return data;
             }
         }
-        public SxSiteTestAnswer[] GetNormalResults(List<SxVMSiteTestStepNormal> steps)
+        public SxSiteTestAnswer[] GetNormalResults(int subjectId)
         {
-            var table = new DataTable();
-            table.Columns.Add(new DataColumn { ColumnName = "QuestionId" });
-            table.Columns.Add(new DataColumn { ColumnName = "SubjectId" });
-            steps.ForEach(x =>
-            {
-                table.Rows.Add(x.QuestionId, x.SubjectId);
-            });
-
-            var p = new DynamicParameters();
-            p.Add("oldSteps", table.AsTableValuedParameter("dbo.OldSiteTestStepNormal"));
-
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_normal_results", (a, q, s, t) =>
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("dbo.get_site_test_normal_results @subjectId", (a, q, s, t) =>
                 {
                     a.Question = q;
                     q.Test = t;
                     a.Subject = s;
                     return a;
-                }, p, commandType: CommandType.StoredProcedure);
+                }, new { subjectId=subjectId});
 
                 return data.ToArray();
             }

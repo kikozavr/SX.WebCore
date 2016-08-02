@@ -346,6 +346,7 @@ namespace SX.WebCore.HtmlHelpers
         {
             var footer = new TagBuilder("tfoot");
             var tr = new TagBuilder("tr");
+            tr.AddCssClass("sx-gv__footer-row");
             TagBuilder td;
 
             td = new TagBuilder("td");

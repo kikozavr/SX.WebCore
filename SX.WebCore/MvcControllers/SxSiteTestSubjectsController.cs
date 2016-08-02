@@ -46,11 +46,31 @@ namespace SX.WebCore.MvcControllers
                 if (model.Picture != null)
                     ViewData["PictureIdCaption"] = model.Picture.Caption;
             }
-            return PartialView("_Edit", Mapper.Map<SxSiteTestSubject, SxVMEditSiteTestSubject>(model));
+            var viewModel = new SxVMEditSiteTestSubject
+            {
+                Description = model.Description,
+                Id = model.Id,
+                Title = model.Title,
+                PictureId = model.PictureId,
+                TestId = model.TestId,
+                Picture = Mapper.Map<SxPicture, SxVMPicture>(model.Picture),
+                Test = model.Test != null ? new SxVMSiteTest
+                {
+                    Id = model.Test.Id,
+                    Description = model.Test.Description,
+                    Rules = model.Test.Rules,
+                    Show = model.Test.Show,
+                    Title = model.Test.Title,
+                    TitleUrl = model.Test.TitleUrl,
+                    Type = model.Test.Type,
+                    DateCreate = model.Test.DateCreate
+                } : null
+            };
+            return PartialView("_Edit", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit([Bind(Prefix ="subject")] SxVMEditSiteTestSubject model)
+        public virtual ActionResult Edit([Bind(Prefix = "subject")] SxVMEditSiteTestSubject model)
         {
             if (ModelState.IsValid)
             {

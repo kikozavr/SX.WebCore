@@ -8,7 +8,7 @@ namespace SX.WebCore
     [Table("D_SITE_TEST_SUBJECT")]
     public class SxSiteTestSubject : SxDbUpdatedModel<int>
     {
-        [Required, MaxLength(200), Index]
+        [Required, MaxLength(400), Index]
         public string Title { get; set; }
 
         public string Description { get; set; }

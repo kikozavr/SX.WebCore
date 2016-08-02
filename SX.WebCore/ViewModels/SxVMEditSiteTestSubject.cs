@@ -8,7 +8,7 @@ namespace SX.WebCore.ViewModels
     {
         public int Id { get; set; }
 
-        [Required, MaxLength(200), Display(Name ="Заголовок")]
+        [Required, MaxLength(400), Display(Name ="Заголовок"), DataType(DataType.MultilineText)]
         public string Title { get; set; }
         
         [Display(Name = "Описание"), AllowHtml, DataType(DataType.MultilineText)]

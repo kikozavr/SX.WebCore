@@ -1,7 +1,6 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -43,7 +42,23 @@ namespace SX.WebCore.MvcControllers
                 if (model == null)
                     return new HttpNotFoundResult();
             }
-            return PartialView("_Edit", Mapper.Map<SxSiteTestQuestion, SxVMEditSiteTestQuestion>(model));
+            var viewModel = new SxVMEditSiteTestQuestion {
+                Id=model.Id,
+                Text=model.Text,
+                TestId=model.TestId,
+                Test= model.Test != null ? new SxVMSiteTest
+                {
+                    Id = model.Test.Id,
+                    Description = model.Test.Description,
+                    Rules = model.Test.Rules,
+                    Show = model.Test.Show,
+                    Title = model.Test.Title,
+                    TitleUrl = model.Test.TitleUrl,
+                    Type = model.Test.Type,
+                    DateCreate = model.Test.DateCreate
+                } : null
+            };
+            return PartialView("_Edit", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

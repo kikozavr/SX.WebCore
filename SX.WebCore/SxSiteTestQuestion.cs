@@ -7,7 +7,7 @@ namespace SX.WebCore
     [Table("D_SITE_TEST_QUESTION")]
     public class SxSiteTestQuestion : SxDbUpdatedModel<int>
     {
-        [Required, MaxLength(400), Index]
+        [Required, MaxLength(500), Index]
         public string Text { get; set; }
 
         public virtual SxSiteTest Test { get; set; }

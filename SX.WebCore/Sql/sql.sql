@@ -1320,23 +1320,13 @@ CREATE PROCEDURE dbo.get_random_site_tests
 	@amount INT
 AS
 BEGIN
-	SELECT TOP(@amount) dst.Id,
+	SELECT TOP(@amount)
 	       dst.Title,
-	       dst.TitleUrl,
 	       dst.[Description],
-	       COUNT(DISTINCT(dsts.Id))   AS StepsCount,
-	       COUNT(DISTINCT(dstq.Id))   AS QuestionsCount
-	FROM   D_SITE_TEST                AS dst
-	       JOIN D_SITE_TEST_SUBJECT   AS dsts
-	            ON  dsts.TestId = dst.Id
-	       JOIN D_SITE_TEST_QUESTION  AS dstq
-	            ON  dstq.TestId = dst.Id
-	WHERE  Show = 1
-	GROUP BY
-	       dst.Id,
-	       dst.Title,
 	       dst.TitleUrl,
-	       dst.[Description]
+	       dst.Rules
+	FROM   D_SITE_TEST AS dst
+	WHERE dst.Show=1
 	ORDER BY
 	       NEWID()
 END

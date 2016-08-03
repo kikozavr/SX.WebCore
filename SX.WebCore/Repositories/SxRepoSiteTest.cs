@@ -92,7 +92,7 @@ namespace SX.WebCore.Repositories
                     return a;
                 }, new { titleUrl = titleUrl }, splitOn: "Id").SingleOrDefault();
 
-                if (Equals(data.Question.Test.Type, SxSiteTest.SiteTestType.Normal))
+                if (Equals(data.Question.Test.Type, SxSiteTest.SiteTestType.Normal) || Equals(data.Question.Test.Type, SxSiteTest.SiteTestType.NormalImage))
                 {
                     data.Question.Test.Questions = conn.Query<SxSiteTestQuestion>("dbo.get_site_test_normal_questions @testId, @subjectId, @amount", new { testId = data.Question.TestId, subjectId = data.SubjectId, amount = 3 }).ToArray();
                 }

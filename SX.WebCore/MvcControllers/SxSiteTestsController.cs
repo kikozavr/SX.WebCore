@@ -212,7 +212,7 @@ namespace SX.WebCore.MvcControllers
 
                     startColumn++;
                     range = ws.Cells[startRow, startColumn];
-                    subjectDesc = range.Value != null ? range.Value.ToString().Trim() : null;
+                    subjectDesc = range.Value ?.ToString().Trim();
 
                     for (int y = 0; y < test.Questions.Length; y++)
                     {
@@ -307,6 +307,7 @@ namespace SX.WebCore.MvcControllers
         {
             return await Task.Run(() =>
             {
+                var validSteps = steps.Where(x => x.QuestionId != 0).ToArray();
                 SxSiteTestAnswer answer;
                 SxVMSiteTestStepNormal userAnswer;
                 var result = new SXVMSiteTestResult<SxVMSiteTestResultNormal>();
@@ -314,11 +315,11 @@ namespace SX.WebCore.MvcControllers
                 var test = data.First().Question.Test;
                 result.SiteTestTitle = test.Title;
                 result.SiteTestUrl = Url.Action("Details","SiteTests", new { titleUrl=test.TitleUrl});
-                result.Results = new SxVMSiteTestResultNormal[steps.Count];
+                result.Results = new SxVMSiteTestResultNormal[validSteps.Length];
 
-                for (int i = 0; i < steps.Count; i++)
+                for (int i = 0; i < validSteps.Length; i++)
                 {
-                    userAnswer = steps[i];
+                    userAnswer = validSteps[i];
                     answer = data.First(x=>x.SubjectId== userAnswer.SubjectId);
 
                     result.Results[i] = new SxVMSiteTestResultNormal
@@ -329,7 +330,8 @@ namespace SX.WebCore.MvcControllers
                         Step= userAnswer
                     };
 
-                    result.BallsCount += userAnswer.BallsSubjectShow + (answer.QuestionId == userAnswer.QuestionId ? userAnswer.BallsGoodRead : 0) + userAnswer.BallsBadRead;
+                    var isCorrect = answer.QuestionId == userAnswer.QuestionId;
+                    result.BallsCount += userAnswer.BallsSubjectShow + (isCorrect ? userAnswer.BallsGoodRead : 0) + userAnswer.BallsBadRead + (isCorrect?15:0);
                 }
 
 

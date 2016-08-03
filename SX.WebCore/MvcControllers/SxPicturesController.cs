@@ -76,17 +76,36 @@ namespace SX.WebCore.MvcControllers
             return View(Mapper.Map<SxPicture, SxVMEditPicture>(model));
         }
 
-        private static int maxSize = 153600;
         [Authorize(Roles = "photo-redactor")]
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditPicture picture, HttpPostedFileBase file)
+        public async Task<ActionResult> AddMany(HttpPostedFileBase[] files)
         {
-            var allowFormats = new string[] {
+            return await Task.Run(() =>
+            {
+                var data = files.Where(x => x.ContentLength <= maxSize && allowFormats.Contains(x.ContentType));
+                foreach (var file in data)
+                {
+                    var redactModel = new SxPicture {
+                        Caption =file.FileName,
+                        ImgFormat=file.ContentType
+                    };
+                    redactModel = getImage(redactModel, file);
+                    _repo.Create(redactModel);
+                }
+                return RedirectToAction("Index");
+            });
+        }
+
+        private static int maxSize = 153600;
+        private static string[] allowFormats= new string[] {
                 "image/jpeg",
                 "image/png",
                 "image/gif"
             };
-
+        [Authorize(Roles = "photo-redactor")]
+        [HttpPost, ValidateAntiForgeryToken]
+        public virtual ActionResult Edit(SxVMEditPicture picture, HttpPostedFileBase file)
+        {
             if (file != null && file.ContentLength > maxSize)
                 ModelState.AddModelError("Caption", string.Format("Размер файла не должен превышать {0} kB", maxSize / 1024));
             if (file != null && !allowFormats.Contains(file.ContentType))

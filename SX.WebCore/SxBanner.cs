@@ -61,5 +61,7 @@ namespace SX.WebCore
         public decimal TargetCost { get; set; }
 
         public decimal CPM { get; set; }
+
+        public string Description { get; set; }
     }
 }

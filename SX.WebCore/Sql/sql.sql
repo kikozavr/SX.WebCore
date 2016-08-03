@@ -1231,7 +1231,8 @@ CREATE PROCEDURE dbo.update_banner(
     @title          NVARCHAR(100),
     @place          INT,
     @controller     NVARCHAR(50),
-    @action         NVARCHAR(50)
+    @action         NVARCHAR(50),
+    @desc           NVARCHAR(MAX)
 )
 AS
 BEGIN
@@ -1242,7 +1243,8 @@ BEGIN
 	       DateUpdate         = GETDATE(),
 	       ControllerName     = @controller,
 	       ActionName         = @action,
-	       Place              = @place
+	       Place              = @place,
+	       [Description]      = @desc
 	WHERE  Id                 = @id
 END
 GO

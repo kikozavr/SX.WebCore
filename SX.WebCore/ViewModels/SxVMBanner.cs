@@ -35,5 +35,7 @@ namespace SX.WebCore.ViewModels
                 return Math.Round(ShowsCount == 0 ? 0 : (decimal)ClicksCount / ShowsCount * 100, 2);
             }
         }
+
+        public string Description { get; set; }
     }
 }

@@ -128,7 +128,7 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("update_banner @id, @url, @pid, @title, @place, @controller, @action", new
+                conn.Execute("dbo.update_banner @id, @url, @pid, @title, @place, @controller, @action, @desc", new
                 {
                     id = model.Id,
                     url = model.Url,
@@ -136,7 +136,8 @@ namespace SX.WebCore.Repositories
                     title = model.Title,
                     place = model.Place,
                     controller = model.ControllerName,
-                    action = model.ActionName
+                    action = model.ActionName,
+                    desc=model.Description
                 });
             }
             return GetByKey(model.Id);

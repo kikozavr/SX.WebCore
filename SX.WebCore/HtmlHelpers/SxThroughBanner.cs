@@ -8,6 +8,9 @@ namespace SX.WebCore.HtmlHelpers
         public static MvcHtmlString SxThroughBanner(this HtmlHelper htmlHelper, SxBanner banner, Func<SxBanner, string> FuncBannerImgUrl)
         {
             if (banner == null) return null;
+
+            var div = new TagBuilder("div");
+
             var figure = new TagBuilder("figure");
             figure.MergeAttribute("data-href", banner.Url);
             figure.MergeAttribute("data-id", banner.Id.ToString().ToLower());
@@ -24,7 +27,17 @@ namespace SX.WebCore.HtmlHelpers
 
             figure.InnerHtml += a;
 
-            return MvcHtmlString.Create(figure.ToString());
+            div.InnerHtml += figure;
+
+            if (!string.IsNullOrEmpty(banner.Description))
+            {
+                var p = new TagBuilder("p");
+                p.AddCssClass("th-banner__desc");
+                p.InnerHtml += banner.Description;
+                div.InnerHtml += p;
+            }
+
+            return MvcHtmlString.Create(div.ToString());
         }
     }
 }

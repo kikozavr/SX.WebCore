@@ -75,7 +75,7 @@ namespace SX.WebCore.MvcControllers
                 if (model.Id == Guid.Empty)
                     newModel = _repo.Create(redactModel);
                 else
-                    newModel = _repo.Update(redactModel, true, "Title", "PictureId", "Url", "Place", "ControllerName", "ActionName");
+                    newModel = _repo.Update(redactModel, true, "Title", "PictureId", "Url", "Place", "ControllerName", "ActionName", "Description");
 
                 return RedirectToAction("index");
             }

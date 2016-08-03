@@ -25,5 +25,8 @@ namespace SX.WebCore.ViewModels
 
         [MaxLength(50), Display(Name = "Действие")]
         public string ActionName { get; set; }
+
+        [Display(Name ="Описание"), DataType(DataType.MultilineText)]
+        public string Description { get; set; }
     }
 }

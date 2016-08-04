@@ -40,6 +40,8 @@ namespace SX.WebCore.Providers
             var sb = new StringBuilder();
             sb.AppendLine("Message: " + ex.Message);
             sb.AppendLine("StackTrace: " + ex.StackTrace);
+            if (ex.InnerException != null)
+                sb.AppendLine("InnerException: " + ex.InnerException.Message);
             WriteMessage(sb.ToString());
         }
     }

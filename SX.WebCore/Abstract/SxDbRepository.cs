@@ -87,6 +87,11 @@ namespace SX.WebCore.Abstract
             return Update(model, changeDateUpdate, propertiesForChange);
         }
 
+        public virtual TModel Update(TModel model)
+        {
+            throw new NotImplementedException("Не поддерживается в данном контексте");
+        }
+
         public virtual void Delete(params object[] id)
         {
             var dbContext = Activator.CreateInstance<TDbContext>();
@@ -94,6 +99,13 @@ namespace SX.WebCore.Abstract
             if (model == null) return;
 
             dbContext.Entry(model).State = EntityState.Deleted;
+            dbContext.SaveChanges();
+        }
+
+        public virtual void Delete(TModel model)
+        {
+            var dbContext = Activator.CreateInstance<TDbContext>();
+            dbContext.Set<TModel>().Remove(model);
             dbContext.SaveChanges();
         }
 
@@ -111,9 +123,16 @@ namespace SX.WebCore.Abstract
         //    return All;
         //}
 
+        [Obsolete("Надо заменить на Read")]
         public virtual TModel[] Query(SxFilter filter)
         {
-            return All.Take(100).ToArray();
+            return new TModel[0];
+        }
+
+        public virtual TModel[] Read(SxFilter filter, out int count)
+        {
+            count = 0;
+            return new TModel[0];
         }
 
         public virtual T[] Query<T>(SxFilter filter)

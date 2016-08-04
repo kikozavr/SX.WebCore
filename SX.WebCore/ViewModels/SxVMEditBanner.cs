@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SX.WebCore.ViewModels
 {
@@ -26,7 +27,7 @@ namespace SX.WebCore.ViewModels
         [MaxLength(50), Display(Name = "Действие")]
         public string ActionName { get; set; }
 
-        [Display(Name ="Описание"), DataType(DataType.MultilineText)]
+        [Display(Name ="Описание"), DataType(DataType.MultilineText), AllowHtml]
         public string Description { get; set; }
     }
 }

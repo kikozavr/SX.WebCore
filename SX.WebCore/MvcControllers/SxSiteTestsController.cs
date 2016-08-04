@@ -212,7 +212,7 @@ namespace SX.WebCore.MvcControllers
 
                     startColumn++;
                     range = ws.Cells[startRow, startColumn];
-                    subjectDesc = range.Value ?.ToString().Trim();
+                    subjectDesc = range.Value?.ToString().Trim();
 
                     for (int y = 0; y < test.Questions.Length; y++)
                     {
@@ -314,24 +314,24 @@ namespace SX.WebCore.MvcControllers
                 var data = _repo.GetNormalResults(steps.First().SubjectId);
                 var test = data.First().Question.Test;
                 result.SiteTestTitle = test.Title;
-                result.SiteTestUrl = Url.Action("Details","SiteTests", new { titleUrl=test.TitleUrl});
+                result.SiteTestUrl = Url.Action("Details", "SiteTests", new { titleUrl = test.TitleUrl });
                 result.Results = new SxVMSiteTestResultNormal[validSteps.Length];
 
                 for (int i = 0; i < validSteps.Length; i++)
                 {
                     userAnswer = validSteps[i];
-                    answer = data.First(x=>x.SubjectId== userAnswer.SubjectId);
+                    answer = data.First(x => x.SubjectId == userAnswer.SubjectId);
 
                     result.Results[i] = new SxVMSiteTestResultNormal
                     {
                         SubjectTitle = answer.Subject.Title,
                         QuestionText = data.First(x => x.QuestionId == userAnswer.QuestionId).Question.Text,
                         IsCorrect = answer.QuestionId == userAnswer.QuestionId,
-                        Step= userAnswer
+                        Step = userAnswer
                     };
 
                     var isCorrect = answer.QuestionId == userAnswer.QuestionId;
-                    result.BallsCount += userAnswer.BallsSubjectShow + (isCorrect ? userAnswer.BallsGoodRead : 0) + userAnswer.BallsBadRead + (isCorrect?15:0);
+                    result.BallsCount += userAnswer.BallsSubjectShow + (isCorrect ? userAnswer.BallsGoodRead : 0) + userAnswer.BallsBadRead + (isCorrect ? 15 : 0);
                 }
 
 

@@ -31,10 +31,10 @@ namespace SX.WebCore.HtmlHelpers
 
             if (!string.IsNullOrEmpty(banner.Description))
             {
-                var p = new TagBuilder("p");
-                p.AddCssClass("th-banner__desc");
-                p.InnerHtml += banner.Description;
-                div.InnerHtml += p;
+                var desc = new TagBuilder("div");
+                desc.AddCssClass("th-banner__desc");
+                desc.InnerHtml += htmlHelper.Raw(banner.Description);
+                div.InnerHtml += desc;
             }
 
             return MvcHtmlString.Create(div.ToString());

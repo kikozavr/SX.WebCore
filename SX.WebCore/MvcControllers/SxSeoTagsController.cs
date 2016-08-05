@@ -36,6 +36,7 @@ namespace SX.WebCore.MvcControllers
         [HttpPost]
         public virtual PartialViewResult Index(SxVMSeoTags filterModel, SxOrder order, int page = 1)
         {
+            filterModel.Keywords = null;
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             filter.PagerInfo.TotalItems = _repo.Count(filter);
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;

@@ -116,7 +116,8 @@ namespace SX.WebCore.MvcApplication
                         Settings.emptyGameBadImagePath,
                         Settings.robotsFileSetting,
                         Settings.siteFaveiconPath,
-                        Settings.defH1
+                        Settings.defH1,
+                        Settings.siteDesc
                     );
                 AppCache.Add("CACHE_SITE_SETTINGS", data, cip);
             }

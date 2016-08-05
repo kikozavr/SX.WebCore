@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace SX.WebCore.Managers
         private readonly string _smtpUserPassword;
         private readonly string _smtpHost;
         private readonly int _smtpPort;
-        public SxAppMailManager(string smtpUserName, string smtpUserPassword, string smtpHost, int smtpPort= 587)
+        public SxAppMailManager(string smtpUserName, string smtpUserPassword, string smtpHost, int smtpPort = 587)
         {
             _smtpUserName = smtpUserName;
             _smtpUserPassword = smtpUserPassword;
@@ -19,10 +20,13 @@ namespace SX.WebCore.Managers
             _smtpPort = smtpPort;
         }
 
-        public virtual void SendMail(string mailFrom, string body, string[] mailsTo, string subject, bool isBodyHtml=false, bool enableSsl=false)
+        public virtual async Task<bool> SendMail(string mailFrom, string body, string[] mailsTo, string subject, bool isBodyHtml = false, bool enableSsl = false)
         {
-            Task.Run(()=> {
-                if (!mailsTo.Any()) return;
+            return await Task.Run(() =>
+            {
+                var result = false;
+
+                if (!mailsTo.Any()) return result;
 
                 var mail = new MailMessage();
                 for (int i = 0; i < mailsTo.Length; i++)
@@ -34,6 +38,8 @@ namespace SX.WebCore.Managers
                 mail.Subject = subject;
                 mail.Body = body;
                 mail.IsBodyHtml = isBodyHtml;
+
+                
                 using (var smtp = new SmtpClient())
                 {
                     var credential = new NetworkCredential
@@ -45,8 +51,18 @@ namespace SX.WebCore.Managers
                     smtp.Host = _smtpHost;
                     smtp.Port = _smtpPort;
                     smtp.EnableSsl = enableSsl;
-                    smtp.Send(mail);
+                    try
+                    {
+                        smtp.Send(mail);
+                        result= true;
+                    }
+                    catch
+                    {
+                        result= false;
+                    }
                 }
+
+                return result;
             });
         }
     }

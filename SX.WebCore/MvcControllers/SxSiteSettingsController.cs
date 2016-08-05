@@ -52,7 +52,8 @@ namespace SX.WebCore.MvcControllers
                     Settings.siteLogoPath,
                     Settings.siteName,
                     Settings.siteBgPath,
-                    Settings.siteFaveiconPath
+                    Settings.siteFaveiconPath,
+                    Settings.siteDesc
                 );
 
             var viewModel = new SxVMSiteSettings
@@ -62,6 +63,7 @@ namespace SX.WebCore.MvcControllers
                 SiteName = settings.ContainsKey(Settings.siteName) ? settings[Settings.siteName].Value : null,
                 SiteBgPath = settings.ContainsKey(Settings.siteBgPath) ? settings[Settings.siteBgPath].Value : null,
                 SiteFaveiconPath = settings.ContainsKey(Settings.siteFaveiconPath) ? settings[Settings.siteFaveiconPath].Value : null,
+                SiteDesc= settings.ContainsKey(Settings.siteDesc) ? settings[Settings.siteDesc].Value : null,
             };
 
             viewModel.OldSiteDomain = viewModel.SiteDomain;
@@ -69,23 +71,31 @@ namespace SX.WebCore.MvcControllers
             viewModel.OldSiteName = viewModel.SiteName;
             viewModel.OldSiteBgPath = viewModel.SiteBgPath;
             viewModel.OldSiteFaveiconPath = viewModel.SiteFaveiconPath;
+            viewModel.OldSiteDesc = viewModel.SiteDesc;
 
             Guid guid;
-            Guid.TryParse(settings[Settings.siteDomain].ToString(), out guid);
-            if (guid != Guid.Empty)
-                ViewData["SiteDomainCaption"] = _repoPicture.GetByKey(guid).Caption;
-            Guid.TryParse(settings[Settings.siteLogoPath].ToString(), out guid);
-            if (guid != Guid.Empty)
-                ViewData["LogoPathCaption"] = _repoPicture.GetByKey(guid).Caption;
-            Guid.TryParse(settings[Settings.siteName].ToString(), out guid);
-            if (guid != Guid.Empty)
-                ViewData["SiteNameCaption"] = _repoPicture.GetByKey(guid).Caption;
-            Guid.TryParse(settings[Settings.siteBgPath].ToString(), out guid);
-            if (guid != Guid.Empty)
-                ViewData["SiteBgPathCaption"] = _repoPicture.GetByKey(guid).Caption;
-            Guid.TryParse(settings[Settings.siteFaveiconPath].ToString(), out guid);
-            if (guid != Guid.Empty)
-                ViewData["SiteFaveiconPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+
+            if (settings.ContainsKey(Settings.siteLogoPath))
+            {
+                Guid.TryParse(settings[Settings.siteLogoPath].ToString(), out guid);
+                if (guid != Guid.Empty)
+                    ViewData["LogoPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+            }
+
+            if (settings.ContainsKey(Settings.siteBgPath))
+            {
+                Guid.TryParse(settings[Settings.siteBgPath].ToString(), out guid);
+                if (guid != Guid.Empty)
+                    ViewData["SiteBgPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+            }
+
+
+            if (settings.ContainsKey(Settings.siteFaveiconPath))
+            {
+                Guid.TryParse(settings[Settings.siteFaveiconPath].ToString(), out guid);
+                if (guid != Guid.Empty)
+                    ViewData["SiteFaveiconPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+            }
 
             return View(viewModel);
         }
@@ -95,8 +105,8 @@ namespace SX.WebCore.MvcControllers
         {
             if (ModelState.IsValid)
             {
-                var isExists = !string.IsNullOrEmpty(model.OldSiteDomain) || !string.IsNullOrEmpty(model.OldLogoPath) || !string.IsNullOrEmpty(model.OldSiteName) || !string.IsNullOrEmpty(model.OldSiteBgPath) || !string.IsNullOrEmpty(model.OldSiteFaveiconPath);
-                var isModified = !Equals(model.SiteDomain, model.OldSiteDomain) || !Equals(model.LogoPath, model.OldLogoPath) || !Equals(model.SiteName, model.OldSiteName) || !Equals(model.SiteBgPath, model.OldSiteBgPath) || !Equals(model.SiteFaveiconPath, model.OldSiteFaveiconPath);
+                var isExists = !string.IsNullOrEmpty(model.OldSiteDomain) || !string.IsNullOrEmpty(model.OldLogoPath) || !string.IsNullOrEmpty(model.OldSiteName) || !string.IsNullOrEmpty(model.OldSiteBgPath) || !string.IsNullOrEmpty(model.OldSiteFaveiconPath) || !string.IsNullOrEmpty(model.OldSiteDesc);
+                var isModified = !Equals(model.SiteDomain, model.OldSiteDomain) || !Equals(model.LogoPath, model.OldLogoPath) || !Equals(model.SiteName, model.OldSiteName) || !Equals(model.SiteBgPath, model.OldSiteBgPath) || !Equals(model.SiteFaveiconPath, model.OldSiteFaveiconPath) || !Equals(model.SiteDesc, model.OldSiteDesc);
 
                 if (!isExists)
                 {
@@ -105,7 +115,8 @@ namespace SX.WebCore.MvcControllers
                         new SxSiteSetting { Id = Settings.siteLogoPath, Value = model.LogoPath },
                         new SxSiteSetting { Id = Settings.siteName, Value = model.SiteName },
                         new SxSiteSetting { Id = Settings.siteBgPath, Value = model.SiteBgPath },
-                        new SxSiteSetting { Id = Settings.siteFaveiconPath, Value = model.SiteFaveiconPath }
+                        new SxSiteSetting { Id = Settings.siteFaveiconPath, Value = model.SiteFaveiconPath },
+                        new SxSiteSetting { Id = Settings.siteDesc, Value = model.SiteDesc }
                     };
                     for (int i = 0; i < settings.Length; i++)
                     {
@@ -125,6 +136,7 @@ namespace SX.WebCore.MvcControllers
                     _repo.Update(new SxSiteSetting { Id = Settings.siteName, Value = model.SiteName }, true, "Value");
                     _repo.Update(new SxSiteSetting { Id = Settings.siteBgPath, Value = model.SiteBgPath }, true, "Value");
                     _repo.Update(new SxSiteSetting { Id = Settings.siteFaveiconPath, Value = model.SiteFaveiconPath }, true, "Value");
+                    _repo.Update(new SxSiteSetting { Id = Settings.siteDesc, Value = model.SiteDesc }, true, "Value");
                     TempData["EditEmptyGameMessage"] = "Настройки успешно обновлены";
                     SxApplication<TDbContext>.SiteDomain = model.SiteDomain;
                     return RedirectToAction("editsite");

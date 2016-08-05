@@ -133,6 +133,15 @@ namespace SX.WebCore.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to siteDesc.
+        /// </summary>
+        public static string siteDesc {
+            get {
+                return ResourceManager.GetString("siteDesc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to siteDomain.
         /// </summary>
         public static string siteDomain {

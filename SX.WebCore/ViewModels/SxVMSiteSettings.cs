@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SX.WebCore.ViewModels
 {
@@ -28,5 +29,10 @@ namespace SX.WebCore.ViewModels
         public string SiteDomain { get; set; }
         [MaxLength(100)]
         public string OldSiteDomain { get; set; }
+
+        [Display(Name ="Описание сайта"), DataType(DataType.MultilineText), AllowHtml]
+        public string SiteDesc { get; set; }
+        [AllowHtml]
+        public string OldSiteDesc { get; set; }
     }
 }

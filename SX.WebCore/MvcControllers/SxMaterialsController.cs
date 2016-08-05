@@ -2,7 +2,6 @@
 using SX.WebCore.Abstract;
 using SX.WebCore.Repositories;
 using System.Configuration;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;

@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
-using SX.WebCore.Attrubutes;
 using SX.WebCore.Providers;
 using System;
 using System.Data.SqlClient;
@@ -29,6 +28,21 @@ namespace SX.WebCore.Repositories
             {
                 var data = conn.Query<SxBanner>(query, param: param);
                 return data.ToArray();
+            }
+        }
+
+        public void GetStatistic(out int showsCount, out int clicksCount)
+        {
+            showsCount = 0;
+            clicksCount = 0;
+
+            var queryShows = "SELECT SUM(db.ShowsCount) FROM D_BANNER AS db";
+            var queryClicks = "SELECT SUM(db.ClicksCount) FROM D_BANNER AS db"; ;
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                showsCount = conn.Query<int>(queryShows).SingleOrDefault();
+                clicksCount= conn.Query<int>(queryClicks).SingleOrDefault();
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -13,8 +14,9 @@ namespace SX.WebCore.HtmlHelpers
             public SxGridViewSettings()
             {
                 Columns = new SxGridViewColumn<TModel>[0];
-                Filter = new SxFilter{
-                    PagerInfo=new SxPagerInfo(1,10)
+                Filter = new SxFilter
+                {
+                    PagerInfo = new SxPagerInfo(1, 10)
                 };
             }
 
@@ -27,6 +29,8 @@ namespace SX.WebCore.HtmlHelpers
             public bool ShowFilterRow { get; set; } = true;
             public bool ShowSelectedCheckbox { get; set; } = false;
             public bool EnableEditing { get; set; } = false;
+            public Func<TModel, string> EditBtnTitle { get; set; }
+            public Func<TModel, string> EditBtnCssClass { get; set; }
             public Func<TModel, string> EditRowUrl { get; set; }
             public bool EnableCreating { get; set; } = false;
             public string CreateRowUrl { get; set; }
@@ -78,13 +82,13 @@ namespace SX.WebCore.HtmlHelpers
             div.MergeAttribute("data-ajax-url", settings.DataAjaxUrl);
 
             var table = new TagBuilder("table");
-            if(htmlAttributes!=null)
+            if (htmlAttributes != null)
             {
                 var attrs = new RouteValueDictionary(htmlAttributes);
                 table.MergeAttributes(attrs);
             }
             table.AddCssClass("table table-condensed table-bordered table-responsive table-striped");
-                
+
 
             table.InnerHtml += getHeader(htmlHelper, settings);
 
@@ -154,7 +158,7 @@ namespace SX.WebCore.HtmlHelpers
                         a.InnerHtml += link;
                         th.InnerHtml += a;
                     }
-                    else if(settings.ShowSelectedCheckbox)
+                    else if (settings.ShowSelectedCheckbox)
                     {
                         th.InnerHtml += "<input type=\"checkbox\" data-toggle=\"tooltip\" title=\"Выделить все\" class=\"sx-gv__select-all-chbx\" />";
                     }
@@ -169,7 +173,7 @@ namespace SX.WebCore.HtmlHelpers
                     column = settings.Columns[i - 1];
                     th.InnerHtml += column.Caption;
                     th.MergeAttribute("data-field-name", column.FieldName);
-                    if(settings.Filter.Order!=null && settings.Filter.Order.FieldName==column.FieldName)
+                    if (settings.Filter.Order != null && settings.Filter.Order.FieldName == column.FieldName)
                         th.InnerHtml += getSortArrow(settings.Filter.Order.Direction);
                 }
                 tr.InnerHtml += th;
@@ -208,7 +212,7 @@ namespace SX.WebCore.HtmlHelpers
                     }
                     if (settings.RowId != null)
                         tr.MergeAttribute("data-row-id", settings.RowId(model));
-                    if(settings.RowText!=null)
+                    if (settings.RowText != null)
                         tr.MergeAttribute("data-row-text", settings.RowText(model));
 
                     type = model.GetType();
@@ -223,25 +227,25 @@ namespace SX.WebCore.HtmlHelpers
                                 a.AddCssClass("sx-gv__edit-btn");
                                 a.MergeAttribute("href", settings.EditRowUrl(model));
                                 a.MergeAttribute("data-toggle", "tooltip");
-                                a.MergeAttribute("title", "Редактировать");
+                                a.MergeAttribute("title", settings.EditBtnTitle != null ? settings.EditBtnTitle(model) : "Редактировать");
 
                                 var link = new TagBuilder("i");
-                                link.AddCssClass("fa fa-pencil");
+                                link.AddCssClass(settings.EditBtnCssClass!=null? settings.EditBtnCssClass(model):"fa fa-pencil");
                                 a.InnerHtml += link;
                                 td.InnerHtml += a;
                             }
-                            if(settings.ShowSelectedCheckbox)
+                            if (settings.ShowSelectedCheckbox)
                             {
                                 var input = new TagBuilder("input");
                                 input.MergeAttribute("type", "checkbox");
                                 td.InnerHtml += input;
                             }
-                            if(settings.EnableDeleting)
+                            if (settings.EnableDeleting)
                             {
                                 if (settings.DeleteRowUrl == null)
                                     throw new ArgumentNullException("DeleteRowUrl");
 
-                                td.InnerHtml += "<a href=\""+settings.DeleteRowUrl(model) +"\" class=\"sx-gv__delete-btn\" data-toggle=\"tooltip\" title=\"Удалить\"><i class=\"fa fa-times\"></i></a>";
+                                td.InnerHtml += "<a href=\"" + settings.DeleteRowUrl(model) + "\" class=\"sx-gv__delete-btn\" data-toggle=\"tooltip\" title=\"Удалить\"><i class=\"fa fa-times\"></i></a>";
                             }
                         }
                         else
@@ -296,13 +300,14 @@ namespace SX.WebCore.HtmlHelpers
                 {
                     propValue = prop.GetValue(settings.Filter.WhereExpressionObject);
                     propStringValue = propValue != null ? propValue.ToString() : null;
+
                     if (
                         propStringValue != null
                         && propStringValue != "0"
-                        && propStringValue!= "01.01.0001 0:00:00"
-                        && propStringValue!= "00000000-0000-0000-0000-000000000000"
-                        && propStringValue!="False"
-                        && propStringValue!= "Unknown"
+                        && propStringValue != "01.01.0001 0:00:00"
+                        && propStringValue != "00000000-0000-0000-0000-000000000000"
+                        && propStringValue != "False"
+                        && propStringValue != "Unknown"
                         )
                         filterProperties.Add(prop.Name, propStringValue);
                 }
@@ -350,7 +355,7 @@ namespace SX.WebCore.HtmlHelpers
             TagBuilder td;
 
             td = new TagBuilder("td");
-            if(settings.ShowSelectedCheckbox)
+            if (settings.ShowSelectedCheckbox)
             {
                 //var a = new TagBuilder("a");
                 //a.AddCssClass("sx-gv__add-from-chbx-btn");
@@ -387,9 +392,9 @@ namespace SX.WebCore.HtmlHelpers
 
         public enum SortDirection : byte
         {
-            Unknown=0,
-            Asc=1,
-            Desc=2
+            Unknown = 0,
+            Asc = 1,
+            Desc = 2
         }
     }
 }

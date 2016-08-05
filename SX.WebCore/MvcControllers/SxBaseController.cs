@@ -87,7 +87,7 @@ namespace SX.WebCore.MvcControllers
             writePageBanners();
 
             //пишем информацию о запросе
-            if (Equals(filterContext.HttpContext.Cache["APP_LoggingRequest"],true))
+            if (Equals(filterContext.HttpContext.Cache["APP_LoggingRequest"],true) && SxAreaName!="admin")
             {
                 writeRequestInfo();
             }
@@ -146,8 +146,6 @@ namespace SX.WebCore.MvcControllers
 
         private void writeRequestInfo()
         {
-            if (Request.IsLocal) return;
-
             Task.Run(() =>
             {
                 var requestInstance = new SxRequest

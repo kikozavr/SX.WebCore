@@ -32,6 +32,12 @@ namespace SX.WebCore.MvcControllers
 
             ViewBag.Filter = filter;
 
+            var showsCount = 0;
+            var clicksCount = 0;
+            _repo.GetStatistic(out showsCount, out clicksCount);
+            ViewBag.ShowsCount = showsCount;
+            ViewBag.ClicksCount = clicksCount;
+
             return View(viewModel);
         }
 

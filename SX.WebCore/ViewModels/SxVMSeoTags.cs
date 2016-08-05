@@ -21,7 +21,7 @@ namespace SX.WebCore.ViewModels
         {
             get
             {
-                if (!Keywords.Any()) return null;
+                if (Keywords==null || !Keywords.Any()) return null;
 
                 var sb = new StringBuilder();
                 for (int i = 0; i < Keywords.Length; i++)

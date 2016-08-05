@@ -149,6 +149,10 @@
     <value>siteBgPath</value>
     <comment>Путь к файлу фона сайта</comment>
   </data>
+  <data name="siteDesc" xml:space="preserve">
+    <value>siteDesc</value>
+    <comment>Описание сайта</comment>
+  </data>
   <data name="siteDomain" xml:space="preserve">
     <value>siteDomain</value>
     <comment>Домен управляемого сайта</comment>

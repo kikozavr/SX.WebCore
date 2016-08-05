@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 
@@ -153,6 +154,13 @@ namespace SX.WebCore
                 case "я": return "ia";
                 default: return null;
             }
+        }
+
+        public static string CleanHtml(string input, int? length=null)
+        {
+            var result=Regex.Replace(input, @"<[^>]+>|&nbsp;", "").Trim();
+            return !length.HasValue || result.Length <= length ? result
+                : result.Substring(0, (int)length) + "...";
         }
     }
 }

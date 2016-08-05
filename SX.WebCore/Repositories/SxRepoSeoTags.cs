@@ -8,7 +8,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSeoTags<TDbContext> : SxDbRepository<int, SxSeoTags, TDbContext> where TDbContext: SxDbContext
+    public sealed class SxRepoSeoTags<TDbContext> : SxDbRepository<int, SxSeoTags, TDbContext> where TDbContext : SxDbContext
     {
         public override SxSeoTags[] Query(SxFilter filter)
         {
@@ -48,14 +48,23 @@ namespace SX.WebCore.Repositories
         {
             param = null;
             string query = null;
-            query += " WHERE (dsi.RawUrl LIKE '%'+@raw_url+'%' OR @raw_url IS NULL)";
-            query += " AND (dsi.RawUrl IS NOT NULL) ";
+            query += " WHERE (dsi.RawUrl LIKE '%'+@raw_url+'%' OR @raw_url IS NULL) ";
+            query += " AND (dsi.SeoTitle LIKE '%'+@title+'%' OR @title IS NULL) ";
+            query += " AND (dsi.SeoDescription LIKE '%'+@desc+'%' OR @desc IS NULL) ";
+            query += " AND (dsi.H1 LIKE '%'+@h1+'%' OR @h1 IS NULL) ";
+            query += " AND (dsi.MAterialId IS NULL) ";
 
             var rawUrl = filter.WhereExpressionObject != null && filter.WhereExpressionObject.RawUrl != null ? (string)filter.WhereExpressionObject.RawUrl : null;
+            var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.SeoTitle != null ? (string)filter.WhereExpressionObject.SeoTitle : null;
+            var desc = filter.WhereExpressionObject != null && filter.WhereExpressionObject.SeoDescription != null ? (string)filter.WhereExpressionObject.SeoDescription : null;
+            var h1 = filter.WhereExpressionObject != null && filter.WhereExpressionObject.H1 != null ? (string)filter.WhereExpressionObject.H1 : null;
 
             param = new
             {
-                raw_url = rawUrl
+                raw_url = rawUrl,
+                title = title,
+                desc = desc,
+                h1 = h1
             };
 
             return query;
@@ -151,10 +160,11 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("dbo.update_material_seo_tags @mid, @mct, @stid", new {
-                    mid=mid,
-                    mct=mct,
-                    stid= stid
+                conn.Execute("dbo.update_material_seo_tags @mid, @mct, @stid", new
+                {
+                    mid = mid,
+                    mct = mct,
+                    stid = stid
                 });
             }
         }

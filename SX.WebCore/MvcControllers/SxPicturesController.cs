@@ -21,7 +21,7 @@ namespace SX.WebCore.MvcControllers
     [SessionState(SessionStateBehavior.Disabled)]
     public abstract class SxPicturesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxDbRepository<Guid, SxPicture, TDbContext> _repo;
+        private static SxRepoPicture<TDbContext> _repo;
         private static CacheItemPolicy _defaultPolicy
         {
             get

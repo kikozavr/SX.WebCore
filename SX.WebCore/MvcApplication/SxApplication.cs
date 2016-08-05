@@ -46,15 +46,16 @@ namespace SX.WebCore.MvcApplication
             }
         }
 
+        private static string _siteDomain;
         public static string SiteDomain
         {
             get
             {
-                return (string)AppCache["CACHE_SITE_DOMAIN"];
+                return _siteDomain;
             }
             set
             {
-                AppCache["CACHE_SITE_DOMAIN"] = value;
+                _siteDomain = value;
             }
         }
 
@@ -114,7 +115,8 @@ namespace SX.WebCore.MvcApplication
                         Settings.emptyGameGoodImagePath,
                         Settings.emptyGameBadImagePath,
                         Settings.robotsFileSetting,
-                        Settings.siteFaveiconPath
+                        Settings.siteFaveiconPath,
+                        Settings.defH1
                     );
                 AppCache.Add("CACHE_SITE_SETTINGS", data, cip);
             }

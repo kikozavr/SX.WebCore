@@ -325,6 +325,7 @@
     <Compile Include="ViewModels\SxVMBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMBanner.cs" />
     <Compile Include="ViewModels\SxVMBannerGroup.cs" />
+    <Compile Include="ViewModels\SxVMBreadcrumb.cs" />
     <Compile Include="ViewModels\SxVMEdit301Redirect.cs" />
     <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMEditBanner.cs" />

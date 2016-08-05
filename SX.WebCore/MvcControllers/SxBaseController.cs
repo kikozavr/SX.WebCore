@@ -50,7 +50,7 @@ namespace SX.WebCore.MvcControllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var routeDataValues = filterContext.RequestContext.RouteData.Values;
-            SxAreaName = routeDataValues["area"].ToString().ToLower();
+            SxAreaName = routeDataValues["area"]?.ToString().ToLower();
             SxControllerName = routeDataValues["controller"].ToString().ToLower();
             SxActionName = routeDataValues["action"].ToString().ToLower();
             var session = filterContext.RequestContext.HttpContext.Session;

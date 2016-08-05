@@ -79,6 +79,15 @@ namespace SX.WebCore.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to defH1.
+        /// </summary>
+        public static string defH1 {
+            get {
+                return ResourceManager.GetString("defH1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to emptyGameBadImagePath.
         /// </summary>
         public static string emptyGameBadImagePath {

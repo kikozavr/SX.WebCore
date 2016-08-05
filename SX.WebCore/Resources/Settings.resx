@@ -125,6 +125,10 @@
     <value>v. 1.0.0.11</value>
     <comment>Версия админ панели</comment>
   </data>
+  <data name="defH1" xml:space="preserve">
+    <value>defH1</value>
+    <comment>Значение H1 по-умолчанию</comment>
+  </data>
   <data name="emptyGameBadImagePath" xml:space="preserve">
     <value>emptyGameBadImagePath</value>
     <comment>Путь к отрицательному изображению игры по-умолчанию</comment>

@@ -43,5 +43,7 @@ namespace SX.WebCore
             /// </summary>
             NormalImage = 2
         }
+
+        public int ViewsCount { get; set; }
     }
 }

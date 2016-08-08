@@ -17,11 +17,8 @@ namespace SX.WebCore
         [Required, MaxLength(255), Index]
         public string Url { get; set; }
 
-        [MaxLength(50)]
-        public string ControllerName { get; set; }
-
-        [MaxLength(50)]
-        public string ActionName { get; set; }
+        [MaxLength(255), Index]
+        public string RawUrl { get; set; }
 
         public BannerPlace Place { get; set; }
 

@@ -164,7 +164,8 @@ namespace SX.WebCore.MvcControllers
 
         private void writePageBanners()
         {
-            ViewBag.PageBanners = SxApplication<TDbContext>.BannerProvider.GetPageBanners(SxControllerName, SxActionName);
+            var rawUrl = Request.RawUrl;
+            ViewBag.PageBanners = SxApplication<TDbContext>.BannerProvider.GetPageBanners(rawUrl);
         }
     }
 }

@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 06.08.2016 10:50:46
+ * Time: 08.08.2016 15:13:00
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,10 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
+
+
 
 
 
@@ -419,6 +423,10 @@ BEGIN
 END
 GO
 
+
+
+
+
 /*******************************************
  * добавить комментарии материала
  *******************************************/
@@ -474,9 +482,11 @@ CREATE PROCEDURE dbo.get_material_category
 AS
 BEGIN
 	SELECT *
-	FROM   D_MATERIAL_CATEGORY AS dmc
-	LEFT JOIN D_PICTURE AS dp ON dp.Id = dmc.FrontPictureId
-	LEFT JOIN D_MATERIAL_CATEGORY AS dmc2 ON dmc2.Id=dmc.ParentCategoryId
+	FROM   D_MATERIAL_CATEGORY            AS dmc
+	       LEFT JOIN D_PICTURE            AS dp
+	            ON  dp.Id = dmc.FrontPictureId
+	       LEFT JOIN D_MATERIAL_CATEGORY  AS dmc2
+	            ON  dmc2.Id = dmc.ParentCategoryId
 	WHERE  dmc.Id = @categoryId
 END
 GO
@@ -1233,27 +1243,25 @@ IF OBJECT_ID(N'dbo.update_banner', N'P') IS NOT NULL
     DROP PROCEDURE dbo.update_banner;
 GO
 CREATE PROCEDURE dbo.update_banner(
-    @id             UNIQUEIDENTIFIER,
-    @url            VARCHAR(255),
-    @pid            UNIQUEIDENTIFIER,
-    @title          NVARCHAR(100),
-    @place          INT,
-    @controller     NVARCHAR(50),
-    @action         NVARCHAR(50),
-    @desc           NVARCHAR(MAX)
+    @id         UNIQUEIDENTIFIER,
+    @url        VARCHAR(255),
+    @pid        UNIQUEIDENTIFIER,
+    @title      NVARCHAR(100),
+    @place      INT,
+    @rawUrl     NVARCHAR(255),
+    @desc       NVARCHAR(MAX)
 )
 AS
 BEGIN
 	UPDATE D_BANNER
-	SET    Title              = @title,
-	       PictureId          = @pid,
-	       [Url]              = @url,
-	       DateUpdate         = GETDATE(),
-	       ControllerName     = @controller,
-	       ActionName         = @action,
-	       Place              = @place,
-	       [Description]      = @desc
-	WHERE  Id                 = @id
+	SET    Title             = @title,
+	       PictureId         = @pid,
+	       [Url]             = @url,
+	       DateUpdate        = GETDATE(),
+	       RawUrl            = @rawUrl,
+	       Place             = @place,
+	       [Description]     = @desc
+	WHERE  Id                = @id
 END
 GO
 
@@ -1339,6 +1347,29 @@ BEGIN
 	WHERE  dst.Show = 1
 	ORDER BY
 	       NEWID()
+END
+GO
+
+/*******************************************
+ * Добавить просмотр теста
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_site_test_show', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_site_test_show;
+GO
+CREATE PROCEDURE dbo.add_site_test_show
+	@testId INT
+AS
+BEGIN
+	DECLARE @oldViewsCount INT
+	SELECT TOP 1 @oldViewsCount = dst.ViewsCount
+	FROM   D_SITE_TEST AS dst
+	WHERE  dst.Id = @testId
+	
+	UPDATE D_SITE_TEST
+	SET    ViewsCount = @oldViewsCount + 1
+	WHERE  Id = @testId
+	
+	SELECT @oldViewsCount + 1
 END
 GO
 
@@ -2411,5 +2442,74 @@ BEGIN
 	    SET @result = 1
 	
 	SELECT @result
+END
+GO
+
+/*******************************************
+ * Получить рейтинг материала
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_material_rating', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_material_rating;
+GO
+CREATE PROCEDURE dbo.get_material_rating
+	@mid INT,
+	@mct INT
+AS
+BEGIN
+	DECLARE @result FLOAT
+	SELECT @result = AVG(dr.[Value])
+	FROM   D_RATING AS dr
+	WHERE  dr.MaterialId = @mid
+	       AND dr.ModelCoreType = @mct
+	
+	SELECT @result
+END
+GO
+
+/*******************************************
+ * Добавить рейтинг материала
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_material_rating', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_material_rating;
+GO
+CREATE PROCEDURE dbo.add_material_rating
+	@userId NVARCHAR(128),
+	@value INT,
+	@sessionId NVARCHAR(128),
+	@mid INT,
+	@mct INT
+AS
+BEGIN
+	SET NOCOUNT ON
+	
+	IF NOT EXISTS (
+	       SELECT *
+	       FROM   D_RATING AS dr
+	       WHERE  (dr.UserId = @userId OR dr.SessionId = @sessionId)
+	              AND dr.MaterialId = @mid
+	              AND dr.ModelCoreType = @mct
+	   )
+	BEGIN
+	    INSERT INTO D_RATING
+	      (
+	        UserId,
+	        [Value],
+	        SessionId,
+	        MaterialId,
+	        ModelCoreType,
+	        DateCreate
+	      )
+	    VALUES
+	      (
+	        @userId,
+	        @value,
+	        @sessionId,
+	        @mid,
+	        @mct,
+	        GETDATE()
+	      )
+	END
+	
+	EXEC dbo.get_material_rating @mid, @mct
 END
 GO

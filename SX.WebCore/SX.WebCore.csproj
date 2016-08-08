@@ -177,10 +177,12 @@
     <Compile Include="Abstract\SxDbUpdatedModel.cs" />
     <Compile Include="Attrubutes\NotEqualAttribute.cs" />
     <Compile Include="HtmlHelpers\SxGridLookup.cs" />
+    <Compile Include="HtmlHelpers\SxRating.cs" />
     <Compile Include="HtmlHelpers\SxShareButtons.cs" />
     <Compile Include="Hubs\SxChatHub.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
     <Compile Include="MvcControllers\SxMaterialsController.cs" />
+    <Compile Include="MvcControllers\SxRatingController.cs" />
     <Compile Include="MvcControllers\SxShareButtonsController.cs" />
     <Compile Include="MvcControllers\SxNetsController.cs" />
     <Compile Include="MvcControllers\Sx301RedirectsController.cs" />
@@ -207,6 +209,7 @@
     <Compile Include="MvcControllers\SxMaterialCategoriesController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
     <Compile Include="Repositories\SxRepoMaterial.cs" />
+    <Compile Include="Repositories\SxRepoRating.cs" />
     <Compile Include="Repositories\SxRepoShareButton.cs" />
     <Compile Include="Repositories\SxRepoNet.cs" />
     <Compile Include="Repositories\SxRepoAppUser.cs" />
@@ -293,6 +296,7 @@
     <Compile Include="SxEmployee.cs" />
     <Compile Include="SxDateStatistic.cs" />
     <Compile Include="SxHumor.cs" />
+    <Compile Include="SxRating.cs" />
     <Compile Include="SxShareButton.cs" />
     <Compile Include="SxNet.cs" />
     <Compile Include="SxOrder.cs" />

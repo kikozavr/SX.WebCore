@@ -17,5 +17,6 @@ namespace SX.WebCore.ViewModels
         public SxSiteTest.SiteTestType Type { get; set; }
         public SxVMSiteTestQuestion[] Questions { get; set; }
         public string Rules { get; set; }
+        public int ViewsCount { get; set; }
     }
 }

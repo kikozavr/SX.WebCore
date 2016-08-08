@@ -12,70 +12,58 @@ namespace SX.WebCore.Providers
             _banners = banners;
         }
 
-        private static SxBanner getPlaceBanner(SxBanner.BannerPlace place)
-        {
-            SxBanner banner = null;
-            var data = _banners().Where(x => x.Place == place && x.ControllerName == null && x.ActionName == null).ToArray();
-            banner = getRandomBanner(data);
-            return banner;
-        }
-
-        private static SxBanner getControllerBanner(SxBanner.BannerPlace place, string controllerName)
-        {
-            SxBanner banner = null;
-            var data = _banners().Where(x => x.Place == place && x.ControllerName == controllerName && x.ActionName == null).ToArray();
-            banner = getRandomBanner(data);
-            return banner ?? getPlaceBanner(place);
-        }
-
-        private static SxBanner getActionBanner(SxBanner.BannerPlace place, string controllerName, string actionName)
-        {
-            SxBanner banner = null;
-            var data = _banners().Where(x => x.Place == place && Equals(x.ControllerName, controllerName) && Equals(x.ActionName, actionName)).ToArray();
-            banner = getRandomBanner(data);
-            return banner ?? getControllerBanner(place, controllerName);
-        }
-
-        private static SxBanner getRandomBanner(SxBanner[] data)
-        {
-            SxBanner banner = null;
-            if (data.Any())
-            {
-                var random = new Random();
-                var randomIndex = random.Next(data.Length);
-                banner = data[randomIndex];
-            }
-
-            return banner;
-        }
-
-        private static SxBanner getBanner(SxBanner.BannerPlace place, string controllerName = null, string actionName = null)
-        {
-            if (place == SxBanner.BannerPlace.Unknown) return null;
-
-            SxBanner banner = null;
-            if (controllerName == null && actionName == null)
-                banner = getPlaceBanner(place);
-            else if (controllerName != null && actionName == null)
-                banner = getControllerBanner(place, controllerName);
-            else if (controllerName != null && actionName != null)
-                banner = getActionBanner(place, controllerName, actionName);
-
-            return banner;
-        }
-
-        public SxBanner[] GetPageBanners(string controllerName, string actionName)
+        public SxBanner[] GetPageBanners(string rawUrl)
         {
             var list = new List<SxBanner>();
+
             foreach (var p in Enum.GetValues(typeof(SxBanner.BannerPlace)))
             {
                 var place = (SxBanner.BannerPlace)p;
-                var banner = getBanner(place, controllerName, actionName);
+                if (place == SxBanner.BannerPlace.Unknown) continue;
+
+                var banner = getBanner(place, list, rawUrl);
                 if (banner != null)
                     list.Add(banner);
             }
 
             return list.ToArray();
+        }
+
+        private static SxBanner getBanner(SxBanner.BannerPlace place, List<SxBanner> existBanners, string rawUrl = null)
+        {
+            var banner = getPlaceBanner(place, existBanners, rawUrl);
+            return banner;
+        }
+
+        private static SxBanner getPlaceBanner(SxBanner.BannerPlace place, List<SxBanner> existBanners, string rawUrl = null)
+        {
+            SxBanner banner = null;
+            var data = _banners().Where(x => (x.Place == place || (x.Place == place && x.RawUrl == rawUrl)) && existBanners.SingleOrDefault(b=>b.PictureId==x.PictureId)==null).ToArray();
+            banner = getRandomBanner(data, rawUrl);
+            return banner;
+        }
+
+        private static SxBanner getRandomBanner(SxBanner[] data, string rawUrl = null)
+        {
+            SxBanner banner = null;
+            if (data.Any())
+            {
+                var dataForRawUrl = data.Where(x => x.RawUrl == rawUrl).ToArray();
+                if (dataForRawUrl.Any())
+                {
+                    var randomForRawUrl = new Random();
+                    var randomIndexForRawUrl = randomForRawUrl.Next(dataForRawUrl.Length);
+                    banner = dataForRawUrl[randomIndexForRawUrl];
+                }
+                else
+                {
+                    var random = new Random();
+                    var randomIndex = random.Next(data.Length);
+                    banner = data[randomIndex];
+                }
+            }
+
+            return banner;
         }
     }
 }

@@ -81,7 +81,7 @@ namespace SX.WebCore.MvcControllers
                 if (model.Id == Guid.Empty)
                     newModel = _repo.Create(redactModel);
                 else
-                    newModel = _repo.Update(redactModel, true, "Title", "PictureId", "Url", "Place", "ControllerName", "ActionName", "Description");
+                    newModel = _repo.Update(redactModel, true, "Title", "PictureId", "Url", "Place", "RawUrl", "Description");
 
                 return RedirectToAction("index");
             }
@@ -150,14 +150,6 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_GroupBanners", viewModel);
         }
 
-        public static async Task addBannerClick(Guid bannerId)
-        {
-            await Task.Run(() =>
-            {
-                _repo.AddClick(bannerId);
-            });
-        }
-
         [HttpGet, AllowAnonymous]
         public virtual async Task<ActionResult> Click(Guid bannerId)
         {
@@ -170,7 +162,11 @@ namespace SX.WebCore.MvcControllers
                 return new HttpNotFoundResult();
             else
             {
-                await addBannerClick(banner.Id);
+                await Task.Run(() =>
+                {
+                    _repo.AddClick(bannerId);
+                });
+
                 return Redirect(banner.Url);
             }
         }

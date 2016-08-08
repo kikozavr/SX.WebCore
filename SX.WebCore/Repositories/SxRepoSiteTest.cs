@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -152,7 +153,7 @@ namespace SX.WebCore.Repositories
                 {
                     title = model.Title,
                     desc = model.Description,
-                    rules=model.Rules,
+                    rules = model.Rules,
                     titleUrl = UrlHelperExtensions.SeoFriendlyUrl(model.Title),
                     type = model.Type
                 }).SingleOrDefault();
@@ -235,7 +236,7 @@ namespace SX.WebCore.Repositories
                     q.Test = t;
                     a.Subject = s;
                     return a;
-                }, new { subjectId=subjectId});
+                }, new { subjectId = subjectId });
 
                 return data.ToArray();
             }
@@ -248,6 +249,18 @@ namespace SX.WebCore.Repositories
                 var data = conn.Query<SxSiteTest>("dbo.get_site_test_rules @testId", new { testId = siteTestId }).SingleOrDefault();
                 return data;
             }
+        }
+
+        public async Task<int> AddShow(int testId)
+        {
+            return await Task.Run(() =>
+            {
+                using (var connection = new SqlConnection(ConnectionString))
+                {
+                    var data = connection.Query<int>("dbo.add_site_test_show @testId", new { testId = testId });
+                    return data.SingleOrDefault();
+                }
+            });
         }
     }
 }

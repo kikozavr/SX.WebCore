@@ -21,11 +21,8 @@ namespace SX.WebCore.ViewModels
         [Display(Name = "Место на странице")]
         public SxBanner.BannerPlace? Place { get; set; }
 
-        [MaxLength(50), Display(Name = "Конроллер")]
-        public string ControllerName { get; set; }
-
-        [MaxLength(50), Display(Name = "Действие")]
-        public string ActionName { get; set; }
+        [MaxLength(266), Display(Name = "Внутренний адрес страницы")]
+        public string RawUrl { get; set; }
 
         [Display(Name ="Описание"), DataType(DataType.MultilineText), AllowHtml]
         public string Description { get; set; }

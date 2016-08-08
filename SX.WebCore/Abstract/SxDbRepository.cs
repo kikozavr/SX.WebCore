@@ -92,6 +92,7 @@ namespace SX.WebCore.Abstract
             throw new NotImplementedException("Не поддерживается в данном контексте");
         }
 
+        [Obsolete("Это нужно удалить")]
         public virtual void Delete(params object[] id)
         {
             var dbContext = Activator.CreateInstance<TDbContext>();
@@ -117,11 +118,6 @@ namespace SX.WebCore.Abstract
                 return dbContext.Set<TModel>().AsNoTracking();
             }
         }
-
-        //public virtual IQueryable<TModel> Query(SxFilter filter)
-        //{
-        //    return All;
-        //}
 
         [Obsolete("Надо заменить на Read")]
         public virtual TModel[] Query(SxFilter filter)

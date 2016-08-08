@@ -152,7 +152,8 @@ namespace SX.WebCore.Repositories
             var query = @"SELECT dsi.Id FROM D_SEO_TAGS AS dsi WHERE dsi.RawUrl=@RAW_URL";
             using (var conn = new SqlConnection(ConnectionString))
             {
-                return conn.Query<SxSeoTags>(query, new { @RAW_URL = rawUrl }).SingleOrDefault();
+                var data= conn.Query<SxSeoTags>(query, new { @RAW_URL = rawUrl }).SingleOrDefault();
+                return data;
             }
         }
 

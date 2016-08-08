@@ -59,6 +59,7 @@ namespace SX.WebCore.HtmlHelpers
             }
 
             public Func<TModel, string> Template { get; set; }
+            public Func<TModel, string> ColumnCssClass { get; set; }
         }
 
         public static MvcHtmlString SxGridView<TModel>(this HtmlHelper htmlHelper, TModel[] collection, SxGridViewSettings<TModel> settings = null, object htmlAttributes = null)
@@ -251,6 +252,9 @@ namespace SX.WebCore.HtmlHelpers
                         else
                         {
                             column = settings.Columns[y - 1];
+
+                            if (column.ColumnCssClass != null)
+                                td.AddCssClass(column.ColumnCssClass(model));
 
                             if (column.Template != null)
                                 value = column.Template(model);

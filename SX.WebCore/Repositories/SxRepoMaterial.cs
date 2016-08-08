@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.ViewModels;
+using System;
 using System.Data.SqlClient;
 using System.Linq;
 using static SX.WebCore.Enums;
@@ -29,7 +30,8 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public TViewModel GetByTitleUrl<TViewModel>(int year, string month, string day, string titleUrl) where TViewModel : SxVMMaterial
+        [Obsolete]
+        public virtual TViewModel GetByTitleUrl<TViewModel>(int year, string month, string day, string titleUrl) where TViewModel : SxVMMaterial
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
@@ -38,6 +40,11 @@ namespace SX.WebCore.Repositories
                     data.Videos = conn.Query<SxVideo>("get_material_videos @mid, @mct", new { mid = data.Id, mct = data.ModelCoreType }).ToArray();
                 return data;
             }
+        }
+
+        public virtual TModel GetByTitleUrl(int year, string month, string day, string titleUrl)
+        {
+            return null;
         }
 
         public bool ExistsMaterialByTitleUrl(string titleUrl)

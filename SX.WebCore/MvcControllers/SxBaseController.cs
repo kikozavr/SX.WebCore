@@ -57,16 +57,16 @@ namespace SX.WebCore.MvcControllers
             SxSessionId = session?.SessionID;
             SxRawUrl = Request.RawUrl.ToLower();
 
-            //забаненные адреса
-            var urlRef = Request.UrlReferrer;
-            if (urlRef != null)
-            {
-                if (SxApplication<TDbContext>.GetBannedUrls().Contains(urlRef.ToString()))
-                {
-                    filterContext.Result = new HttpStatusCodeResult(403);
-                    return;
-                }
-            }
+            //забаненные адреса (не используется)
+            //var urlRef = Request.UrlReferrer;
+            //if (urlRef != null)
+            //{
+            //    if (SxApplication<TDbContext>.GetBannedUrls().Contains(urlRef.ToString()))
+            //    {
+            //        filterContext.Result = new HttpStatusCodeResult(403);
+            //        return;
+            //    }
+            //}
 
             //если экшн является дочерним или задан аттрибут нелогирования запроса
             var notLogRequest = filterContext.ActionDescriptor.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(NotLogRequestAttribute)) != null;

@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 02.08.2016 14:24:41
+ * Time: 06.08.2016 10:50:46
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,7 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
 
 
 
@@ -418,114 +419,6 @@ BEGIN
 END
 GO
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*******************************************
  * добавить комментарии материала
  *******************************************/
@@ -571,12 +464,127 @@ END
 GO
 
 /*******************************************
+ * Получить категорию материалов
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_material_category', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_material_category;
+GO
+CREATE PROCEDURE dbo.get_material_category
+	@categoryId NVARCHAR(128)
+AS
+BEGIN
+	SELECT *
+	FROM   D_MATERIAL_CATEGORY AS dmc
+	LEFT JOIN D_PICTURE AS dp ON dp.Id = dmc.FrontPictureId
+	LEFT JOIN D_MATERIAL_CATEGORY AS dmc2 ON dmc2.Id=dmc.ParentCategoryId
+	WHERE  dmc.Id = @categoryId
+END
+GO
+
+/*******************************************
+ * Обновить категорию материалов
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+* * */
+IF OBJECT_ID(N'dbo.update_material_category', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.update_material_category;
+GO
+CREATE PROCEDURE dbo.update_material_category
+	@oldCategoryId NVARCHAR(128),
+	@categoryId NVARCHAR(128),
+	@title NVARCHAR(100),
+	@mct INT,
+	@pcid NVARCHAR(128),
+	@pictureId UNIQUEIDENTIFIER
+AS
+BEGIN
+	IF (@oldCategoryId = @categoryId)
+	BEGIN
+	    UPDATE D_MATERIAL_CATEGORY
+	    SET    Title                = @title,
+	           ModelCoreType        = @mct,
+	           ParentCategoryId     = @pcid,
+	           FrontPictureId       = @pictureId
+	    WHERE  Id                   = @categoryId
+	END
+	ELSE
+	BEGIN
+	    IF NOT EXISTS (
+	           SELECT TOP 1 dmc.Id
+	           FROM   D_MATERIAL_CATEGORY AS dmc
+	           WHERE  dmc.Id = @categoryId
+	       )
+	    BEGIN
+	        UPDATE D_MATERIAL_CATEGORY
+	        SET    ParentCategoryId = @categoryId
+	        WHERE  ParentCategoryId = @oldCategoryId
+	        
+	        UPDATE D_MATERIAL_CATEGORY
+	        SET    Id                   = @categoryId,
+	               Title                = @title,
+	               ModelCoreType        = @mct,
+	               ParentCategoryId     = @pcid,
+	               FrontPictureId       = @pictureId
+	        WHERE  Id                   = @oldCategoryId
+	    END
+	END
+	
+	EXEC dbo.get_material_category @categoryId
+END
+GO
+
+/*******************************************
+ * Добавить категорию материалов
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_material_category', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_material_category;
+GO
+CREATE PROCEDURE dbo.add_material_category
+	@categoryId NVARCHAR(128),
+	@title NVARCHAR(100),
+	@mct INT,
+	@pcid NVARCHAR(128),
+	@pictureId UNIQUEIDENTIFIER
+AS
+BEGIN
+	IF NOT EXISTS (
+	       SELECT TOP 1 dmc.Id
+	       FROM   D_MATERIAL_CATEGORY AS dmc
+	       WHERE  dmc.Id = @categoryId
+	   )
+	BEGIN
+	    DECLARE @date DATETIME = GETDATE()
+	    INSERT INTO D_MATERIAL_CATEGORY
+	      (
+	        Id,
+	        Title,
+	        ModelCoreType,
+	        ParentCategoryId,
+	        FrontPictureId,
+	        DateCreate
+	      )
+	    VALUES
+	      (
+	        @categoryId,
+	        @title,
+	        @mct,
+	        @pcid,
+	        @pictureId,
+	        @date
+	      )
+	    
+	    EXEC dbo.get_material_category @categoryId
+	END
+END
+GO
+
+/*******************************************
  * Удалить категорию материалов
  *******************************************/
 IF OBJECT_ID(N'dbo.del_material_category', N'P') IS NOT NULL
     DROP PROCEDURE dbo.del_material_category;
 GO
-CREATE PROCEDURE dbo.del_material_category(@catId VARCHAR(100))
+CREATE PROCEDURE dbo.del_material_category
+	@catId VARCHAR(100)
 AS
 BEGIN
 	BEGIN TRANSACTION
@@ -1328,7 +1336,7 @@ BEGIN
 	       dst.TitleUrl,
 	       dst.Rules
 	FROM   D_SITE_TEST AS dst
-	WHERE dst.Show=1
+	WHERE  dst.Show = 1
 	ORDER BY
 	       NEWID()
 END
@@ -1775,6 +1783,13 @@ BEGIN
 	    SET @id = @@identity
 	    
 	    INSERT INTO D_SITE_TEST_ANSWER
+	      (
+	        QuestionId,
+	        SubjectId,
+	        DateUpdate,
+	        DateCreate,
+	        IsCorrect
+	      )
 	    SELECT @id,
 	           dsts.Id,
 	           GETDATE(),
@@ -1833,6 +1848,13 @@ BEGIN
 	    SET @id = @@identity
 	    
 	    INSERT INTO D_SITE_TEST_ANSWER
+	      (
+	        QuestionId,
+	        SubjectId,
+	        DateUpdate,
+	        DateCreate,
+	        IsCorrect
+	      )
 	    SELECT dstq.Id,
 	           @id,
 	           GETDATE(),
@@ -2176,7 +2198,7 @@ BEGIN
 	       JOIN D_SITE_TEST           AS dst
 	            ON  dst.Id = dstq.TestId
 	            AND dst.Id = @testId
-	WHERE dsta.IsCorrect=1
+	WHERE  dsta.IsCorrect = 1
 END
 GO
 

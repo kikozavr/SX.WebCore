@@ -77,7 +77,7 @@ namespace SX.WebCore.HtmlHelpers
             tb.InnerHtml += tr;
 
             var childs = settings.FuncChildren(node);
-            if (childs.Any())
+            if (childs!=null && childs.Any())
             {
                 for (int i = 0; i < childs.Length; i++)
                 {

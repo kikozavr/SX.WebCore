@@ -204,6 +204,7 @@
     <Compile Include="MvcControllers\SxUserRolesController.cs" />
     <Compile Include="MvcControllers\SxUsersController.cs" />
     <Compile Include="MvcControllers\SxVideoLinksController.cs" />
+    <Compile Include="MvcControllers\SxMaterialCategoriesController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
     <Compile Include="Repositories\SxRepoMaterial.cs" />
     <Compile Include="Repositories\SxRepoShareButton.cs" />
@@ -330,6 +331,7 @@
     <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMEditBanner.cs" />
     <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />
+    <Compile Include="ViewModels\SxVMEditMaterialCategory.cs" />
     <Compile Include="ViewModels\SxVMEditShareButton.cs" />
     <Compile Include="ViewModels\SxVMEditMaterialTag.cs" />
     <Compile Include="ViewModels\SxVMEditPicture.cs" />
@@ -344,6 +346,7 @@
     <Compile Include="ViewModels\SxVMEmployee.cs" />
     <Compile Include="ViewModels\SxVMFAQ.cs" />
     <Compile Include="ViewModels\SxVMMaterial.cs" />
+    <Compile Include="ViewModels\SxVMMaterialCategory.cs" />
     <Compile Include="ViewModels\SxVMShareButton.cs" />
     <Compile Include="ViewModels\SxVMNet.cs" />
     <Compile Include="ViewModels\SxVMPicture.cs" />

@@ -1,5 +1,4 @@
-﻿using SX.WebCore.Attrubutes;
-using SX.WebCore.Repositories;
+﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Threading.Tasks;
 using System.Web.Mvc;

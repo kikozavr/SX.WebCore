@@ -5,7 +5,7 @@ namespace SX.WebCore.HtmlHelpers
 {
     public static partial class SxExtantions
     {
-        public static MvcHtmlString SxThroughBanner(this HtmlHelper htmlHelper, SxBanner banner, Func<SxBanner, string> FuncBannerImgUrl)
+        public static MvcHtmlString SxThroughBanner(this HtmlHelper htmlHelper, SxBanner banner, Func<SxBanner, string> FuncBannerImgUrl, Func<SxBanner, string> FuncBannerUrl)
         {
             if (banner == null) return null;
 
@@ -17,8 +17,9 @@ namespace SX.WebCore.HtmlHelpers
             figure.AddCssClass(string.Concat("th-banner ", banner.Place.ToString().ToLower()));
 
             var a = new TagBuilder("a");
-            a.MergeAttribute("href", "javascript:void(0)");
+            a.MergeAttribute("href", FuncBannerUrl(banner));
             a.MergeAttribute("rel", "nofollow");
+            a.MergeAttribute("target", "_blank");
 
             var img = new TagBuilder("img");
             img.MergeAttribute("alt", banner.Title);

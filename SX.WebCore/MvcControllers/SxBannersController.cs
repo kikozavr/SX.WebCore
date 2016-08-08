@@ -150,14 +150,29 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_GroupBanners", viewModel);
         }
 
-        [HttpPost, AllowAnonymous, NotLogRequest]
-        public virtual async Task<JsonResult> AddClick(Guid bannerId)
+        public static async Task addBannerClick(Guid bannerId)
         {
-            return await Task.Run(() =>
+            await Task.Run(() =>
             {
                 _repo.AddClick(bannerId);
-                return Json(new { Success=true});
             });
+        }
+
+        [HttpGet, AllowAnonymous]
+        public virtual async Task<ActionResult> Click(Guid bannerId)
+        {
+            var banner = await Task.Run(()=> {
+                var data = _repo.GetByKey(bannerId);
+                return data;
+            });
+
+            if (banner == null)
+                return new HttpNotFoundResult();
+            else
+            {
+                await addBannerClick(banner.Id);
+                return Redirect(banner.Url);
+            }
         }
 
         [HttpPost, AllowAnonymous, NotLogRequest]

@@ -34,7 +34,7 @@ namespace SX.WebCore.Managers
                     mail.To.Add(mailsTo[i]);
                 }
 
-                mail.From = new MailAddress(mailFrom);
+                mail.From = new MailAddress(_smtpUserName);
                 mail.Subject = subject;
                 mail.Body = body;
                 mail.IsBodyHtml = isBodyHtml;

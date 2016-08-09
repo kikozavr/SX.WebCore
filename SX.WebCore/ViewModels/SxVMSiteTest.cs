@@ -18,5 +18,6 @@ namespace SX.WebCore.ViewModels
         public SxVMSiteTestQuestion[] Questions { get; set; }
         public string Rules { get; set; }
         public int ViewsCount { get; set; }
+        public bool ShowSubjectDesc { get; set; }
     }
 }

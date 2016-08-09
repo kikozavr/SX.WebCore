@@ -45,5 +45,7 @@ namespace SX.WebCore
         }
 
         public int ViewsCount { get; set; }
+
+        public bool ShowSubjectDesc { get; set; }
     }
 }

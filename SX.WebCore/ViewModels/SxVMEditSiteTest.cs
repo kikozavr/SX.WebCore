@@ -24,5 +24,8 @@ namespace SX.WebCore.ViewModels
 
         [Display(Name ="Правила"), AllowHtml, DataType(DataType.MultilineText)]
         public string Rules { get; set; }
+
+        [Display(Name = "Показывать описания объектов")]
+        public bool ShowSubjectDesc { get; set; }
     }
 }

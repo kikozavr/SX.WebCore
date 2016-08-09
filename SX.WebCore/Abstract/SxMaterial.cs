@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SX.WebCore.Abstract
 {
     [Table("DV_MATERIAL")]
-    public abstract class SxMaterial : SxDbUpdatedModel<int>, ISxHasHtml, ISxHasFrontPicture
+    public abstract class SxMaterial : SxDbUpdatedModel<int>, ISxHasHtml, ISxHasFrontPicture, IHasViewsCount
     {
         [Index]
         public DateTime DateOfPublication { get; set; }

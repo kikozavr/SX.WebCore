@@ -24,6 +24,8 @@ namespace SX.WebCore
 
         public DbSet<SxArticle> Articles { get; set; }
 
+        public DbSet<SxAffiliateLink> AffiliateLinks { get; set; }
+
         public DbSet<SxBannedUrl> BannedUrls { get; set; }
 
         public DbSet<SxBanner> Banners { get; set; }
@@ -99,6 +101,7 @@ namespace SX.WebCore
 
             modelBuilder.Entity<SxBanner>().Property(x => x.TargetCost).HasColumnType("money");
             modelBuilder.Entity<SxBanner>().Property(x => x.CPM).HasColumnType("money");
+            modelBuilder.Entity<SxAffiliateLink>().Property(x => x.ClickCost).HasColumnType("money");
 
             modelBuilder.Entity<SxSiteTestAnswer>().HasKey(x => new { x.QuestionId, x.SubjectId });
             modelBuilder.Entity<SxSiteTestAnswer>().HasRequired(x => x.Question).WithMany().WillCascadeOnDelete(false);

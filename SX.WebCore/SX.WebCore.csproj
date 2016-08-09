@@ -168,6 +168,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\IHasViewsCount.cs" />
     <Compile Include="Abstract\ISxSeoWordCounter.cs" />
     <Compile Include="Abstract\ISxHasFrontPicture.cs" />
     <Compile Include="Abstract\ISxHasHtml.cs" />
@@ -217,6 +218,7 @@
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
     <Compile Include="Repositories\SxRepoSiteTestSubject.cs" />
     <Compile Include="Repositories\SxRepositoryChat.cs" />
+    <Compile Include="SxAffiliateLink.cs" />
     <Compile Include="SxBannersStatistic.cs" />
     <Compile Include="SxFilter.cs" />
     <Compile Include="Abstract\SxMaterial.cs" />
@@ -327,11 +329,13 @@
     <Compile Include="SxVideo.cs" />
     <Compile Include="SxVideoLink.cs" />
     <Compile Include="ViewModels\SxVM301Redirect.cs" />
+    <Compile Include="ViewModels\SxVMAffiliateLink.cs" />
     <Compile Include="ViewModels\SxVMBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMBanner.cs" />
     <Compile Include="ViewModels\SxVMBannerGroup.cs" />
     <Compile Include="ViewModels\SxVMBreadcrumb.cs" />
     <Compile Include="ViewModels\SxVMEdit301Redirect.cs" />
+    <Compile Include="ViewModels\SxVMEditAffiliateLink.cs" />
     <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMEditBanner.cs" />
     <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />

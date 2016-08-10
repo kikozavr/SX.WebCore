@@ -1,7 +1,10 @@
-﻿using SX.WebCore.Attrubutes;
+﻿using Newtonsoft.Json;
+using SX.WebCore.Attrubutes;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -162,7 +165,12 @@ namespace SX.WebCore.MvcControllers
                 return new HttpNotFoundResult();
             else
             {
-                await _repo.AddClickAsync(bannerId);
+                var affiliateCookieName = ConfigurationManager.AppSettings["AffiliateCookieName"];
+                var cookies = Request.Cookies[affiliateCookieName];
+                if (cookies != null)
+                    await _repo.AddClickAsync(bannerId, JsonConvert.DeserializeObject<List<string>>(cookies.Value));
+                else
+                    await _repo.AddClickAsync(bannerId);
                 return Redirect(banner.Url);
             }
         }

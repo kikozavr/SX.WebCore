@@ -5,6 +5,7 @@ using SX.WebCore.MvcApplication;
 using SX.WebCore.Repositories;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Text;
@@ -17,6 +18,7 @@ namespace SX.WebCore.MvcControllers
     public abstract class SxBaseController<TDbContext> : Controller where TDbContext : SxDbContext
     {
         private static SxRepoAffiliateLink<TDbContext> _repoAffiliateLink;
+        private static SxRepoRequest<TDbContext> _repoRequest;
 
         private static CacheItemPolicy _defaultPolicy15Min
         {
@@ -46,6 +48,8 @@ namespace SX.WebCore.MvcControllers
                 Mapper = SxApplication<TDbContext>.MapperConfiguration.CreateMapper();
             if (_repoAffiliateLink == null)
                 _repoAffiliateLink = new SxRepoAffiliateLink<TDbContext>();
+            if (_repoRequest == null)
+                _repoRequest = new SxRepoRequest<TDbContext>();
         }
 
         public string SxAreaName { get; set; }
@@ -74,8 +78,6 @@ namespace SX.WebCore.MvcControllers
                     return;
                 }
             }
-
-            
 
             //если экшн является дочерним или задан аттрибут нелогирования запроса
             var notLogRequest = filterContext.ActionDescriptor.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(NotLogRequestAttribute)) != null;
@@ -166,11 +168,11 @@ namespace SX.WebCore.MvcControllers
                     ClientIP = Request.ServerVariables["REMOTE_ADDR"],
                     RawUrl = Request.RawUrl.ToLowerInvariant(),
                     RequestType = Request.RequestType,
-                    UrlRef = Request.UrlReferrer != null ? Request.UrlReferrer.ToString().ToLowerInvariant() : null,
+                    UrlRef = Request.UrlReferrer != null ? Request.UrlReferrer.AbsoluteUri.ToLower() : null,
                     SessionId = Request.RequestContext.HttpContext.Session.SessionID,
                     UserAgent = Request.UserAgent
                 };
-                new SxRepoRequest<TDbContext>().Create(requestInstance);
+                _repoRequest.Create(requestInstance);
             });
         }
 
@@ -180,8 +182,8 @@ namespace SX.WebCore.MvcControllers
             ViewBag.PageBanners = SxApplication<TDbContext>.BannerProvider.GetPageBanners(rawUrl);
         }
 
-        private static readonly string _affiliateCookieName = "AffiliateCookies";
-        private static readonly string _affiliateQueryParName = "ak";
+        private static readonly string _affiliateCookieName = ConfigurationManager.AppSettings["AffiliateCookieName"];
+        private static readonly string _affiliateQueryParName = ConfigurationManager.AppSettings["AffiliateQueryParName"];
         private void writeAffiliateCookies()
         {
             var ak = Request.QueryString.Get(_affiliateQueryParName);
@@ -190,11 +192,16 @@ namespace SX.WebCore.MvcControllers
 
             var cookies = Request.Cookies[_affiliateCookieName];
 
+            Guid akGuid;
+            if (!Guid.TryParse(ak, out akGuid)) return;
+
+            if (!string.IsNullOrEmpty(ak))
+                _repoAffiliateLink.AddViewAsync(akGuid);
+
             if(cookies==null && !string.IsNullOrEmpty(ak))
             {
                 var list = new List<string>() { ak };
                 Response.Cookies.Add(getAffiliateCookie(list));
-                _repoAffiliateLink.AddViewsAsync(list);
             }
             else if(cookies != null && !string.IsNullOrEmpty(ak))
             {
@@ -204,19 +211,12 @@ namespace SX.WebCore.MvcControllers
                     list.Add(ak);
                     Response.Cookies.Remove(_affiliateCookieName);
                     Response.Cookies.Add(getAffiliateCookie(list));
-                    _repoAffiliateLink.AddViewsAsync(list);
                 }
-            }
-            else if(cookies != null && SxControllerName=="banners" && SxActionName=="click")
-            {
-                var list = JsonConvert.DeserializeObject<List<string>>(cookies.Value);
-                _repoAffiliateLink.AddViewsAsync(list);
             }
         }
         private static HttpCookie getAffiliateCookie(List<string> list)
         {
             var cookie = new HttpCookie(_affiliateCookieName, JsonConvert.SerializeObject(list));
-            cookie.Expires = DateTime.Now.AddHours(1);
             return cookie;
         }
     }

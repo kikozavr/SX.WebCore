@@ -2,6 +2,7 @@
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -157,13 +158,24 @@ namespace SX.WebCore.Repositories
             return GetByKey(model.Id);
         }
 
-        public Task AddClickAsync(Guid bannerId)
-        {
+        public Task AddClickAsync(Guid bannerId, List<string> affiliateLinkIds=null)
+        { 
             return Task.Run(() =>
             {
+                string alIds = null;
+                if (affiliateLinkIds != null && affiliateLinkIds.Any())
+                {
+                    var sb = new StringBuilder();
+                    affiliateLinkIds.ForEach(x=> {
+                        sb.AppendFormat(",'{0}'", x);
+                    });
+                    sb.Remove(0, 1);
+                    alIds = sb.ToString();
+                }
+
                 using (var conn = new SqlConnection(ConnectionString))
                 {
-                    conn.Execute("add_banner_clicks_count @id", new { id = bannerId });
+                    conn.Execute("dbo.add_banner_clicks_count @bId, @alIds", new { bId = bannerId, alIds = alIds });
                 }
             });
         }
@@ -175,7 +187,7 @@ namespace SX.WebCore.Repositories
                 if (!bannersId.Any()) return;
                 using (var conn = new SqlConnection(ConnectionString))
                 {
-                    conn.Execute("add_banners_shows_count @keys", new { keys = getBannerGuids(bannersId) });
+                    conn.Execute("dbo.add_banners_shows_count @keys", new { keys = getBannerGuids(bannersId) });
                 }
             });
         }

@@ -220,6 +220,7 @@
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
     <Compile Include="Repositories\SxRepoSiteTestSubject.cs" />
     <Compile Include="Repositories\SxRepositoryChat.cs" />
+    <Compile Include="SxAffiliateBannerView.cs" />
     <Compile Include="SxAffiliateLink.cs" />
     <Compile Include="SxBannersStatistic.cs" />
     <Compile Include="SxFilter.cs" />

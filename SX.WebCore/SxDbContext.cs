@@ -11,7 +11,7 @@ namespace SX.WebCore
         //Строка поделючения задается здесь
         private static string _nameOrConnectionString;
         public SxDbContext(string nameOrConnectionString)
-            : base(nameOrConnectionString) 
+            : base(nameOrConnectionString)
         {
             _nameOrConnectionString = nameOrConnectionString;
         }
@@ -77,7 +77,7 @@ namespace SX.WebCore
             modelBuilder.Entity<SxComment>().HasRequired(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType }).WillCascadeOnDelete();
             modelBuilder.Entity<SxRating>().HasRequired(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType }).WillCascadeOnDelete();
 
-            modelBuilder.Entity<SxMaterialTag>().HasKey(x=> new { x.Id, x.MaterialId, x.ModelCoreType }).HasRequired(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType }).WillCascadeOnDelete();
+            modelBuilder.Entity<SxMaterialTag>().HasKey(x => new { x.Id, x.MaterialId, x.ModelCoreType }).HasRequired(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType }).WillCascadeOnDelete();
             modelBuilder.Entity<SxMaterialTag>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
             modelBuilder.Entity<SxSeoTags>().HasOptional(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType });
@@ -97,7 +97,7 @@ namespace SX.WebCore
             modelBuilder.Entity<SxVideoLink>().HasRequired(x => x.Material).WithMany(x => x.VideoLinks).HasForeignKey(x => new { x.MaterialId, x.ModelCoreType }).WillCascadeOnDelete(true);
             modelBuilder.Entity<SxVideoLink>().HasRequired(x => x.Video).WithMany().HasForeignKey(x => new { x.VideoId }).WillCascadeOnDelete(true);
 
-            modelBuilder.Entity<SxEmployee>().HasKey(x => x.Id).HasRequired(x=>x.User).WithOptional().WillCascadeOnDelete(true);
+            modelBuilder.Entity<SxEmployee>().HasKey(x => x.Id).HasRequired(x => x.User).WithOptional().WillCascadeOnDelete(true);
 
             modelBuilder.Entity<SxBanner>().Property(x => x.TargetCost).HasColumnType("money");
             modelBuilder.Entity<SxBanner>().Property(x => x.CPM).HasColumnType("money");
@@ -106,6 +106,8 @@ namespace SX.WebCore
             modelBuilder.Entity<SxSiteTestAnswer>().HasKey(x => new { x.QuestionId, x.SubjectId });
             modelBuilder.Entity<SxSiteTestAnswer>().HasRequired(x => x.Question).WithMany().WillCascadeOnDelete(false);
             modelBuilder.Entity<SxSiteTestAnswer>().HasRequired(x => x.Subject).WithMany().WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<SxAffiliateBannerView>().HasKey(x => new { x.BannerId, x.AffiliatelinkId }).Ignore(x => x.Id);
         }
     }
 }

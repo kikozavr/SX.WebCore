@@ -21,7 +21,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public ActionResult Index(int page=1)
         {
-            var order = new SxOrder { FieldName = "dal.RawUrl", Direction = SortDirection.Asc };
+            var order = new SxOrder { FieldName = "dal.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
             var totalItems = 0;
             var data = _repo.Read(filter, out totalItems);

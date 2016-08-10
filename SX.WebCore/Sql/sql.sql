@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 10.08.2016 16:48:10
+ * Time: 10.08.2016 23:58:57
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,8 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
 
 
 
@@ -435,6 +437,8 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
 
 
 
@@ -1298,17 +1302,58 @@ IF OBJECT_ID(N'dbo.add_banner_clicks_count', N'P') IS NOT NULL
     DROP PROCEDURE dbo.add_banner_clicks_count;
 GO
 CREATE PROCEDURE dbo.add_banner_clicks_count
-	@id UNIQUEIDENTIFIER
+	@bId UNIQUEIDENTIFIER,
+	@alIds NVARCHAR(MAX) = NULL
 AS
 BEGIN
-	DECLARE @count INT
-	SELECT TOP(1) @count = db.ClicksCount
-	FROM   D_BANNER AS db
-	WHERE  db.Id = @id
-	
 	UPDATE D_BANNER
-	SET    ClicksCount     = @count + 1
-	WHERE  Id              = @id
+	SET    ClicksCount = db.ClicksCount + 1,
+	       DateUpdate = GETDATE()
+	FROM   D_BANNER AS db
+	WHERE  db.Id = @bId
+	
+	IF (@alIds IS NOT NULL)
+	BEGIN
+		DECLARE @q NVARCHAR(MAX)
+		SET @q='
+	             DECLARE @affiliateLinkId UNIQUEIDENTIFIER
+		DECLARE c CURSOR LOCAL FORWARD_ONLY FAST_FORWARD 
+		FOR
+		    SELECT dal.Id
+		    FROM   D_AFFILIATE_LINK AS dal
+		    WHERE  dal.Id IN (' + @alIds + 
+	             ')
+		
+		OPEN c
+		FETCH NEXT FROM c INTO @affiliateLinkId
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+		    IF NOT EXISTS (
+		           SELECT TOP 1 dabv.BannerId
+		           FROM   D_AFFILIATE_BANNER_VIEW AS dabv
+		           WHERE  dabv.BannerId = ''' +cast(@bId AS NVARCHAR(128))+ '''
+		                  AND dabv.AffiliatelinkId = @affiliateLinkId
+		    )
+		    BEGIN
+		    	INSERT INTO D_AFFILIATE_BANNER_VIEW
+		          (
+		            BannerId,
+		            AffiliatelinkId,
+		            DateCreate
+		          )
+		        VALUES
+		          (
+		            ''' + cast(@bId AS NVARCHAR(128)) + ''',
+		            @affiliateLinkId,
+		            GETDATE()
+		          )
+		    END
+		    FETCH NEXT FROM c INTO @affiliateLinkId
+		END
+		CLOSE c
+		DEALLOCATE c'
+	    EXEC (@q)
+	END
 END
 GO
 
@@ -2566,22 +2611,14 @@ IF OBJECT_ID(N'dbo.add_affiliate_link', N'P') IS NOT NULL
 GO
 CREATE PROCEDURE dbo.add_affiliate_link
 	@id UNIQUEIDENTIFIER,
-	@rawUrl NVARCHAR(255),
 	@desc NVARCHAR(MAX),
 	@cc MONEY
 AS
 BEGIN
 	DECLARE @date DATETIME = GETDATE()
-	IF NOT EXISTS (
-	       SELECT TOP 1 dal.Id
-	       FROM   D_AFFILIATE_LINK AS dal
-	       WHERE  dal.RawUrl = @rawUrl
-	   )
-	BEGIN
 	    INSERT INTO D_AFFILIATE_LINK
 	      (
 	        Id,
-	        RawUrl,
 	        [Description],
 	        DateUpdate,
 	        DateCreate,
@@ -2591,7 +2628,6 @@ BEGIN
 	    VALUES
 	      (
 	        NEWID(),
-	        @rawUrl,
 	        @desc,
 	        @date,
 	        @date,
@@ -2599,7 +2635,6 @@ BEGIN
 	        @cc
 	      )
 	    EXEC dbo.get_affiliate_link @id
-	END
 END
 GO
 
@@ -2611,14 +2646,12 @@ IF OBJECT_ID(N'dbo.update_affiliate_link', N'P') IS NOT NULL
 GO
 CREATE PROCEDURE dbo.update_affiliate_link
 	@id UNIQUEIDENTIFIER,
-	@rawUrl NVARCHAR(255),
 	@desc NVARCHAR(MAX),
 	@cc MONEY
 AS
 BEGIN
 	UPDATE D_AFFILIATE_LINK
-	SET    RawUrl = @rawUrl,
-	       [Description] = @desc,
+	SET    [Description] = @desc,
 	       DateUpdate = GETDATE(),
 	       ClickCost = @cc
 	WHERE  Id = @id
@@ -2646,18 +2679,16 @@ GO
 /*******************************************
  * Добавить клик по парнерке
  *******************************************/
-IF OBJECT_ID(N'dbo.add_affiliate_link_views_count', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.add_affiliate_link_views_count;
+IF OBJECT_ID(N'dbo.add_affiliate_link_view', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_affiliate_link_view;
 GO
-CREATE PROCEDURE dbo.add_affiliate_link_views_count
-	@ids NVARCHAR(MAX)
+CREATE PROCEDURE dbo.add_affiliate_link_view
+	@id UNIQUEIDENTIFIER
 AS
 BEGIN
-	EXEC (
-	         'UPDATE dal
+	UPDATE D_AFFILIATE_LINK
 	SET    ViewsCount = dal.ViewsCount + 1
 	FROM   D_AFFILIATE_LINK AS dal
-	WHERE dal.Id IN (' + @ids + ')'
-	     )
+	WHERE  dal.Id = @id
 END
 GO

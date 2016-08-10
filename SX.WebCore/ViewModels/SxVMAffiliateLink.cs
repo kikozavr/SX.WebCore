@@ -10,8 +10,6 @@ namespace SX.WebCore.ViewModels
 
         public DateTime DateUpdate { get; set; }
 
-        public string RawUrl { get; set; }
-
         public string Description { get; set; }
 
         public int ViewsCount { get; set; }

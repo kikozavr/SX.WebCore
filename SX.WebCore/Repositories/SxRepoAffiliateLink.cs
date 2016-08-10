@@ -17,10 +17,9 @@ namespace SX.WebCore.Repositories
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = connection.Query<SxAffiliateLink>("dbo.add_affiliate_link @id, @rawUrl, @desc, @cc", new
+                var data = connection.Query<SxAffiliateLink>("dbo.add_affiliate_link @id, @desc, @cc", new
                 {
                     id = Guid.NewGuid(),
-                    rawUrl = model.RawUrl,
                     desc = model.Description,
                     cc = model.ClickCost
                 });
@@ -39,7 +38,7 @@ namespace SX.WebCore.Repositories
             var gws = getAffiliateLinksWhereString(filter, out param);
             sb.Append(gws);
 
-            var defaultOrder = new SxOrder { FieldName = "dal.RawUrl", Direction = SortDirection.Asc };
+            var defaultOrder = new SxOrder { FieldName = "dal.DateCreate", Direction = SortDirection.Desc };
             sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
             sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
@@ -60,15 +59,12 @@ namespace SX.WebCore.Repositories
         {
             param = null;
             var query = new StringBuilder();
-            query.Append(" WHERE (dal.RawUrl LIKE '%'+@rawUrl+'%' OR @rawUrl IS NULL) ");
-            query.Append(" AND (dal.[Description] LIKE '%'+@desc+'%' OR @desc IS NULL) ");
+            query.Append(" WHERE (dal.[Description] LIKE '%'+@desc+'%' OR @desc IS NULL) ");
 
-            var rawUrl = filter.WhereExpressionObject != null && filter.WhereExpressionObject.RawUrl != null ? (string)filter.WhereExpressionObject.RawUrl : null;
             var desc = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Description != null ? (string)filter.WhereExpressionObject.Description : null;
 
             param = new
             {
-                rawUrl = rawUrl,
                 desc= desc
             };
 
@@ -79,10 +75,9 @@ namespace SX.WebCore.Repositories
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = connection.Query<SxAffiliateLink>("dbo.update_affiliate_link @id, @rawUrl, @desc, @cc", new
+                var data = connection.Query<SxAffiliateLink>("dbo.update_affiliate_link @id, @desc, @cc", new
                 {
                     id = model.Id,
-                    rawUrl = model.RawUrl,
                     desc = model.Description,
                     cc = model.ClickCost
                 });
@@ -102,23 +97,15 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public virtual Task AddViewsAsync(List<string> ids)
+        public virtual Task AddViewAsync(Guid id)
         {
             return Task.Run(()=> {
 
-                if (ids == null || !ids.Any()) return;
-
                 using (var connection = new SqlConnection(ConnectionString))
                 {
-                    var sb = new StringBuilder();
-                    ids.ForEach(x=> {
-                        sb.AppendFormat(",'{0}'", x);
-                    });
-                    sb.Remove(0, 1);
-
-                    var data = connection.Execute("dbo.add_affiliate_link_views_count @ids", new
+                    var data = connection.Execute("dbo.add_affiliate_link_view @id", new
                     {
-                        ids = sb.ToString()
+                        id = id
                     });
                 }
             });

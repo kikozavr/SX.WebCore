@@ -9,7 +9,7 @@ namespace SX.WebCore.MvcControllers
     [Authorize(Roles = "seo")]
     public abstract class SxRequestsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private SxRepoRequest<TDbContext> _repo;
+        private static SxRepoRequest<TDbContext> _repo;
         private static readonly int _pageSize = 40;
         public SxRequestsController()
         {

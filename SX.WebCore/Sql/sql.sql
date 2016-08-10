@@ -1369,16 +1369,10 @@ AS
 BEGIN
 	EXEC (
 	         'UPDATE D_BANNER
-	SET    ShowsCount = db2.ShowsCount + 1
-	FROM   D_BANNER AS db
-	       JOIN (
-	                SELECT db2.Id,
-	                       db2.ShowsCount
-	                FROM   D_BANNER AS db2
-	                WHERE  Id IN (' + @keys +
-	         ')
-	            ) AS db2
-	            ON  db2.Id = db.Id'
+	SET
+		ShowsCount = db.ShowsCount+1,
+		DateUpdate=GETDATE()
+	FROM D_BANNER AS db WHERE db.Id IN (' + @keys + ')'
 	     )
 END
 GO

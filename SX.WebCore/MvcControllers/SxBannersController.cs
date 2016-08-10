@@ -162,11 +162,7 @@ namespace SX.WebCore.MvcControllers
                 return new HttpNotFoundResult();
             else
             {
-                await Task.Run(() =>
-                {
-                    _repo.AddClick(bannerId);
-                });
-
+                await _repo.AddClickAsync(bannerId);
                 return Redirect(banner.Url);
             }
         }
@@ -174,11 +170,8 @@ namespace SX.WebCore.MvcControllers
         [HttpPost, AllowAnonymous, NotLogRequest]
         public async virtual Task<JsonResult> AddShow(Guid bannerId)
         {
-            return await Task.Run(() =>
-            {
-                _repo.AddShows(new Guid[] { bannerId });
-                return Json(new { Success = true });
-            });
+            await _repo.AddShowsAsync(new Guid[] { bannerId });
+            return Json(new { Success = true });
         }
 
         [HttpGet]

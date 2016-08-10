@@ -1,18 +1,23 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using SX.WebCore.Attrubutes;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.Repositories;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
     public abstract class SxBaseController<TDbContext> : Controller where TDbContext : SxDbContext
     {
+        private static SxRepoAffiliateLink<TDbContext> _repoAffiliateLink;
+
         private static CacheItemPolicy _defaultPolicy15Min
         {
             get
@@ -39,6 +44,8 @@ namespace SX.WebCore.MvcControllers
         {
             if (Mapper == null)
                 Mapper = SxApplication<TDbContext>.MapperConfiguration.CreateMapper();
+            if (_repoAffiliateLink == null)
+                _repoAffiliateLink = new SxRepoAffiliateLink<TDbContext>();
         }
 
         public string SxAreaName { get; set; }
@@ -56,21 +63,26 @@ namespace SX.WebCore.MvcControllers
             var session = filterContext.RequestContext.HttpContext.Session;
             SxSessionId = session?.SessionID;
             SxRawUrl = Request.RawUrl.ToLower();
+            
+            //забаненные адреса
+            var urlRef = Request.UrlReferrer;
+            if (urlRef != null)
+            {
+                if (SxApplication<TDbContext>.GetBannedUrls().Contains(urlRef.ToString()))
+                {
+                    filterContext.Result = new HttpStatusCodeResult(403);
+                    return;
+                }
+            }
 
-            //забаненные адреса (не используется)
-            //var urlRef = Request.UrlReferrer;
-            //if (urlRef != null)
-            //{
-            //    if (SxApplication<TDbContext>.GetBannedUrls().Contains(urlRef.ToString()))
-            //    {
-            //        filterContext.Result = new HttpStatusCodeResult(403);
-            //        return;
-            //    }
-            //}
+            
 
             //если экшн является дочерним или задан аттрибут нелогирования запроса
             var notLogRequest = filterContext.ActionDescriptor.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(NotLogRequestAttribute)) != null;
             if (filterContext.IsChildAction || notLogRequest) return;
+            
+            //пишем куки партнерок
+            writeAffiliateCookies();
 
             //редирект, если есть
             var redirect = get301Redirect();
@@ -166,6 +178,46 @@ namespace SX.WebCore.MvcControllers
         {
             var rawUrl = Request.RawUrl;
             ViewBag.PageBanners = SxApplication<TDbContext>.BannerProvider.GetPageBanners(rawUrl);
+        }
+
+        private static readonly string _affiliateCookieName = "AffiliateCookies";
+        private static readonly string _affiliateQueryParName = "ak";
+        private void writeAffiliateCookies()
+        {
+            var ak = Request.QueryString.Get(_affiliateQueryParName);
+            var afc = Request.Cookies.Get(_affiliateCookieName);
+            if (afc == null && string.IsNullOrEmpty(ak)) return;
+
+            var cookies = Request.Cookies[_affiliateCookieName];
+
+            if(cookies==null && !string.IsNullOrEmpty(ak))
+            {
+                var list = new List<string>() { ak };
+                Response.Cookies.Add(getAffiliateCookie(list));
+                _repoAffiliateLink.AddViewsAsync(list);
+            }
+            else if(cookies != null && !string.IsNullOrEmpty(ak))
+            {
+                var list = JsonConvert.DeserializeObject<List<string>>(cookies.Value);
+                if (!list.Contains(ak))
+                {
+                    list.Add(ak);
+                    Response.Cookies.Remove(_affiliateCookieName);
+                    Response.Cookies.Add(getAffiliateCookie(list));
+                    _repoAffiliateLink.AddViewsAsync(list);
+                }
+            }
+            else if(cookies != null && SxControllerName=="banners" && SxActionName=="click")
+            {
+                var list = JsonConvert.DeserializeObject<List<string>>(cookies.Value);
+                _repoAffiliateLink.AddViewsAsync(list);
+            }
+        }
+        private static HttpCookie getAffiliateCookie(List<string> list)
+        {
+            var cookie = new HttpCookie(_affiliateCookieName, JsonConvert.SerializeObject(list));
+            cookie.Expires = DateTime.Now.AddHours(1);
+            return cookie;
         }
     }
 }

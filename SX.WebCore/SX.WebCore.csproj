@@ -181,6 +181,7 @@
     <Compile Include="HtmlHelpers\SxRating.cs" />
     <Compile Include="HtmlHelpers\SxShareButtons.cs" />
     <Compile Include="Hubs\SxChatHub.cs" />
+    <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
     <Compile Include="MvcControllers\SxMaterialsController.cs" />
     <Compile Include="MvcControllers\SxRatingController.cs" />
@@ -209,6 +210,7 @@
     <Compile Include="MvcControllers\SxVideoLinksController.cs" />
     <Compile Include="MvcControllers\SxMaterialCategoriesController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
+    <Compile Include="Repositories\SxRepoAffiliateLink.cs" />
     <Compile Include="Repositories\SxRepoMaterial.cs" />
     <Compile Include="Repositories\SxRepoRating.cs" />
     <Compile Include="Repositories\SxRepoShareButton.cs" />

@@ -5,6 +5,7 @@ using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
@@ -42,7 +43,7 @@ namespace SX.WebCore.Repositories
             using (var conn = new SqlConnection(ConnectionString))
             {
                 showsCount = conn.Query<int>(queryShows).SingleOrDefault();
-                clicksCount= conn.Query<int>(queryClicks).SingleOrDefault();
+                clicksCount = conn.Query<int>(queryClicks).SingleOrDefault();
             }
         }
 
@@ -150,28 +151,33 @@ namespace SX.WebCore.Repositories
                     title = model.Title,
                     place = model.Place,
                     rawUrl = model.RawUrl,
-                    desc=model.Description
+                    desc = model.Description
                 });
             }
             return GetByKey(model.Id);
         }
 
-        public void AddClick(Guid bannerId)
+        public Task AddClickAsync(Guid bannerId)
         {
-            using (var conn = new SqlConnection(ConnectionString))
+            return Task.Run(() =>
             {
-                conn.Execute("add_banner_clicks_count @id", new { id = bannerId });
-            }
+                using (var conn = new SqlConnection(ConnectionString))
+                {
+                    conn.Execute("add_banner_clicks_count @id", new { id = bannerId });
+                }
+            });
         }
 
-        public void AddShows(Guid[] bannersId)
+        public Task AddShowsAsync(Guid[] bannersId)
         {
-            if (!bannersId.Any()) return;
-
-            using (var conn = new SqlConnection(ConnectionString))
+            return Task.Run(() =>
             {
-                conn.Execute("add_banners_shows_count @keys", new { keys = getBannerGuids(bannersId) });
-            }
+                if (!bannersId.Any()) return;
+                using (var conn = new SqlConnection(ConnectionString))
+                {
+                    conn.Execute("add_banners_shows_count @keys", new { keys = getBannerGuids(bannersId) });
+                }
+            });
         }
         private static string getBannerGuids(Guid[] bannersId)
         {

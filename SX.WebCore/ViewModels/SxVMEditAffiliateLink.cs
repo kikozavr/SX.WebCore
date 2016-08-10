@@ -16,6 +16,6 @@ namespace SX.WebCore.ViewModels
         public string Description { get; set; }
 
         [Display(Name ="Стоимость клика")]
-        public int ViewsCount { get; set; }
+        public int ClickCost { get; set; }
     }
 }

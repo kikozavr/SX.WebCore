@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 08.08.2016 15:13:00
+ * Time: 10.08.2016 16:48:10
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,19 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -422,6 +435,19 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2510,6 +2536,128 @@ BEGIN
 	      )
 	END
 	
-	EXEC dbo.get_material_rating @mid, @mct
+	EXEC dbo.get_material_rating @mid,
+	     @mct
+END
+GO
+
+--SxAffiliateLink
+/*******************************************
+ * Добавить партнерку
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_affiliate_link', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_affiliate_link;
+GO
+CREATE PROCEDURE dbo.get_affiliate_link
+	@id UNIQUEIDENTIFIER
+AS
+BEGIN
+	SELECT *
+	FROM   D_AFFILIATE_LINK AS dal
+	WHERE  dal.Id = @id
+END
+GO
+
+/*******************************************
+ * Добавить партнерку
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_affiliate_link', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_affiliate_link;
+GO
+CREATE PROCEDURE dbo.add_affiliate_link
+	@id UNIQUEIDENTIFIER,
+	@rawUrl NVARCHAR(255),
+	@desc NVARCHAR(MAX),
+	@cc MONEY
+AS
+BEGIN
+	DECLARE @date DATETIME = GETDATE()
+	IF NOT EXISTS (
+	       SELECT TOP 1 dal.Id
+	       FROM   D_AFFILIATE_LINK AS dal
+	       WHERE  dal.RawUrl = @rawUrl
+	   )
+	BEGIN
+	    INSERT INTO D_AFFILIATE_LINK
+	      (
+	        Id,
+	        RawUrl,
+	        [Description],
+	        DateUpdate,
+	        DateCreate,
+	        ViewsCount,
+	        ClickCost
+	      )
+	    VALUES
+	      (
+	        NEWID(),
+	        @rawUrl,
+	        @desc,
+	        @date,
+	        @date,
+	        0,
+	        @cc
+	      )
+	    EXEC dbo.get_affiliate_link @id
+	END
+END
+GO
+
+/*******************************************
+ * Редактировать партнерку
+ *******************************************/
+IF OBJECT_ID(N'dbo.update_affiliate_link', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.update_affiliate_link;
+GO
+CREATE PROCEDURE dbo.update_affiliate_link
+	@id UNIQUEIDENTIFIER,
+	@rawUrl NVARCHAR(255),
+	@desc NVARCHAR(MAX),
+	@cc MONEY
+AS
+BEGIN
+	UPDATE D_AFFILIATE_LINK
+	SET    RawUrl = @rawUrl,
+	       [Description] = @desc,
+	       DateUpdate = GETDATE(),
+	       ClickCost = @cc
+	WHERE  Id = @id
+	
+	EXEC dbo.get_affiliate_link @id
+END
+GO
+
+/*******************************************
+ * Удалить партнерку
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_affiliate_link', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_affiliate_link;
+GO
+CREATE PROCEDURE dbo.del_affiliate_link
+	@id UNIQUEIDENTIFIER
+AS
+BEGIN
+	DELETE 
+	FROM   D_AFFILIATE_LINK
+	WHERE  Id = @id
+END
+GO
+
+/*******************************************
+ * Добавить клик по парнерке
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_affiliate_link_views_count', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_affiliate_link_views_count;
+GO
+CREATE PROCEDURE dbo.add_affiliate_link_views_count
+	@ids NVARCHAR(MAX)
+AS
+BEGIN
+	EXEC (
+	         'UPDATE dal
+	SET    ViewsCount = dal.ViewsCount + 1
+	FROM   D_AFFILIATE_LINK AS dal
+	WHERE dal.Id IN (' + @ids + ')'
+	     )
 END
 GO

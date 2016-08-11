@@ -39,7 +39,6 @@ namespace SX.WebCore.Repositories
                 return data.ToArray();
             }
         }
-
         private static string getSeoTagsWhereString(SxFilter filter, out object param)
         {
             param = null;
@@ -76,8 +75,14 @@ namespace SX.WebCore.Repositories
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                connection.Execute("dbo.del_material_tags @mid, @mct", new { mid = mid, mct = mct });
+                connection.Execute("dbo.del_material_seo_tags @mid, @mct", new { mid = mid, mct = mct });
             }
+        }
+        public async Task DeleteMaterialSeoInfoAsync(int mid, ModelCoreType mct)
+        {
+            await Task.Run(()=> {
+                DeleteMaterialSeoInfo(mid, mct);
+            });
         }
 
         /// <summary>
@@ -168,6 +173,14 @@ namespace SX.WebCore.Repositories
             await Task.Run(()=> {
                 UpdateMaterialSeoTags(mid, mct, stid);
             });
+        }
+
+        public override void Delete(SxSeoTags model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_seo_tags @seoTagsId", new { seoTagsId = model.Id });
+            }
         }
     }
 }

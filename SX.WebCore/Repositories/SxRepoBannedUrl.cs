@@ -69,5 +69,13 @@ namespace SX.WebCore.Repositories
                 return data;
             }
         }
+
+        public override void Delete(SxBannedUrl model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_banned_url @bannedUrlId", new { bannedUrlId=model.Id });
+            }
+        }
     }
 }

@@ -35,12 +35,12 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMSeoTags filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> Index(SxVMSeoTags filterModel, SxOrder order, int page = 1)
         {
             filterModel.Keywords = null;
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = _repo.Read(filter)
+            var viewModel = (await _repo.ReadAsync(filter))
                 .Select(x => Mapper.Map<SxSeoTags, SxVMSeoTags>(x))
                 .ToArray();
 
@@ -111,7 +111,7 @@ namespace SX.WebCore.MvcControllers
                 if (isNew)
                 {
                     newModel = _repo.Create(redactModel);
-                    _repo.UpdateMaterialSeoTags((int)model.MaterialId, (Enums.ModelCoreType)model.ModelCoreType, newModel.Id);
+                    _repo.UpdateMaterialSeoTags((int)model.MaterialId, (ModelCoreType)model.ModelCoreType, newModel.Id);
                     TempData["ModelSeoInfoRedactInfo"] = "Успешно добавлено";
                 }
                 else
@@ -131,9 +131,7 @@ namespace SX.WebCore.MvcControllers
         [HttpPost, ValidateAntiForgeryToken]
         public virtual async Task<PartialViewResult> DeleteForMaterial(SxSeoTags model)
         {
-            await _repo.UpdateMaterialSeoTagsAsync((int)model.MaterialId, (ModelCoreType)model.ModelCoreType, null);
-
-            await _repo.DeleteAsync(model);
+            await _repo.DeleteMaterialSeoInfoAsync((int)model.MaterialId, (ModelCoreType)model.ModelCoreType);
 
             TempData["ModelSeoInfoRedactInfo"] = "Успешно удалено";
             return PartialView("_EditForMaterial", new SxVMEditSeoTags { MaterialId = model.MaterialId, ModelCoreType = model.ModelCoreType, Id = 0 });

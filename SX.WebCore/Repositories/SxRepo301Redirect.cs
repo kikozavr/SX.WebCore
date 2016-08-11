@@ -79,5 +79,13 @@ namespace SX.WebCore.Repositories
 
             return result;
         }
+
+        public override void Delete(Sx301Redirect model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_redirect @redirectId", new { redirectId = model.Id });
+            }
+        }
     }
 }

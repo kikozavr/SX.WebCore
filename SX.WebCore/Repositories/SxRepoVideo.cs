@@ -40,7 +40,6 @@ namespace SX.WebCore.Repositories
                 return data.ToArray();
             }
         }
-
         private static string getVideoWhereString(SxFilter filter, out object param)
         {
             param = null;
@@ -156,6 +155,14 @@ WHERE MaterialId=@mid AND ModelCoreType=@mct AND VideoId=@vid";
             using (var conn = new SqlConnection(ConnectionString))
             {
                 conn.Execute(query, param: new { mid = mid, mct = mct, vid = vid });
+            }
+        }
+
+        public override void Delete(SxVideo model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_video @videoId", new { videoId = model.Id });
             }
         }
     }

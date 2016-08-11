@@ -179,12 +179,12 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual async Task<PartialViewResult> TreeViewMenu(ModelCoreType mct, string cur = null)
+        public virtual PartialViewResult TreeViewMenu(ModelCoreType mct, string cur = null)
         {
             ViewBag.CurrentCategory = cur;
 
             var filter = new SxFilter { ModelCoreType = mct };
-            var data = (await _repo.ReadAsync(filter)).Select(x=>Mapper.Map<SxMaterialCategory, TViewModel>(x)).ToArray();
+            var data = _repo.Read(filter).Select(x=>Mapper.Map<SxMaterialCategory, TViewModel>(x)).ToArray();
             var parents = data.Where(x => x.ParentCategoryId == null).ToArray();
             for (int i = 0; i < parents.Length; i++)
             {
@@ -202,7 +202,7 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_TreeViewMenu", parents);
         }
 
-        private Func<SxVMMaterialCategory, string> TreeViewMenuFuncContent(ModelCoreType mct)
+        private Func<TViewModel, string> TreeViewMenuFuncContent(ModelCoreType mct)
         {
             switch (mct)
             {

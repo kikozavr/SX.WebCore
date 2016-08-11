@@ -1038,6 +1038,20 @@ END
 GO
 
 /*******************************************
+ * Получить забаненный адрес
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_banned_url', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_banned_url;
+GO
+CREATE PROCEDURE dbo.del_banned_url
+	@bannedUrlId INT
+AS
+BEGIN
+	DELETE FROM D_BANNED_URL WHERE Id=@bannedUrlId
+END
+GO
+
+/*******************************************
  * Детализированная страница по игре
  *******************************************/
 IF OBJECT_ID(N'dbo.get_game_by_url', N'P') IS NOT NULL
@@ -1297,6 +1311,22 @@ BEGIN
 	       Place             = @place,
 	       [Description]     = @desc
 	WHERE  Id                = @id
+END
+GO
+
+/*******************************************
+ * Удалить баннер
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_banner', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_banner;
+GO
+CREATE PROCEDURE dbo.del_banner
+	@bannerId UNIQUEIDENTIFIER
+AS
+BEGIN
+	DELETE 
+	FROM   D_BANNER
+	WHERE  Id = @bannerId
 END
 GO
 
@@ -1562,6 +1592,20 @@ END
 GO
 
 /*******************************************
+ * Удалить редирект
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_redirect', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_redirect;
+GO
+CREATE PROCEDURE dbo.del_redirect
+	@redirectId UNIQUEIDENTIFIER
+AS
+BEGIN
+	DELETE FROM D_REDIRECT WHERE Id=@redirectId
+END
+GO
+
+/*******************************************
  * Все seo info сайта
  *******************************************/
 IF OBJECT_ID(N'dbo.get_all_seo_info', N'P') IS NOT NULL
@@ -1610,6 +1654,41 @@ BEGIN
 	WHERE  Id                    = @mid
 	       AND ModelCoreType     = @mct
 END
+GO
+
+/*******************************************
+ * Удалить seo-теги материала
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_material_seo_tags', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_material_seo_tags;
+GO
+CREATE PROCEDURE dbo.del_material_seo_tags
+	@mid INT,
+	@mct INT
+AS
+	BEGIN TRANSACTION
+	EXEC dbo.update_material_seo_tags @mid, @mct, NULL
+	
+	DELETE 
+	FROM   D_SEO_TAGS
+	WHERE  Id IN (SELECT dsi.Id
+	              FROM   D_SEO_TAGS AS dsi
+	              WHERE  MaterialId = @mid
+	                     AND ModelCoreType = @mct)
+	
+	COMMIT TRANSACTION
+GO
+
+/*******************************************
+ * Удалить seo-тег
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_seo_tags', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_seo_tags;
+GO
+CREATE PROCEDURE dbo.del_seo_tags
+	@seoTagsId INT
+AS
+	DELETE FROM D_SEO_TAGS WHERE Id=@seoTagsId
 GO
 
 /*******************************************
@@ -2800,27 +2879,25 @@ END
 GO
 
 /*******************************************
- * Удалить seo-теги материала
+ * Удалить ключевое слово
  *******************************************/
-IF OBJECT_ID(N'dbo.del_material_tags', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.del_material_tags;
+IF OBJECT_ID(N'dbo.del_seo_keywords', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_seo_keywords;
 GO
-CREATE PROCEDURE dbo.del_material_tags
-	@mid INT,
-	@mct INT
+CREATE PROCEDURE dbo.del_seo_keywords
+	@id INT
 AS
-	BEGIN TRANSACTION
-	UPDATE DV_MATERIAL
-	SET    SeoTagsId = NULL
-	WHERE  Id = @mid
-	       AND ModelCoreType = @mct
-	
-	DELETE 
-	FROM   D_SEO_TAGS
-	WHERE  Id IN (SELECT dsi.Id
-	              FROM   D_SEO_TAGS AS dsi
-	              WHERE  MaterialId = @mid
-	                     AND ModelCoreType = @mct)
-	
-	COMMIT TRANSACTION
+	DELETE FROM D_SEO_KEYWORD WHERE Id=@id
+GO
+
+/*******************************************
+ * Удалить видео
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_video', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_video;
+GO
+CREATE PROCEDURE dbo.del_video
+	@videoId UNIQUEIDENTIFIER
+AS
+	DELETE FROM D_VIDEO WHERE Id=@videoId
 GO

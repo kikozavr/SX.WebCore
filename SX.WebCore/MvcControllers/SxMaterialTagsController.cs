@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -34,18 +35,18 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(int mid, ModelCoreType mct, SxVMMaterialTag filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> Index(int mid, ModelCoreType mct, SxVMMaterialTag filterModel, SxOrder order, int page = 1)
         {
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order==null || order.Direction==SortDirection.Unknown?defaultOrder:order, WhereExpressionObject = filterModel, MaterialId = mid, ModelCoreType = mct };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxMaterialTag, SxVMMaterialTag>(x)).ToArray();
+            var viewModel = (await _repo.ReadAsync(filter)).Select(x => Mapper.Map<SxMaterialTag, SxVMMaterialTag>(x)).ToArray();
 
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
             ViewBag.ModelCoreType = mct;
 
-            return PartialView("_GridView.cshtml", viewModel);
+            return PartialView("_GridView", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

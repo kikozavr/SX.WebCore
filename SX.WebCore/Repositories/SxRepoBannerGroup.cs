@@ -84,5 +84,14 @@ WHERE  BannerId = @bid
                 conn.Execute(query, new { bid = bannerId, bgid = bannerGroupId });
             }
         }
+
+        public override void Delete(SxBannerGroup model)
+        {
+            var query = @"DELETE FROM D_BANNER_GROUP WHERE Id=@bannerGroupId";
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute(query, new { bannerGroupId=model.Id });
+            }
+        }
     }
 }

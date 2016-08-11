@@ -48,7 +48,7 @@ namespace SX.WebCore.Repositories
             query.Append(" AND (db.Title LIKE '%'+@title+'%' OR @title IS NULL) ");
 
             bool? forGroup = filter.AddintionalInfo != null && filter.AddintionalInfo[0] != null ? (bool?)filter.AddintionalInfo[0] : null;
-            bool? forMaterial = filter.AddintionalInfo != null && filter.AddintionalInfo[1] != null ? (bool?)filter.AddintionalInfo[1] : null;
+            bool? forMaterial = filter.AddintionalInfo != null && filter.AddintionalInfo.Length>1 && filter.AddintionalInfo[1] != null ? (bool?)filter.AddintionalInfo[1] : null;
             if (forGroup.HasValue && filter.WhereExpressionObject != null && filter.WhereExpressionObject.BannerGroupId != null)
             {
                 //for group banners
@@ -153,6 +153,14 @@ namespace SX.WebCore.Repositories
                 });
             }
             return GetByKey(model.Id);
+        }
+
+        public override void Delete(SxBanner model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_banner @bannerId", new { bannerId=model.Id });
+            }
         }
 
         public Task AddClickAsync(Guid bannerId, List<string> affiliateLinkIds=null)

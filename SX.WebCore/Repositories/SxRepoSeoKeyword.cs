@@ -39,7 +39,6 @@ namespace SX.WebCore.Repositories
                 return data.ToArray();
             }
         }
-
         private static string getSeoKeywordsWhereString(SxFilter filter, out object param)
         {
             param = null;
@@ -57,6 +56,14 @@ namespace SX.WebCore.Repositories
             };
 
             return query.ToString();
+        }
+
+        public override void Delete(SxSeoKeyword model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_seo_keywords @id", new { id = model.Id });
+            }
         }
     }
 }

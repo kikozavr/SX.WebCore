@@ -123,11 +123,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual async Task<PartialViewResult> GroupBanners(Guid bgid, int page = 1, int pageSize = 10)
+        public virtual PartialViewResult GroupBanners(Guid bgid, int page = 1, int pageSize = 10)
         {
             var filter = new SxFilter(page, pageSize) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid }, AddintionalInfo=new object[] { true } };
             
-            var viewModel =(await _repo.ReadAsync(filter))
+            var viewModel = _repo.Read(filter)
                 .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
                 .ToArray();
 

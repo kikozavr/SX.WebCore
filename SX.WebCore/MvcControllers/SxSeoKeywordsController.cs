@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -67,15 +68,19 @@ namespace SX.WebCore.MvcControllers
                     newModel = _repo.Update(redactModel, true, "SeoTagsId", "Value");
             }
 
-            return RedirectToAction("index", new { controller="seokeywords", stid = model.SeoTagsId });
+            return RedirectToAction("Index", "SeoKeywords", new { stid = model.SeoTagsId });
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual RedirectToRouteResult Delete(SxVMEditSeoKeyword model)
+        public virtual async Task<ActionResult> Delete(SxSeoKeyword model)
         {
-            var seoInfoId = model.SeoTagsId;
-            _repo.Delete(model.Id);
-            return RedirectToAction("index", new { controller = "seokeywords", stid = model.SeoTagsId });
+            if (await _repo.GetByKeyAsync(model.Id) == null)
+                return new HttpNotFoundResult();
+
+            var seoTagsId = model.SeoTagsId;
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index", "SeoKeywords", new { stid = model.SeoTagsId });
         }
     }
 }

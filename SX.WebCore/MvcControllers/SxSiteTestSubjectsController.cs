@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -80,7 +81,7 @@ namespace SX.WebCore.MvcControllers
                 else
                     newModel = _repo.Update(redactModel, true, "TestId", "Title", "Description", "PictureId");
 
-                return getResult(model);
+                return getResult(newModel.TestId);
             }
             else
             {
@@ -89,16 +90,17 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual PartialViewResult Delete(SxVMEditSiteTestSubject model)
+        public virtual async Task<PartialViewResult> Delete(SxSiteTestSubject model)
         {
-            _repo.Delete(model.Id);
-            return getResult(model);
+            var testId = model.TestId;
+            await _repo.DeleteAsync(model);
+            return getResult(testId);
         }
 
-        private PartialViewResult getResult(SxVMEditSiteTestSubject model)
+        private PartialViewResult getResult(int testId)
         {
             var defaultOrder = new SxOrder { FieldName = "dstq.Title", Direction = SortDirection.Asc };
-            var filter = new SxFilter(1, _pageSize) { Order = defaultOrder, AddintionalInfo = new object[] { model.TestId } };
+            var filter = new SxFilter(1, _pageSize) { Order = defaultOrder, AddintionalInfo = new object[] { testId } };
             var viewModel = _repo.Read(filter)
                 .Select(x => Mapper.Map<SxSiteTestSubject, SxVMSiteTestSubject>(x))
                 .ToArray();

@@ -79,11 +79,11 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override void Delete(params object[] id)
+        public override void Delete(SxPicture model)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                connection.Execute("dbo.del_picture @pictureId", new { pictureId = id[0] });
+                connection.Execute("dbo.del_picture @pictureId", new { pictureId = model.Id });
             }
         }
     }

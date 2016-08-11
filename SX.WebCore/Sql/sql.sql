@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 11.08.2016 10:00:43
+ * Time: 11.08.2016 12:51:32
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,7 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
 
 
 
@@ -459,6 +460,7 @@ GO
 
 
 
+
 /*******************************************
  * добавить комментарии материала
  *******************************************/
@@ -554,18 +556,20 @@ BEGIN
 	           FROM   D_MATERIAL_CATEGORY AS dmc
 	           WHERE  dmc.Id = @categoryId
 	       )
+	    
 	    BEGIN TRANSACTION
-	        UPDATE D_MATERIAL_CATEGORY
-	        SET    ParentCategoryId = @categoryId
-	        WHERE  ParentCategoryId = @oldCategoryId
-	        
-	        UPDATE D_MATERIAL_CATEGORY
-	        SET    Id                   = @categoryId,
-	               Title                = @title,
-	               ModelCoreType        = @mct,
-	               ParentCategoryId     = @pcid,
-	               FrontPictureId       = @pictureId
-	        WHERE  Id                   = @oldCategoryId
+	    UPDATE D_MATERIAL_CATEGORY
+	    SET    ParentCategoryId = @categoryId
+	    WHERE  ParentCategoryId = @oldCategoryId
+	    
+	    UPDATE D_MATERIAL_CATEGORY
+	    SET    Id = @categoryId,
+	           Title = @title,
+	           ModelCoreType = @mct,
+	           ParentCategoryId = @pcid,
+	           FrontPictureId = @pictureId
+	    WHERE  Id = @oldCategoryId
+	    
 	    COMMIT TRANSACTION
 	END
 	
@@ -1333,7 +1337,7 @@ BEGIN
 		    IF NOT EXISTS (
 		           SELECT TOP 1 dabv.BannerId
 		           FROM   D_AFFILIATE_BANNER_VIEW AS dabv
-		           WHERE  dabv.BannerId = ''' + CAST(@bId AS NVARCHAR(128)) + 
+		           WHERE  dabv.BannerId = ''' + CAST(@bId AS NVARCHAR(128)) +
 	        '''
 		                  AND dabv.AffiliatelinkId = @affiliateLinkId
 		    )
@@ -1346,7 +1350,7 @@ BEGIN
 		          )
 		        VALUES
 		          (
-		            ''' + CAST(@bId AS NVARCHAR(128)) + 
+		            ''' + CAST(@bId AS NVARCHAR(128)) +
 	        ''',
 		            @affiliateLinkId,
 		            GETDATE()
@@ -2773,4 +2777,50 @@ BEGIN
 	ORDER BY
 	       x.Title
 END
+GO
+
+/*******************************************
+ * Удалить seo-тег материала
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_material_tag', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_material_tag;
+GO
+CREATE PROCEDURE dbo.del_material_tag
+	@id NVARCHAR(MAX),
+	@mid INT,
+	@mct INT
+AS
+BEGIN
+	DELETE 
+	FROM   D_MATERIAL_TAG
+	WHERE  Id = @id
+	       AND MaterialId = @mid
+	       AND ModelCoreType = @mct
+END
+GO
+
+/*******************************************
+ * Удалить seo-теги материала
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_material_tags', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_material_tags;
+GO
+CREATE PROCEDURE dbo.del_material_tags
+	@mid INT,
+	@mct INT
+AS
+	BEGIN TRANSACTION
+	UPDATE DV_MATERIAL
+	SET    SeoTagsId = NULL
+	WHERE  Id = @mid
+	       AND ModelCoreType = @mct
+	
+	DELETE 
+	FROM   D_SEO_TAGS
+	WHERE  Id IN (SELECT dsi.Id
+	              FROM   D_SEO_TAGS AS dsi
+	              WHERE  MaterialId = @mid
+	                     AND ModelCoreType = @mct)
+	
+	COMMIT TRANSACTION
 GO

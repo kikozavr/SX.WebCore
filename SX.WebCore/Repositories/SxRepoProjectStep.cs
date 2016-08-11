@@ -41,7 +41,7 @@ FROM   D_PROJECT_STEP AS dps";
             }
         }
 
-        public override void Delete(params object[] id)
+        public override void Delete(SxProjectStep model)
         {
             var query = @"WITH j(Id) AS (
          SELECT dps.Id
@@ -61,7 +61,7 @@ WHERE  Id IN (SELECT j.Id
 
             using (var connection = new SqlConnection(ConnectionString))
             {
-                connection.Execute(query, new { id = id[0] });
+                connection.Execute(query, new { id = model.Id });
             }
         }
 

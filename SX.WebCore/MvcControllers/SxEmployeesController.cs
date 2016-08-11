@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -33,11 +34,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMEmployee filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> Index(SxVMEmployee filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = _repo.Read(filter)
+            var viewModel =(await _repo.ReadAsync(filter))
                 .Select(x => Mapper.Map<SxEmployee, SxVMEmployee>(x))
                 .ToArray();
 

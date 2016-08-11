@@ -56,11 +56,12 @@ namespace SX.WebCore.MvcControllers
 
         [Authorize(Roles = "photo-redactor")]
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMPicture filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> Index(SxVMPicture filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            
-            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxPicture, SxVMPicture>(x)).ToArray();
+
+            var data = await _repo.ReadAsync(filter);
+            var viewModel = data.Select(x=>Mapper.Map<SxPicture, SxVMPicture>(x)).ToArray();
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -157,10 +158,13 @@ namespace SX.WebCore.MvcControllers
 
         [Authorize(Roles = "photo-redactor")]
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Delete(Guid id)
+        public virtual async Task<ActionResult> Delete(SxPicture model)
         {
-            _repo.Delete(id);
-            return RedirectToAction("index");
+            if (await _repo.GetByKeyAsync(model.Id) == null)
+                return new HttpNotFoundResult();
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
 
         [HttpGet]

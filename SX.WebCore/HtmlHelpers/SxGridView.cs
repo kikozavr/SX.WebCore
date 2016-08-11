@@ -256,11 +256,7 @@ namespace SX.WebCore.HtmlHelpers
                             if (column.ColumnCssClass != null)
                                 td.AddCssClass(column.ColumnCssClass(model));
 
-                            if (column.Template != null)
-                                value = column.Template(model);
-                            else
-                                value = type.GetProperty(column.FieldName).GetValue(model);
-                            td.InnerHtml += value;
+                            td.InnerHtml += column.Template != null? column.Template(model): type.GetProperty(column.FieldName).GetValue(model);
 
                         }
                         tr.InnerHtml += td;

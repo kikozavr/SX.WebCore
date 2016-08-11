@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -110,7 +111,7 @@ namespace SX.WebCore.MvcControllers
                 if (isNew)
                 {
                     newModel = _repo.Create(redactModel);
-                    _repo.UpdateMaterialSeoInfo((int)model.MaterialId, (Enums.ModelCoreType)model.ModelCoreType, newModel.Id);
+                    _repo.UpdateMaterialSeoTags((int)model.MaterialId, (Enums.ModelCoreType)model.ModelCoreType, newModel.Id);
                     TempData["ModelSeoInfoRedactInfo"] = "Успешно добавлено";
                 }
                 else
@@ -128,20 +129,24 @@ namespace SX.WebCore.MvcControllers
 
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual PartialViewResult DeleteForMaterial(SxVMEditSeoTags model)
+        public virtual async Task<PartialViewResult> DeleteForMaterial(SxSeoTags model)
         {
-            _repo.UpdateMaterialSeoInfo((int)model.MaterialId, (ModelCoreType)model.ModelCoreType, null);
+            await _repo.UpdateMaterialSeoTagsAsync((int)model.MaterialId, (ModelCoreType)model.ModelCoreType, null);
 
-            _repo.Delete(model.Id);
+            await _repo.DeleteAsync(model);
+
             TempData["ModelSeoInfoRedactInfo"] = "Успешно удалено";
             return PartialView("_EditForMaterial", new SxVMEditSeoTags { MaterialId = model.MaterialId, ModelCoreType = model.ModelCoreType, Id = 0 });
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Delete(SxVMEditSeoTags model)
+        public virtual async Task<ActionResult> Delete(SxSeoTags model)
         {
-            _repo.Delete(model.Id);
-            return RedirectToAction("index");
+            if (await _repo.GetByKeyAsync(model.Id) == null)
+                return new HttpNotFoundResult();
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
     }
 }

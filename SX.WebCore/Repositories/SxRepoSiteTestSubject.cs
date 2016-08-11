@@ -77,11 +77,11 @@ namespace SX.WebCore.Repositories
             return query.ToString();
         }
 
-        public override void Delete(params object[] id)
+        public override void Delete(SxSiteTestSubject model)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("del_site_test_subject @subjectId", new { subjectId = id[0] });
+                conn.Execute("dbo.del_site_test_subject @subjectId", new { subjectId = model.Id });
             }
         }
 
@@ -89,7 +89,7 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestSubject>("add_site_test_subject @testId, @title, @desc, @pictureId", new
+                var data = conn.Query<SxSiteTestSubject>("dbo.add_site_test_subject @testId, @title, @desc, @pictureId", new
                 {
                     testId = model.TestId,
                     title = model.Title,

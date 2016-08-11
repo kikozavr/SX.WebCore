@@ -2,6 +2,7 @@
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
@@ -72,10 +73,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual RedirectToRouteResult Delete(SxVMEditProjectStep model)
+        public virtual async Task<ActionResult> Delete(SxProjectStep model)
         {
-            _repo.Delete(model.Id);
-            return RedirectToAction("index");
+            if (await _repo.GetByKeyAsync(model.Id) == null)
+                return new HttpNotFoundResult();
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
 
         [HttpPost]

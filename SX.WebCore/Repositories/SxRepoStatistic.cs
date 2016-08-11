@@ -4,6 +4,7 @@ using SX.WebCore.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -11,51 +12,61 @@ namespace SX.WebCore.Repositories
 {
     public class SxRepoStatistic<TDbContext> : SxDbRepository<Guid, SxStatistic, TDbContext> where TDbContext : SxDbContext
     {
-        public SxStatisticUserLogin[] UserLogins(SxFilter filter)
+        public  SxStatisticUserLogin[] UserLogins(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString(new string[] { "dsl.*", "ds.*", "anu.Id", "anu.NikName" });
-            query += @" FROM D_STAT_LOGIN AS dsl
-JOIN D_STATISTIC AS ds ON ds.Id = dsl.StatisticId
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString(new string[] {
+                "dsl.*",
+                "ds.*",
+                "anu.Id",
+                "anu.NikName"
+            }));
+            sb.Append(" FROM D_STAT_LOGIN AS dsl ");
+            var joinString = @" JOIN D_STATISTIC AS ds ON ds.Id = dsl.StatisticId
 JOIN AspNetUsers AS anu ON anu.Id = dsl.UserId ";
+            sb.Append(joinString);
 
             object param = null;
-            query += getUserLoginsWhereString(filter, out param);
+            var gws = getUserLoginsWhereString(filter, out param);
+            sb.Append(gws);
 
-            var defaultOrder = new SxOrder { FieldName= "ds.DateCreate", Direction=SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            var defaultOrder = new SxOrder { FieldName = "ds.DateCreate", Direction = SortDirection.Desc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
 
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<SxStatisticUserLogin, SxStatistic, SxAppUser, SxStatisticUserLogin>(query, (dsl, ds, anu)=> {
-                    dsl.Statistic = ds;
-                    dsl.User = anu;
-                    return dsl;
-                }, param: param, splitOn: "Id");
-                return data.ToArray();
-            }
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM D_STAT_LOGIN AS dsl ");
+            sbCount.Append(joinString);
+            sbCount.Append(gws);
+
+                using (var conn = new SqlConnection(ConnectionString))
+                {
+                    var data = conn.Query<SxStatisticUserLogin, SxStatistic, SxAppUser, SxStatisticUserLogin>(sb.ToString(), (dsl, ds, anu) =>
+                    {
+                        dsl.Statistic = ds;
+                        dsl.User = anu;
+                        return dsl;
+                    }, param: param, splitOn: "Id");
+                    filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                    return data.ToArray();
+                }
         }
 
-        public int UserLoginsCount(SxFilter filter)
+        public async Task<SxStatisticUserLogin[]> UserLoginsAsync(SxFilter filter)
         {
-            var query = @"SELECT COUNT(*) FROM D_STAT_LOGIN AS dsl JOIN AspNetUsers AS anu ON anu.Id = dsl.UserId";
-
-            object param = null;
-            query += getUserLoginsWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
+            return await Task.Run(() =>
             {
-                var data = conn.Query<int>(query, param: param).Single();
-                return data;
-            }
+                return UserLogins(filter);
+            });
         }
 
         private static string getUserLoginsWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            query += " WHERE (anu.NikName LIKE '%'+@un+'%' OR @un IS NULL) ";
+            var query = new StringBuilder();
+            query.Append(" WHERE (anu.NikName LIKE '%'+@un+'%' OR @un IS NULL) ");
 
             var un = filter.WhereExpressionObject != null && filter.WhereExpressionObject.NikName != null ? (string)filter.WhereExpressionObject.NikName : null;
 
@@ -64,7 +75,7 @@ JOIN AspNetUsers AS anu ON anu.Id = dsl.UserId ";
                 un = un
             };
 
-            return query;
+            return query.ToString();
         }
 
         /// <summary>

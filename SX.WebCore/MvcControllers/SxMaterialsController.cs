@@ -10,7 +10,7 @@ using static SX.WebCore.Enums;
 namespace SX.WebCore.MvcControllers
 {
     public abstract class SxMaterialsController<TModel, TDbContext> : SxBaseController<TDbContext>
-        where TModel : SxDbModel<int>
+        where TModel : SxMaterial
         where TDbContext : SxDbContext
     {
         private static ModelCoreType _mct;
@@ -22,9 +22,12 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
+        private static SxRepoSeoTags<TDbContext> _repoSeoTags;
         protected SxMaterialsController(ModelCoreType mct)
         {
             _mct = mct;
+            if (_repoSeoTags == null)
+                _repoSeoTags = new SxRepoSeoTags<TDbContext>();
         }
 
         private static SxRepoMaterial<TModel, TDbContext> _repo;
@@ -37,6 +40,13 @@ namespace SX.WebCore.MvcControllers
             set
             {
                 _repo = value;
+            }
+        }
+        protected static SxRepoSeoTags<TDbContext> RepoSeoTags
+        {
+            get
+            {
+                return _repoSeoTags;
             }
         }
 
@@ -58,6 +68,18 @@ namespace SX.WebCore.MvcControllers
         {
             var viewModel = default(TModel);
             return View(viewModel);
+        }
+
+        [HttpGet, ValidateAntiForgeryToken]
+        public virtual async Task<ActionResult> Delete(TModel model)
+        {
+            if (await _repo.GetByKeyAsync(model.Id, model.ModelCoreType)==null)
+                return new HttpNotFoundResult();
+
+            _repoSeoTags.DeleteMaterialSeoInfo(model.Id, model.ModelCoreType);
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
 
         [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]

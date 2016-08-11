@@ -1,9 +1,10 @@
-﻿using System;
+﻿using SX.WebCore.Abstract;
+using System;
 using static SX.WebCore.Enums;
 
 namespace SX.WebCore.ViewModels
 {
-    public class SxVMMaterialCategory
+    public class SxVMMaterialCategory : IHierarchy<SxVMMaterialCategory>
     {
         public string Id { get; set; }
 

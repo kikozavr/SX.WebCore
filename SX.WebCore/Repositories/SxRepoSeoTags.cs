@@ -4,6 +4,7 @@ using SX.WebCore.Providers;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -69,16 +70,13 @@ namespace SX.WebCore.Repositories
         /// <summary>
         /// Удалить seo-теги материала
         /// </summary>
-        /// <param name="repo"></param>
         /// <param name="mid"></param>
         /// <param name="mct"></param>
         public void DeleteMaterialSeoInfo(int mid, ModelCoreType mct)
         {
-            var query = "UPDATE DV_MATERIAL SET SeoTagsId=NULL WHERE Id=@mid AND ModelCoreType=@mct;";
-            query += " DELETE FROM D_SEO_TAGS WHERE Id IN (SELECT dsi.Id FROM D_SEO_TAGS AS dsi WHERE MaterialId=@mid AND ModelCoreType=@mct)";
             using (var connection = new SqlConnection(ConnectionString))
             {
-                connection.Execute(query, new { mid = mid, mct = mct });
+                connection.Execute("dbo.del_material_tags @mid, @mct", new { mid = mid, mct = mct });
             }
         }
 
@@ -152,7 +150,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public void UpdateMaterialSeoInfo(int mid, ModelCoreType mct, int? stid)
+        public void UpdateMaterialSeoTags(int mid, ModelCoreType mct, int? stid)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
@@ -163,6 +161,13 @@ namespace SX.WebCore.Repositories
                     stid = stid
                 });
             }
+        }
+
+        public async Task UpdateMaterialSeoTagsAsync(int mid, ModelCoreType mct, int? stid)
+        {
+            await Task.Run(()=> {
+                UpdateMaterialSeoTags(mid, mct, stid);
+            });
         }
     }
 }

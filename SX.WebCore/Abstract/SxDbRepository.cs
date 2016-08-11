@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SX.WebCore.Abstract
 {
@@ -92,22 +93,17 @@ namespace SX.WebCore.Abstract
             throw new NotImplementedException("Не поддерживается в данном контексте");
         }
 
-        [Obsolete("Это нужно удалить")]
-        public virtual void Delete(params object[] id)
-        {
-            var dbContext = Activator.CreateInstance<TDbContext>();
-            var model = dbContext.Set<TModel>().Find(id);
-            if (model == null) return;
-
-            dbContext.Entry(model).State = EntityState.Deleted;
-            dbContext.SaveChanges();
-        }
-
         public virtual void Delete(TModel model)
         {
             var dbContext = Activator.CreateInstance<TDbContext>();
             dbContext.Set<TModel>().Remove(model);
             dbContext.SaveChanges();
+        }
+        public virtual async Task DeleteAsync(TModel model)
+        {
+            await Task.Run(()=> {
+                Delete(model);
+            });
         }
 
         public virtual IQueryable<TModel> All
@@ -123,12 +119,25 @@ namespace SX.WebCore.Abstract
         {
             return new TModel[0];
         }
+        public virtual async Task<TModel[]> ReadAsync(SxFilter filter)
+        {
+            return await Task.Run(()=> {
+                return Read(filter);
+            });
+        }
 
         public virtual TModel GetByKey(params object[] id)
         {
             var dbContext = Activator.CreateInstance<TDbContext>();
             var dbSet = dbContext.Set<TModel>();
             return dbSet.Find(id);
+        }
+        public virtual async Task<TModel> GetByKeyAsync(params object[] id)
+        {
+            return await Task.Run(() =>
+            {
+                return GetByKey(id);
+            });
         }
 
         private static object[] getEntityKeys(DbContext dbContext, Type modelType, TModel model)

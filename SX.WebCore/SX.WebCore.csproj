@@ -169,6 +169,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\IHasViewsCount.cs" />
+    <Compile Include="Abstract\IHierarchy.cs" />
+    <Compile Include="Abstract\ISxMaterial.cs" />
     <Compile Include="Abstract\ISxSeoWordCounter.cs" />
     <Compile Include="Abstract\ISxHasFrontPicture.cs" />
     <Compile Include="Abstract\ISxHasHtml.cs" />
@@ -183,6 +185,7 @@
     <Compile Include="Hubs\SxChatHub.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
+    <Compile Include="MvcControllers\SxManualsController.cs" />
     <Compile Include="MvcControllers\SxMaterialsController.cs" />
     <Compile Include="MvcControllers\SxRatingController.cs" />
     <Compile Include="MvcControllers\SxShareButtonsController.cs" />
@@ -342,6 +345,7 @@
     <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMEditBanner.cs" />
     <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />
+    <Compile Include="ViewModels\SxVMEditManual.cs" />
     <Compile Include="ViewModels\SxVMEditMaterialCategory.cs" />
     <Compile Include="ViewModels\SxVMEditShareButton.cs" />
     <Compile Include="ViewModels\SxVMEditMaterialTag.cs" />
@@ -356,6 +360,7 @@
     <Compile Include="ViewModels\SxVMEditVideo.cs" />
     <Compile Include="ViewModels\SxVMEmployee.cs" />
     <Compile Include="ViewModels\SxVMFAQ.cs" />
+    <Compile Include="ViewModels\SxVMManual.cs" />
     <Compile Include="ViewModels\SxVMMaterial.cs" />
     <Compile Include="ViewModels\SxVMMaterialCategory.cs" />
     <Compile Include="ViewModels\SxVMShareButton.cs" />

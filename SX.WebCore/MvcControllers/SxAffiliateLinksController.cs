@@ -2,6 +2,7 @@
 using SX.WebCore.ViewModels;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -34,16 +35,15 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public PartialViewResult Index(SxVMAffiliateLink filterModel, SxOrder order, int page = 1)
+        public async Task<PartialViewResult> Index(SxVMAffiliateLink filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var data = _repo.Read(filter);
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-
-            var viewModel = data
+            var viewModel = (await _repo.ReadAsync(filter))
                 .Select(x => Mapper.Map<SxAffiliateLink, SxVMAffiliateLink>(x))
                 .ToArray();
+
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
             ViewBag.Filter = filter;
 

@@ -1,6 +1,9 @@
-﻿using SX.WebCore.Repositories;
+﻿using SX.WebCore.Abstract;
+using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
+using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -8,7 +11,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxMaterialCategoriesController<TDbContext> : SxBaseController<TDbContext> where TDbContext: SxDbContext
+    public abstract class SxMaterialCategoriesController<TDbContext, TViewModel> : SxBaseController<TDbContext>
+        where TDbContext: SxDbContext
+        where TViewModel : class, IHierarchy<TViewModel>
     {
         private static SxRepoMaterialCategory<TDbContext> _repo;
         public SxMaterialCategoriesController()
@@ -17,21 +22,74 @@ namespace SX.WebCore.MvcControllers
                 _repo = new SxRepoMaterialCategory<TDbContext>();
         }
 
-        private static int _pageSize = 20;
-        [HttpGet]
-        public virtual ViewResult Index(ModelCoreType mct, int page = 1)
+        protected SxRepoMaterialCategory<TDbContext> Repo
         {
-            var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
-            var filter = new SxFilter(page, _pageSize) { Order = order, ModelCoreType=mct };
+            get
+            {
+                return _repo;
+            }
+            set { }
+        }
 
-            var viewModel= _repo.Read(filter)
-                .Select(x => Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(x))
-                .ToArray();
+        private static int _pageSize = 20;
 
+        [HttpGet]
+        public virtual ActionResult Index(ModelCoreType? mct, int page=1)
+        {
+            if (!mct.HasValue)
+                return new HttpNotFoundResult();
+
+            var filter = new SxFilter { ModelCoreType = (ModelCoreType)mct };
+            var data = _repo.Read(filter).Select(x=>Mapper.Map<SxMaterialCategory, TViewModel>(x)).ToArray();
+            var parents = data.Where(x => x.ParentCategoryId == null).ToArray();
+            for (int i = 0; i < parents.Length; i++)
+            {
+                var parent = parents[i];
+                parent.Level = 1;
+                updateTreeNodeLevel(parent.Id, data, 1);
+                fillMaterialCategory(parent, null, data);
+            }
+
+            ViewBag.MaxTreeViewLevel = data.Any() ? data.Max(x => x.Level) : 1;
             ViewBag.ModelCoreType = mct;
-            ViewBag.Filter = filter;
+            ViewBag.PageTitle = getPageTitle((ModelCoreType)mct);
 
-            return View(viewModel);
+            return View(parents);
+        }
+        protected static void updateTreeNodeLevel(string id, TViewModel[] all, int level)
+        {
+            all.Single(x => x.Id == id).Level = level;
+        }
+        protected static void fillMaterialCategory(TViewModel pg, TViewModel parent, TViewModel[] all)
+        {
+            var children = all.Where(x => x.ParentCategoryId == pg.Id).ToArray();
+            if (!children.Any()) return;
+
+            for (int i = 0; i < children.Length; i++)
+            {
+                var child = children[i];
+                child.Level = pg.Level + 1;
+                updateTreeNodeLevel(child.Id, all, child.Level);
+                fillMaterialCategory(child, pg, all);
+            }
+
+            pg.ChildCategories = children.OrderBy(x => x.Title).ToArray();
+        }
+        protected static string getPageTitle(ModelCoreType mct)
+        {
+            switch (mct)
+            {
+                case ModelCoreType.Article:
+                    return "Категории статей";
+                case ModelCoreType.News:
+                    return "Категории новостей";
+                case ModelCoreType.Manual:
+                    return "Справочные категории";
+                case ModelCoreType.Aphorism:
+                    return "Категории афоризмов";
+                default:
+                    return "Категоря материалов не определена";
+            }
         }
 
         [HttpPost]
@@ -52,19 +110,14 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual ActionResult Edit(ModelCoreType mct, string id)
+        public virtual ActionResult Edit(ModelCoreType mct, string pcid = null, string id = null)
         {
-            var isNew = string.IsNullOrEmpty(id);
-            var data = isNew ? new SxMaterialCategory { ModelCoreType=mct} : _repo.GetByKey(id);
-            if (!isNew && data == null)
-                return new HttpNotFoundResult();
-
-            if (data.FrontPicture != null)
-                ViewData["FrontPictureIdCaption"] = data.FrontPicture.Caption;
-
-            ViewBag.ModelCoreType = mct;
-
+            var data = string.IsNullOrEmpty(id) ? new SxMaterialCategory { ModelCoreType = mct, ParentCategoryId = pcid } : _repo.GetByKey(id);
             var viewModel = Mapper.Map<SxMaterialCategory, SxVMEditMaterialCategory>(data);
+
+            if (data.FrontPictureId.HasValue)
+                ViewData["FrontPictureIdCaption"]=data.FrontPicture.Caption;
+
             return View(viewModel);
         }
 
@@ -85,7 +138,7 @@ namespace SX.WebCore.MvcControllers
                 else
                     _repo.Update(redactModel, oldId: oldId);
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { mct=model.ModelCoreType });
             }
             else
                 return View(model);
@@ -103,11 +156,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult FindTreeView(ModelCoreType mct)
+        public virtual async Task<PartialViewResult> FindTreeView(ModelCoreType mct)
         {
             var filter = new SxFilter { ModelCoreType = mct };
 
-            var data = _repo.Read(filter).Select(x=>Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(x)).ToArray();
+            var data = (await _repo.ReadAsync(filter)).Select(x=>Mapper.Map<SxMaterialCategory, TViewModel>(x)).ToArray();
 
             var parents = data.Where(x => x.ParentCategoryId == null).ToArray();
             for (int i = 0; i < parents.Length; i++)
@@ -125,39 +178,40 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_TreeView", parents);
         }
 
-        private static void updateTreeNodeLevel(string id, SxVMMaterialCategory[] all, int level)
+        [HttpGet]
+        public virtual async Task<PartialViewResult> TreeViewMenu(ModelCoreType mct, string cur = null)
         {
-            all.Single(x => x.Id == id).Level = level;
-        }
-        private static void fillMaterialCategory(SxVMMaterialCategory pg, SxVMMaterialCategory parent, SxVMMaterialCategory[] all)
-        {
-            var children = all.Where(x => x.ParentCategoryId == pg.Id).ToArray();
-            if (!children.Any()) return;
+            ViewBag.CurrentCategory = cur;
 
-            for (int i = 0; i < children.Length; i++)
+            var filter = new SxFilter { ModelCoreType = mct };
+            var data = (await _repo.ReadAsync(filter)).Select(x=>Mapper.Map<SxMaterialCategory, TViewModel>(x)).ToArray();
+            var parents = data.Where(x => x.ParentCategoryId == null).ToArray();
+            for (int i = 0; i < parents.Length; i++)
             {
-                var child = children[i];
-                child.Level = pg.Level + 1;
-                updateTreeNodeLevel(child.Id, all, child.Level);
-                fillMaterialCategory(child, pg, all);
+                var parent = parents[i];
+                parent.Level = 1;
+                updateTreeNodeLevel(parent.Id, data, 1);
+                fillMaterialCategory(parent, null, data);
             }
 
-            pg.ChildCategories = children.OrderBy(x => x.Title).ToArray();
+            ViewBag.MaxTreeViewLevel = data.Any() ? data.Max(x => x.Level) : 1;
+            ViewBag.ModelCoreType = mct;
+            ViewBag.PageTitle = getPageTitle(mct);
+            ViewBag.TreeViewMenuFuncContent = TreeViewMenuFuncContent(mct);
+
+            return PartialView("_TreeViewMenu", parents);
         }
-        private static string getPageTitle(ModelCoreType mct)
+
+        private Func<SxVMMaterialCategory, string> TreeViewMenuFuncContent(ModelCoreType mct)
         {
             switch (mct)
             {
-                case ModelCoreType.Article:
-                    return "Категории статей";
-                case ModelCoreType.News:
-                    return "Категории новостей";
-                case ModelCoreType.Manual:
-                    return "Справочные категории";
                 case ModelCoreType.Aphorism:
-                    return "Категории афоризмов";
+                    return (x) => string.Format("<a href=\"{0}\">{1}</a>", Url.Action("Index", "Aphorisms", new { curCat = x.Id }), x.Title);
+                case ModelCoreType.Manual:
+                    return (x) => string.Format("<a href=\"{0}\">{1}</a>", Url.Action("Index", "FAQ", new { curCat = x.Id }), x.Title);
                 default:
-                    return "Категоря материалов не определена";
+                    return null;
             }
         }
     }

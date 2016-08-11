@@ -182,7 +182,7 @@ namespace SX.WebCore.MvcControllers
 
         public void delEmployee(SxVMEditAppUser model)
         {
-            _repoEmployee.Delete(model.Id);
+            _repoEmployee.Delete(new SxEmployee { Id=model.Id });
         }
 
         [HttpPost, ValidateAntiForgeryToken]

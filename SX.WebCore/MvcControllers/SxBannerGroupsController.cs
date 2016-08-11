@@ -2,6 +2,7 @@
 using SX.WebCore.ViewModels;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -34,11 +35,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMBannerGroup filterModel, SxOrder order, int page = 1)
+        public async virtual Task<PartialViewResult> Index(SxVMBannerGroup filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = _repo.Read(filter)
+            var viewModel = (await _repo.ReadAsync(filter))
                 .Select(x => Mapper.Map<SxBannerGroup, SxVMBannerGroup>(x))
                 .ToArray();
 
@@ -85,32 +86,36 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Delete(SxVMEditBannerGroup model)
+        public virtual async Task<ActionResult> Delete(SxBannerGroup model)
         {
-            _repo.Delete(model.Id);
-            return RedirectToAction("index");
+            if (await _repo.GetByKeyAsync(model.Id) == null)
+                return new HttpNotFoundResult();
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
         public virtual RedirectToRouteResult AddBanner(Guid bgid, Guid bid)
         {
             _repo.AddBanner(bgid, bid);
-            return RedirectToAction("edit", new { id = bgid });
+            return RedirectToAction("Edit", new { id = bgid });
         }
 
         [HttpPost]
-        public virtual PartialViewResult DeleteBanner(Guid bgid, Guid bid)
+        public virtual async Task<PartialViewResult> DeleteBanner(Guid bgid, Guid bid)
         {
             _repo.DeleteBanner(bgid, bid);
 
             var repoBanner = new SxRepoBanner<TDbContext>();
-            var filter = new SxFilter(1, 20) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid } };
-            var totalItems = repoBanner.Count(filter, true);
-            filter.PagerInfo.TotalItems = totalItems;
+            var filter = new SxFilter(1, 20) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid }, AddintionalInfo=new object[] { true } };
+
+            var viewModel = await repoBanner.ReadAsync(filter);
+            
             ViewBag.PagerInfo = filter.PagerInfo;
             ViewBag.BannerGroupId = bgid;
 
-            var viewModel = repoBanner.Query(filter, true);
+            
             return PartialView("_GroupBanners", viewModel);
         }
     }

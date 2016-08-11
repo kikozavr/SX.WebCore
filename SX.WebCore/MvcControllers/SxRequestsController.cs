@@ -23,8 +23,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
-            
-            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxRequest, SxVMRequest>(x)).ToArray();
+
+            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxRequest, SxVMRequest>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -32,11 +32,12 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMRequest filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> Index(SxVMRequest filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxRequest, SxVMRequest>(x)).ToArray();
+            var data = await _repo.ReadAsync(filter);
+            var viewModel = data.Select(x => Mapper.Map<SxRequest, SxVMRequest>(x)).ToArray();
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -51,11 +52,8 @@ namespace SX.WebCore.MvcControllers
 #endif
         public async Task<JsonResult> DateStatistic()
         {
-            return await Task.Run(() =>
-            {
-                var data = _repo.DateStatistic();
-                return Json(data, JsonRequestBehavior.AllowGet);
-            });
+            var data = await _repo.DateStatisticAsync();
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
     }
 }

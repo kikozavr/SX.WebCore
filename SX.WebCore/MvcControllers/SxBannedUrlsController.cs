@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -31,11 +32,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMBannedUrl filterModel, SxOrder order, int page = 1)
+        public async virtual Task<PartialViewResult> Index(SxVMBannedUrl filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxBannedUrl, SxVMBannedUrl>(x)).ToArray();
+            var viewModel = (await _repo.ReadAsync(filter)).Select(x => Mapper.Map<SxBannedUrl, SxVMBannedUrl>(x)).ToArray();
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -69,7 +70,7 @@ namespace SX.WebCore.MvcControllers
                 else
                     newModel = _repo.Update(redactModel, true, "Url", "Couse");
 
-                return RedirectToAction("index");
+                return RedirectToAction("Index");
             }
             else
             {
@@ -77,13 +78,14 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public virtual ActionResult Delete(SxVMEditBannedUrl model)
+        [HttpPost, ValidateAntiForgeryToken]
+        public virtual async Task<ActionResult> Delete(SxBannedUrl model)
         {
-            if (_repo.GetByKey(model.Id) != null)
-                _repo.Delete(model.Id);
-            return RedirectToAction("index");
+            if (await _repo.GetByKeyAsync(model.Id) == null)
+                return new HttpNotFoundResult();
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
     }
 }

@@ -6,6 +6,7 @@ using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
@@ -105,13 +106,15 @@ namespace SX.WebCore.Repositories
             return query.ToString();
         }
 
-        public SxDateStatistic[] DateStatistic()
+        public async Task<SxDateStatistic[]> DateStatisticAsync()
         {
-            using (var conn = new SqlConnection(ConnectionString))
+            return await Task.Run(() =>
             {
-                var data = conn.Query<SxDateStatistic>("dbo.get_request_date_statistic");
-                return data.ToArray();
-            }
+                using (var conn = new SqlConnection(ConnectionString))
+                {
+                    return conn.Query<SxDateStatistic>("dbo.get_request_date_statistic").ToArray();
+                }
+            });
         }
     }
 }

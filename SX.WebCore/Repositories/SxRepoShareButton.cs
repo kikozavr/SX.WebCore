@@ -86,7 +86,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override void Delete(params object[] id)
+        public sealed override void Delete(SxShareButton model)
         {
             throw new NotImplementedException("Удаление сети не поддерживается");
         }

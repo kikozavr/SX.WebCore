@@ -69,11 +69,15 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual RedirectToRouteResult Delete(SxVMEditMaterialTag model)
+        public virtual ActionResult Delete(SxMaterialTag model)
         {
-            var id = model.Id.Replace("^", ".");
-            _repo.Delete(id, model.MaterialId, model.ModelCoreType);
 
+            var id = model.Id.Replace("^", ".");
+            var data = _repo.GetByKey(id, model.MaterialId, model.ModelCoreType);
+            if (data == null)
+                return new HttpNotFoundResult();
+
+            _repo.Delete(model);
             return RedirectToAction("index", new { mid = model.MaterialId, mct = model.ModelCoreType });
         }
     }

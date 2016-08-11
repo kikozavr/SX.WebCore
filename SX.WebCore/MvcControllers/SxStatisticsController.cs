@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -21,9 +22,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageUserLoginsSize) { Order = order };
-            filter.PagerInfo.TotalItems = _repo.UserLoginsCount(filter);
-            var data = _repo.UserLogins(filter);
-            var viewModel = data
+            
+            var viewModel = _repo.UserLogins(filter)
                 .Select(x => Mapper.Map<SxStatisticUserLogin, SxVMStatisticUserLogin>(x))
                 .ToArray();
 
@@ -33,15 +33,16 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult UserLogins(SxVMStatisticUserLogin filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> UserLogins(SxVMStatisticUserLogin filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageUserLoginsSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = _repo.UserLoginsCount(filter);
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageUserLoginsSize ? 1 : page;
-            var data = _repo.UserLogins(filter);
+            
+            var data = await _repo.UserLoginsAsync(filter);
             var viewModel = data
                 .Select(x => Mapper.Map<SxStatisticUserLogin, SxVMStatisticUserLogin>(x))
                 .ToArray();
+
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageUserLoginsSize ? 1 : page;
 
             ViewBag.Filter = filter;
 

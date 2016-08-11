@@ -123,17 +123,20 @@ namespace SX.WebCore.MvcControllers
                     else
                         newModel = _repo.Update(redactModel, true, "Title", "Description", "Rules", "Show", "ShowSubjectDesc");
                 }
-                return RedirectToAction("index");
+                return RedirectToAction("Index");
             }
             else
                 return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual RedirectToRouteResult Delete(SxVMEditSiteTest model)
+        public virtual async Task<ActionResult> Delete(SxSiteTest model)
         {
-            _repo.Delete(model.Id);
-            return RedirectToAction("index");
+            if (await _repo.GetByKeyAsync(model.Id) == null)
+                return new HttpNotFoundResult();
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
 
         private readonly int _matrixPageSize = 7;

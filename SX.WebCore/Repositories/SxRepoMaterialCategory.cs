@@ -9,7 +9,8 @@ using System.Text;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoMaterialCategory<TDbContext> : SxDbRepository<string, SxMaterialCategory, TDbContext> where TDbContext : SxDbContext
+    public class SxRepoMaterialCategory<TDbContext> : SxDbRepository<string, SxMaterialCategory, TDbContext>
+        where TDbContext : SxDbContext
     {
         public override SxMaterialCategory Create(SxMaterialCategory model)
         {
@@ -31,24 +32,6 @@ namespace SX.WebCore.Repositories
                 return data;
             }
         }
-
-        //public override SxMaterialCategory[] Query(SxFilter filter)
-        //{
-        //    var query = SxQueryProvider.GetSelectString(new string[] { "dmc.*" });
-        //    query += " FROM D_MATERIAL_CATEGORY AS dmc ";
-
-        //    object param = null;
-        //    query += getMaterialCategoriesWhereString(filter, out param);
-
-        //    var defaultOrder = new SxOrder { FieldName = "dmc.DateCreate", Direction = SortDirection.Desc };
-        //    query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
-
-        //    using (var connection = new SqlConnection(ConnectionString))
-        //    {
-        //        var data = connection.Query<SxMaterialCategory>(query, param: param);
-        //        return data.ToArray();
-        //    }
-        //}
 
         public override SxMaterialCategory[] Read(SxFilter filter)
         {
@@ -161,15 +144,15 @@ COMMIT TRANSACTION";
             }
         }
 
-        public override void Delete(params object[] id)
-        {
-            var key = (string)id[0];
+        //public override void Delete(params object[] id)
+        //{
+        //    var key = (string)id[0];
 
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Execute("dbo.del_material_category @catId", new { catId= key });
-            }
-        }
+        //    using (var connection = new SqlConnection(ConnectionString))
+        //    {
+        //        connection.Execute("dbo.del_material_category @catId", new { catId= key });
+        //    }
+        //}
 
         public override void Delete(SxMaterialCategory model)
         {

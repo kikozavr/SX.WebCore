@@ -2,6 +2,7 @@
 using SX.WebCore.ViewModels;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -33,11 +34,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVM301Redirect filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> Index(SxVM301Redirect filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<Sx301Redirect, SxVM301Redirect>(x)).ToArray();
+            var viewModel =(await _repo.ReadAsync(filter)).Select(x => Mapper.Map<Sx301Redirect, SxVM301Redirect>(x)).ToArray();
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -65,17 +66,21 @@ namespace SX.WebCore.MvcControllers
                     newModel = _repo.Create(redactModel);
                 else
                     newModel = _repo.Update(redactModel, true, "OldUrl", "NewUrl");
-                return RedirectToAction("index");
+                return RedirectToAction("Index");
             }
             else
                 return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Delete(SxVMEdit301Redirect model)
+        public virtual ActionResult Delete(Sx301Redirect model)
         {
-            _repo.Delete(model.Id);
-            return RedirectToAction("index");
+            var data = _repo.GetByKey(model.Id);
+            if (data == null)
+                return new HttpNotFoundResult();
+
+            _repo.Delete(model);
+            return RedirectToAction("Index");
         }
     }
 }

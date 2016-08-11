@@ -77,12 +77,7 @@ namespace SX.WebCore.Repositories
             throw new NotImplementedException("Обновление сети не поддерживается");
         }
 
-        public override void Delete(params object[] id)
-        {
-            throw new NotImplementedException("Удаление сети не поддерживается");
-        }
-
-        public override void Delete(SxNet model)
+        public sealed override void Delete(SxNet model)
         {
             throw new NotImplementedException("Удаление сети не поддерживается");
         }

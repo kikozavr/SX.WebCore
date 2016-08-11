@@ -28,8 +28,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "db.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
-            var viewModel = _repo.Query(filter)
+            
+            var viewModel = _repo.Read(filter)
                 .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
                 .ToArray();
 
@@ -45,14 +45,15 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMBanner filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> Index(SxVMBanner filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-            var viewModel = _repo.Query(filter)
+            
+            var viewModel =(await _repo.ReadAsync(filter))
                 .Select(x=>Mapper.Map<SxBanner, SxVMBanner>(x))
                 .ToArray();
+
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
             ViewBag.Filter = filter;
 
@@ -86,7 +87,7 @@ namespace SX.WebCore.MvcControllers
                 else
                     newModel = _repo.Update(redactModel, true, "Title", "PictureId", "Url", "Place", "RawUrl", "Description");
 
-                return RedirectToAction("index");
+                return RedirectToAction("Index");
             }
             else
             {
@@ -95,60 +96,60 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Delete(SxVMEditBanner model)
+        public virtual async Task<ActionResult> Delete(SxBanner model)
         {
-            _repo.Delete(model.Id);
-            return RedirectToAction("index");
+            if (await _repo.GetByKeyAsync(model.Id) == null)
+                return new HttpNotFoundResult();
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public virtual PartialViewResult FindGridView(Guid bgid, SxVMBanner filterModel = null, int page = 1, int pageSize = 10)
+        public virtual async Task<PartialViewResult> FindGridView(Guid bgid, SxVMBanner filterModel = null, int page = 1, int pageSize = 10)
         {
             filterModel.BannerGroupId = bgid;
             ViewBag.Filter = filterModel;
-            var filter = new SxFilter(page, pageSize) { WhereExpressionObject = filterModel };
-            var totalItems = _repo.Count(filter, false);
-            filter.PagerInfo.TotalItems = totalItems;
-            ViewBag.PagerInfo = filter.PagerInfo;
-            ViewBag.BannerGroupId = bgid;
+            var filter = new SxFilter(page, pageSize) { WhereExpressionObject = filterModel, AddintionalInfo=new object[] { false } };
 
-            var viewModel = _repo.Query(filter, false)
+            var viewModel =(await _repo.ReadAsync(filter))
                 .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
                 .ToArray();
+
+            ViewBag.PagerInfo = filter.PagerInfo;
+            ViewBag.BannerGroupId = bgid;
 
             return PartialView("_FindGridView", viewModel);
         }
 
         [HttpGet]
-        public virtual PartialViewResult GroupBanners(Guid bgid, int page = 1, int pageSize = 10)
+        public virtual async Task<PartialViewResult> GroupBanners(Guid bgid, int page = 1, int pageSize = 10)
         {
-            var filter = new SxFilter(page, pageSize) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid } };
-            var totalItems = _repo.Count(filter, true);
-            filter.PagerInfo.TotalItems = totalItems;
-            ViewBag.BannerGroupId = bgid;
-            ViewBag.Filter = filter;
-
-            var viewModel = _repo.Query(filter, true)
+            var filter = new SxFilter(page, pageSize) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid }, AddintionalInfo=new object[] { true } };
+            
+            var viewModel =(await _repo.ReadAsync(filter))
                 .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
                 .ToArray();
+
+            ViewBag.BannerGroupId = bgid;
+            ViewBag.Filter = filter;
 
             return PartialView("_GroupBanners", viewModel);
         }
 
         [HttpPost]
-        public virtual PartialViewResult GroupBanners(Guid bgid, SxVMBanner filterModel, SxOrder order, int page = 1, int pageSize = 10, bool forGroup=true)
+        public virtual async Task<PartialViewResult> GroupBanners(Guid bgid, SxVMBanner filterModel, SxOrder order, int page = 1, int pageSize = 10, bool forGroup=true)
         {
             filterModel.BannerGroupId = bgid;
-            var filter = new SxFilter(page, pageSize) { Order = order, WhereExpressionObject = filterModel };
-            var totalItems = _repo.Count(filter, forGroup);
-            filter.PagerInfo.TotalItems = totalItems;
+            var filter = new SxFilter(page, pageSize) { Order = order, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { forGroup } };
+            
+            var viewModel =(await _repo.ReadAsync(filter))
+                .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
+                .ToArray();
+
             ViewBag.BannerGroupId = bgid;
             ViewBag.ForGroup = forGroup;
             ViewBag.Filter = filter;
-
-            var viewModel = _repo.Query(filter, forGroup)
-                .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
-                .ToArray();
 
             return PartialView("_GroupBanners", viewModel);
         }
@@ -156,10 +157,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet, AllowAnonymous]
         public virtual async Task<ActionResult> Click(Guid bannerId)
         {
-            var banner = await Task.Run(()=> {
-                var data = _repo.GetByKey(bannerId);
-                return data;
-            });
+            var banner = await _repo.GetByKeyAsync(bannerId);
 
             if (banner == null)
                 return new HttpNotFoundResult();

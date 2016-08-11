@@ -65,11 +65,11 @@ namespace SX.WebCore.Repositories
             return query.ToString();
         }
 
-        public override void Delete(params object[] id)
+        public override void Delete(SxSiteTestQuestion model)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("dbo.del_site_test_question @questionId", new { questionId = id[0] });
+                conn.Execute("dbo.del_site_test_question @questionId", new { questionId = model.Id });
             }
         }
 

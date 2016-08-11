@@ -81,13 +81,13 @@ namespace SX.WebCore.Repositories
             return null;
         }
 
-        public override void Delete(params object[] id)
+        public override void Delete(SxEmployee model)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
                 conn.Execute("dbo.del_employee @uid", new
                 {
-                    uid = id[0]
+                    uid = model.Id
                 });
             }
         }

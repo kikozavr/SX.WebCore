@@ -33,7 +33,7 @@ namespace SX.WebCore.Repositories
 
             //count
             var sbCount = new StringBuilder();
-            sbCount.Append(@"SELECT COUNT(1) FROM D_AFFILIATE_LINK AS dal ");
+            sbCount.Append(@"SELECT COUNT(1) FROM D_MATERIAL_TAG AS dmt ");
             sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
@@ -43,7 +43,6 @@ namespace SX.WebCore.Repositories
                 return data.ToArray();
             }
         }
-
         private static string getMaterialTagWhereString(SxFilter filter, out object param)
         {
             param = null;
@@ -61,6 +60,14 @@ namespace SX.WebCore.Repositories
             };
 
             return query.ToString();
+        }
+
+        public override void Delete(SxMaterialTag model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_material_tag @id, @mid, @mct", new { id = model.Id, mid = model.MaterialId, mct = model.ModelCoreType });
+            }
         }
 
         public SxVMMaterialTag[] GetCloud(SxFilter filter, int amount = 50)

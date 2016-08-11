@@ -23,9 +23,7 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "dal.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
-            var totalItems = 0;
-            var data = _repo.Read(filter, out totalItems);
-            filter.PagerInfo.TotalItems = totalItems;
+            var data = _repo.Read(filter);
             var viewModel = data
                 .Select(x => Mapper.Map<SxAffiliateLink, SxVMAffiliateLink>(x))
                 .ToArray();
@@ -40,9 +38,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var totalItems = 0;
-            var data = _repo.Read(filter, out totalItems);
-            filter.PagerInfo.TotalItems = totalItems;
+            var data = _repo.Read(filter);
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
             var viewModel = data

@@ -1,5 +1,6 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -22,8 +23,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
-            var viewModel = _repo.Query<SxVMRequest>(filter);
+            
+            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxRequest, SxVMRequest>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -34,9 +35,10 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult Index(SxVMRequest filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
+
+            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxRequest, SxVMRequest>(x)).ToArray();
+
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-            var viewModel = _repo.Query<SxVMRequest>(filter);
 
             ViewBag.Filter = filter;
 

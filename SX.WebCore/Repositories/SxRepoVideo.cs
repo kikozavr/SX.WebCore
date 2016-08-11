@@ -5,6 +5,7 @@ using SX.WebCore.ViewModels;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -12,47 +13,40 @@ namespace SX.WebCore.Repositories
 {
     public class SxRepoVideo<TDbContext> : SxDbRepository<Guid, SxVideo, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxVMVideo[] Query<SxVMVideo>(SxFilter filter)
+        public override SxVideo[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString();
-            query += @" FROM D_VIDEO dv ";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString());
+            sb.Append(" FROM D_VIDEO AS dv ");
 
             object param = null;
-            query += getVideoWhereString(filter, out param);
+            var gws = getVideoWhereString(filter, out param);
+            sb.Append(gws);
 
-            var defaultOrder = new SxOrder { FieldName="DateCreate", Direction=SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            var defaultOrder = new SxOrder { FieldName = "dv.DateCreate", Direction = SortDirection.Desc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM D_VIDEO AS dv ");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxVMVideo>(query, param: param);
+                var data = conn.Query<SxVideo>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
-            }
-        }
-
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM D_VIDEO dv ";
-
-            object param = null;
-            query += getVideoWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<int>(query, param: param).Single();
-
-                return data;
             }
         }
 
         private static string getVideoWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            query += " WHERE (dv.Title LIKE '%'+@title+'%' OR @title IS NULL) ";
-            query += " AND (dv.VideoId LIKE '%'+@vid+'%' OR @vid IS NULL) ";
+            var query = new StringBuilder();
+            query.Append(" WHERE (dv.Title LIKE '%'+@title+'%' OR @title IS NULL) ");
+            query.Append(" AND (dv.VideoId LIKE '%'+@vid+'%' OR @vid IS NULL) ");
 
             var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Title != null ? (string)filter.WhereExpressionObject.Title : null;
             var vid = filter.WhereExpressionObject != null && filter.WhereExpressionObject.VideoId != null ? (string)filter.WhereExpressionObject.VideoId : null;
@@ -63,25 +57,25 @@ namespace SX.WebCore.Repositories
                 vid = vid
             };
 
-            return query;
+            return query.ToString();
         }
 
         public virtual SxVMVideo[] LinkedVideos(SxFilter filter, bool forMaterial)
         {
-            var query = SxQueryProvider.GetSelectString(new string[] { "dv.*" });
-            query += @" FROM D_VIDEO AS dv " + (forMaterial ? "" : @"LEFT") + @" JOIN D_VIDEO_LINK AS dvl ON dvl.VideoId = dv.Id ";
+            var sb=new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString(new string[] { "dv.*" }));
+            sb.AppendFormat(@" FROM D_VIDEO AS dv {0} JOIN D_VIDEO_LINK AS dvl ON dvl.VideoId = dv.Id ", forMaterial ? "" : @"LEFT");
 
             object param = null;
-            query += getLinkedVideoWhereString(filter, forMaterial, out param);
+            sb.Append(getLinkedVideoWhereString(filter, forMaterial, out param));
 
             var defaultOrder = new SxOrder { FieldName = "dv.DateCreate", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
-
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
+            sb.Append(" OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY");
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxVMVideo>(sql: query, param: param);
+                var data = conn.Query<SxVMVideo>(sql: sb.ToString(), param: param);
                 return data.ToArray();
             }
         }
@@ -114,16 +108,16 @@ namespace SX.WebCore.Repositories
             checkLinkedVideosFilter(filter);
 
             param = null;
-            string query = null;
-            query += " WHERE (dv.Title LIKE '%'+@title+'%' OR @title IS NULL) ";
-            query += " AND (dv.VideoId LIKE '%'+@vid+'%' OR @vid IS NULL) ";
+            var query = new StringBuilder();
+            query.Append(" WHERE (dv.Title LIKE '%'+@title+'%' OR @title IS NULL) ");
+            query.Append(" AND (dv.VideoId LIKE '%'+@vid+'%' OR @vid IS NULL) ");
             if (forMaterial)
             {
-                query += " AND (dvl.ModelCoreType = @mct) ";
-                query += " AND (dvl.Materialid = @mid) ";
+                query.Append(" AND (dvl.ModelCoreType = @mct) ");
+                query.Append(" AND (dvl.Materialid = @mid) ");
             }
             else
-                query += " AND (dv.Id NOT IN (SELECT dvl2.VideoId FROM D_VIDEO_LINK AS dvl2 WHERE dvl2.MaterialId=@mid AND dvl2.ModelCoreType=@mct)) ";
+                query.Append(" AND (dv.Id NOT IN (SELECT dvl2.VideoId FROM D_VIDEO_LINK AS dvl2 WHERE dvl2.MaterialId=@mid AND dvl2.ModelCoreType=@mct)) ");
 
 
             var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Title != null ? (string)filter.WhereExpressionObject.Title : null;
@@ -137,7 +131,7 @@ namespace SX.WebCore.Repositories
                 mct = filter.AddintionalInfo[1]
             };
 
-            return query;
+            return query.ToString();
         }
 
         public virtual void AddMaterialVideo(int mid, ModelCoreType mct, Guid vid)

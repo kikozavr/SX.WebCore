@@ -24,8 +24,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "dn.Name", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
-            var viewModel = _repo.Query(filter).Select(x=>Mapper.Map<SxNet, SxVMNet>(x)).ToArray();
+
+            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxNet, SxVMNet>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -36,9 +36,10 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult Index(SxVMNet filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
+            
+            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxNet, SxVMNet>(x)).ToArray();
+
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-            var viewModel = _repo.Query(filter).Select(x => Mapper.Map<SxNet, SxVMNet>(x)).ToArray();
 
             ViewBag.Filter = filter;
 

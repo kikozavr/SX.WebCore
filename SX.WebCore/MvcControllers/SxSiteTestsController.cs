@@ -36,8 +36,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "Title", Direction = SortDirection.Asc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
-            var viewModel = _repo.Query(filter).Select(x => Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
+
+            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -48,9 +48,10 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult Index(SxVMSiteTest filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
+
+            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
+
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-            var viewModel = _repo.Query(filter).Select(x => Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -61,9 +62,10 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult FindGridView(SxVMSiteTest filterModel, SxOrder order, int page = 1, int pageSize = 10)
         {
             var filter = new SxFilter(page, pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
+
+            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
+
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= pageSize ? 1 : page;
-            var viewModel = _repo.Query<SxVMSiteTest>(filter);
 
             ViewBag.Filter = filter;
 

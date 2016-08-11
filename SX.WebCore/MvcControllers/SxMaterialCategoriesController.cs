@@ -23,10 +23,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order, ModelCoreType=mct };
-            var totalItems = 0;
-            var data = _repo.Read(filter, out totalItems);
-            filter.PagerInfo.TotalItems = totalItems;
-            var viewModel=data
+
+            var viewModel= _repo.Read(filter)
                 .Select(x => Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(x))
                 .ToArray();
 
@@ -41,14 +39,11 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel, ModelCoreType= mct };
 
-            var totalItems = 0;
-            var data = _repo.Read(filter, out totalItems);
-            filter.PagerInfo.TotalItems = totalItems;
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-
-            var viewModel = data
+            var viewModel = _repo.Read(filter)
                 .Select(x => Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(x))
                 .ToArray();
+
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
             ViewBag.ModelCoreType = mct;
             ViewBag.Filter = filter;
@@ -111,8 +106,8 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult FindTreeView(ModelCoreType mct)
         {
             var filter = new SxFilter { ModelCoreType = mct };
-            var count = 0;
-            var data = _repo.Read(filter, out count).Select(x=>Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(x)).ToArray();
+
+            var data = _repo.Read(filter).Select(x=>Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(x)).ToArray();
 
             var parents = data.Where(x => x.ParentCategoryId == null).ToArray();
             for (int i = 0; i < parents.Length; i++)

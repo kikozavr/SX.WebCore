@@ -28,11 +28,11 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override SxAffiliateLink[] Read(SxFilter filter, out int count)
+        public override SxAffiliateLink[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
-            sb.Append(@" FROM D_AFFILIATE_LINK AS dal ");
+            sb.Append(" FROM D_AFFILIATE_LINK AS dal ");
 
             object param = null;
             var gws = getAffiliateLinksWhereString(filter, out param);
@@ -45,13 +45,13 @@ namespace SX.WebCore.Repositories
 
             //count
             var sbCount = new StringBuilder();
-            sbCount.Append(@"SELECT COUNT(1) FROM D_AFFILIATE_LINK AS dal ");
+            sbCount.Append("SELECT COUNT(1) FROM D_AFFILIATE_LINK AS dal ");
             sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
                 var data = conn.Query<SxAffiliateLink>(sb.ToString(), param: param);
-                count = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }

@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 10.08.2016 23:58:57
+ * Time: 11.08.2016 10:00:43
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,7 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
 
 
 
@@ -457,6 +458,7 @@ GO
 
 
 
+
 /*******************************************
  * добавить комментарии материала
  *******************************************/
@@ -523,8 +525,7 @@ GO
 
 /*******************************************
  * Обновить категорию материалов
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-* * */
+ *******************************************/
 IF OBJECT_ID(N'dbo.update_material_category', N'P') IS NOT NULL
     DROP PROCEDURE dbo.update_material_category;
 GO
@@ -553,7 +554,7 @@ BEGIN
 	           FROM   D_MATERIAL_CATEGORY AS dmc
 	           WHERE  dmc.Id = @categoryId
 	       )
-	    BEGIN
+	    BEGIN TRANSACTION
 	        UPDATE D_MATERIAL_CATEGORY
 	        SET    ParentCategoryId = @categoryId
 	        WHERE  ParentCategoryId = @oldCategoryId
@@ -565,7 +566,7 @@ BEGIN
 	               ParentCategoryId     = @pcid,
 	               FrontPictureId       = @pictureId
 	        WHERE  Id                   = @oldCategoryId
-	    END
+	    COMMIT TRANSACTION
 	END
 	
 	EXEC dbo.get_material_category @categoryId
@@ -1314,15 +1315,16 @@ BEGIN
 	
 	IF (@alIds IS NOT NULL)
 	BEGIN
-		DECLARE @q NVARCHAR(MAX)
-		SET @q='
+	    DECLARE @q NVARCHAR(MAX)
+	    SET @q = 
+	        '
 	             DECLARE @affiliateLinkId UNIQUEIDENTIFIER
 		DECLARE c CURSOR LOCAL FORWARD_ONLY FAST_FORWARD 
 		FOR
 		    SELECT dal.Id
 		    FROM   D_AFFILIATE_LINK AS dal
-		    WHERE  dal.Id IN (' + @alIds + 
-	             ')
+		    WHERE  dal.Id IN (' + @alIds +
+	        ')
 		
 		OPEN c
 		FETCH NEXT FROM c INTO @affiliateLinkId
@@ -1331,7 +1333,8 @@ BEGIN
 		    IF NOT EXISTS (
 		           SELECT TOP 1 dabv.BannerId
 		           FROM   D_AFFILIATE_BANNER_VIEW AS dabv
-		           WHERE  dabv.BannerId = ''' +cast(@bId AS NVARCHAR(128))+ '''
+		           WHERE  dabv.BannerId = ''' + CAST(@bId AS NVARCHAR(128)) + 
+	        '''
 		                  AND dabv.AffiliatelinkId = @affiliateLinkId
 		    )
 		    BEGIN
@@ -1343,7 +1346,8 @@ BEGIN
 		          )
 		        VALUES
 		          (
-		            ''' + cast(@bId AS NVARCHAR(128)) + ''',
+		            ''' + CAST(@bId AS NVARCHAR(128)) + 
+	        ''',
 		            @affiliateLinkId,
 		            GETDATE()
 		          )
@@ -1352,6 +1356,7 @@ BEGIN
 		END
 		CLOSE c
 		DEALLOCATE c'
+	    
 	    EXEC (@q)
 	END
 END
@@ -2610,25 +2615,25 @@ CREATE PROCEDURE dbo.add_affiliate_link
 AS
 BEGIN
 	DECLARE @date DATETIME = GETDATE()
-	    INSERT INTO D_AFFILIATE_LINK
-	      (
-	        Id,
-	        [Description],
-	        DateUpdate,
-	        DateCreate,
-	        ViewsCount,
-	        ClickCost
-	      )
-	    VALUES
-	      (
-	        NEWID(),
-	        @desc,
-	        @date,
-	        @date,
-	        0,
-	        @cc
-	      )
-	    EXEC dbo.get_affiliate_link @id
+	INSERT INTO D_AFFILIATE_LINK
+	  (
+	    Id,
+	    [Description],
+	    DateUpdate,
+	    DateCreate,
+	    ViewsCount,
+	    ClickCost
+	  )
+	VALUES
+	  (
+	    NEWID(),
+	    @desc,
+	    @date,
+	    @date,
+	    0,
+	    @cc
+	  )
+	EXEC dbo.get_affiliate_link @id
 END
 GO
 
@@ -2684,5 +2689,88 @@ BEGIN
 	SET    ViewsCount = dal.ViewsCount + 1
 	FROM   D_AFFILIATE_LINK AS dal
 	WHERE  dal.Id = @id
+END
+GO
+
+/*******************************************
+ * Первое видео материала
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_first_material_video', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_first_material_video;
+GO
+CREATE PROCEDURE dbo.get_first_material_video
+	@mid INT,
+	@mct INT
+AS
+BEGIN
+	SELECT TOP(1) *
+	FROM   D_VIDEO_LINK  AS dvl
+	       JOIN D_VIDEO  AS dv
+	            ON  dv.Id = dvl.VideoId
+	WHERE  dvl.MaterialId = @mid
+	       AND dvl.ModelCoreType = @mct
+	ORDER BY
+	       dv.DateCreate DESC
+END
+GO
+
+/*******************************************
+ * Мануалы категории
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_manuals_by_category', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_manuals_by_category;
+GO
+CREATE PROCEDURE dbo.get_manuals_by_category
+	@cat NVARCHAR(MAX)
+AS
+BEGIN
+	SELECT *
+	FROM   D_MANUAL                  AS dm
+	       JOIN DV_MATERIAL          AS dm2
+	            ON  dm2.Id = dm.Id
+	            AND dm2.ModelCoreType = dm.ModelCoreType
+	       JOIN D_MATERIAL_CATEGORY  AS dmc
+	            ON  dmc.Id = dm2.CategoryId
+	WHERE  dm2.CategoryId = @cat
+	       OR  dmc.ParentCategoryId = @cat
+END
+GO
+
+/*******************************************
+ * Облако для материала
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_material_cloud', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_material_cloud;
+GO
+CREATE PROCEDURE dbo.get_material_cloud
+	@amount INT,
+	@mid INT,
+	@mct INT
+AS
+BEGIN
+	SELECT TOP(@amount) x.Title,
+	       SUM(x.[Count])  AS [Count],
+	       (CASE WHEN SUM(x.IsCurrent) >= 1 THEN 1 ELSE 0 END) AS IsCurrent
+	FROM   (
+	           SELECT dmt.Id          AS Title,
+	                  COUNT(1)        AS [Count],
+	                  (
+	                      CASE 
+	                           WHEN (dmt.MaterialId = @mid OR @mid IS NULL)
+	                      AND (dmt.ModelCoreType = @mct OR @mct IS NULL) THEN 1 
+	                          ELSE 
+	                          0 END
+	                  )               AS IsCurrent
+	           FROM   D_MATERIAL_TAG  AS dmt
+	           WHERE  dmt.ModelCoreType = @mct
+	           GROUP BY
+	                  dmt.Id,
+	                  dmt.MaterialId,
+	                  dmt.ModelCoreType
+	       )                  x
+	GROUP BY
+	       x.Title
+	ORDER BY
+	       x.Title
 END
 GO

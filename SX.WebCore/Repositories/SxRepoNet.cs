@@ -5,53 +5,49 @@ using System.Data.SqlClient;
 using System.Linq;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 using System;
+using System.Text;
 
 namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoNet<TDbContext> : SxDbRepository<int, SxNet, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxNet[] Query(SxFilter filter)
+        public override SxNet[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString();
-            query += " FROM D_NET dn";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString());
+            sb.Append(@" FROM D_NET AS dn ");
 
             object param = null;
-            query += getNetsWhereString(filter, out param);
+            var gws = getNetsWhereString(filter, out param);
+            sb.Append(gws);
 
-            var defaultOrder = new SxOrder { FieldName = "dn.Name", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order ?? defaultOrder);
+            var defaultOrder = new SxOrder { FieldName = "dn.Name", Direction = SortDirection.Asc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append(@"SELECT COUNT(1) FROM D_NET AS dn ");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxNet>(query, param: param);
+                var data = conn.Query<SxNet>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
-            }
-        }
-
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM D_NET AS dn";
-
-            object param = null;
-            query += getNetsWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                return conn.Query<int>(query, param: param).Single();
             }
         }
 
         private static string getNetsWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            query += " WHERE (dn.Code LIKE '%'+@code+'%' OR @code IS NULL)";
-            query += " AND (dn.Name LIKE '%'+@name+'%' OR @name IS NULL)";
-            query += " AND (dn.Url LIKE '%'+@url+'%' OR @url IS NULL)";
-            query += " AND (dn.LogoCssClass LIKE '%'+@logoCssClass+'%' OR @logoCssClass IS NULL)";
-            query += " AND (dn.Color LIKE '%'+@color+'%' OR @color IS NULL)";
+            var query = new StringBuilder();
+            query.Append(" WHERE (dn.Code LIKE '%'+@code+'%' OR @code IS NULL)");
+            query.Append(" AND (dn.Name LIKE '%'+@name+'%' OR @name IS NULL)");
+            query.Append(" AND (dn.Url LIKE '%'+@url+'%' OR @url IS NULL)");
+            query.Append(" AND (dn.LogoCssClass LIKE '%'+@logoCssClass+'%' OR @logoCssClass IS NULL)");
+            query.Append(" AND (dn.Color LIKE '%'+@color+'%' OR @color IS NULL)");
 
             var code = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Code != null ? (string)filter.WhereExpressionObject.Code : null;
             var name = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Name != null ? (string)filter.WhereExpressionObject.Name : null;
@@ -68,7 +64,7 @@ namespace SX.WebCore.Repositories
                 color = color
             };
 
-            return query;
+            return query.ToString();
         }
 
         public override SxNet Create(SxNet model)
@@ -82,6 +78,11 @@ namespace SX.WebCore.Repositories
         }
 
         public override void Delete(params object[] id)
+        {
+            throw new NotImplementedException("Удаление сети не поддерживается");
+        }
+
+        public override void Delete(SxNet model)
         {
             throw new NotImplementedException("Удаление сети не поддерживается");
         }

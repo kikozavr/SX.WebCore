@@ -32,25 +32,25 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override SxMaterialCategory[] Query(SxFilter filter)
-        {
-            var query = SxQueryProvider.GetSelectString(new string[] { "dmc.*" });
-            query += " FROM D_MATERIAL_CATEGORY AS dmc ";
+        //public override SxMaterialCategory[] Query(SxFilter filter)
+        //{
+        //    var query = SxQueryProvider.GetSelectString(new string[] { "dmc.*" });
+        //    query += " FROM D_MATERIAL_CATEGORY AS dmc ";
 
-            object param = null;
-            query += getMaterialCategoriesWhereString(filter, out param);
+        //    object param = null;
+        //    query += getMaterialCategoriesWhereString(filter, out param);
 
-            var defaultOrder = new SxOrder { FieldName = "dmc.DateCreate", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+        //    var defaultOrder = new SxOrder { FieldName = "dmc.DateCreate", Direction = SortDirection.Desc };
+        //    query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
 
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                var data = connection.Query<SxMaterialCategory>(query, param: param);
-                return data.ToArray();
-            }
-        }
+        //    using (var connection = new SqlConnection(ConnectionString))
+        //    {
+        //        var data = connection.Query<SxMaterialCategory>(query, param: param);
+        //        return data.ToArray();
+        //    }
+        //}
 
-        public override SxMaterialCategory[] Read(SxFilter filter, out int allCount)
+        public override SxMaterialCategory[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -73,7 +73,7 @@ namespace SX.WebCore.Repositories
             using (var conn = new SqlConnection(ConnectionString))
             {
                 var data = conn.Query<SxMaterialCategory>(sb.ToString(), param: param);
-                allCount = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }
@@ -98,7 +98,7 @@ namespace SX.WebCore.Repositories
         {
             var exist = GetByKey(model.Id);
             var isRedactedId = exist == null;
-            if(isRedactedId)
+            if (isRedactedId)
             {
                 var oldId = additionalData[0];
                 var query = @"BEGIN TRANSACTION
@@ -123,12 +123,13 @@ COMMIT TRANSACTION";
 
                 using (var conn = new SqlConnection(ConnectionString))
                 {
-                    conn.Execute(query, new {
-                        id=model.Id,
-                        oldid= oldId,
-                        title=model.Title,
-                        mct=model.ModelCoreType,
-                        fpid=model.FrontPictureId
+                    conn.Execute(query, new
+                    {
+                        id = model.Id,
+                        oldid = oldId,
+                        title = model.Title,
+                        mct = model.ModelCoreType,
+                        fpid = model.FrontPictureId
                     });
                 }
 

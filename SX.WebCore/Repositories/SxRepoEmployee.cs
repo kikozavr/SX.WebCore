@@ -3,77 +3,60 @@ using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoEmployee<TDbContext> : SxDbRepository<string, SxEmployee, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxEmployee[] Query(SxFilter filter)
+        public override SxEmployee[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString();
-            query += @" FROM D_EMPLOYEE AS de
-JOIN AspNetUsers AS anu ON anu.Id = de.Id ";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString());
+            sb.Append(" FROM D_EMPLOYEE AS de ");
+            var joinString = @" JOIN AspNetUsers AS anu ON anu.Id = de.Id ";
+            sb.Append(joinString);
 
             object param = null;
-            query += getEmployeeWhereString(filter, out param);
+            var gws = getEmployeeWhereString(filter, out param);
+            sb.Append(gws);
 
             var defaultOrder = new SxOrder { FieldName = "de.DateCreate", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM D_EMPLOYEE AS de ");
+            sbCount.Append(joinString);
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxEmployee, SxAppUser, SxEmployee>(query, (e, u) => {
+                var data = conn.Query<SxEmployee, SxAppUser, SxEmployee>(sb.ToString(), (e, u) => {
                     e.User = u;
                     return e;
                 }, param: param, splitOn: "Id");
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
-            }
-        }
-
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM D_EMPLOYEE AS de";
-
-            object param = null;
-            query += getEmployeeWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<int>(query, param: param).Single();
-                return data;
             }
         }
 
         private static string getEmployeeWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            //query += " WHERE (dg.Title LIKE '%'+@title+'%' OR @title IS NULL) ";
-            //query += " AND (dg.TitleAbbr LIKE '%'+@title_abbr+'%' OR @title_abbr IS NULL) ";
-            //query += " AND (dg.[Description] LIKE '%'+@desc+'%' OR @desc IS NULL) ";
+            var query = new StringBuilder();
 
-            //var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Title != null ? (string)filter.WhereExpressionObject.Title : null;
-            //var title_abbr = filter.WhereExpressionObject != null && filter.WhereExpressionObject.TitleAbbr != null ? (string)filter.WhereExpressionObject.TitleAbbr : null;
-            //var desc = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Description != null ? (string)filter.WhereExpressionObject.Description : null;
-
-            //param = new
-            //{
-            //    title = title,
-            //    title_abbr = title_abbr,
-            //    desc = desc
-            //};
-
-            return query;
+            return query.ToString();
         }
 
         public override SxEmployee GetByKey(params object[] id)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxEmployee, SxAppUser, SxEmployee>("get_employees @id", (e, u) =>
+                var data = conn.Query<SxEmployee, SxAppUser, SxEmployee>("dbo.get_employees @id", (e, u) =>
                 {
                     e.User = u;
                     return e;
@@ -90,7 +73,7 @@ JOIN AspNetUsers AS anu ON anu.Id = de.Id ";
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("add_employee @uid", new
+                conn.Execute("dbo.add_employee @uid", new
                 {
                     uid = model.Id
                 });
@@ -102,7 +85,7 @@ JOIN AspNetUsers AS anu ON anu.Id = de.Id ";
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("del_employee @uid", new
+                conn.Execute("dbo.del_employee @uid", new
                 {
                     uid = id[0]
                 });

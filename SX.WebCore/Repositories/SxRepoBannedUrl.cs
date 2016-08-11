@@ -3,61 +3,51 @@ using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoBannedUrl<TDbContext> : SxDbRepository<int, SxBannedUrl, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxVMBannedUrl[] Query<SxVMBannedUrl>(SxFilter filter)
+        public override SxBannedUrl[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString(new string[] { "dbu.Id", "dbu.Url", "dbu.Couse" });
-            query += " FROM D_BANNED_URL AS dbu ";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString(new string[] {
+                "dbu.Id",
+                "dbu.Url",
+                "dbu.Couse"
+            }));
+            sb.Append(" FROM D_BANNED_URL AS dbu ");
 
             object param = null;
-            query += getBannedUrlWhereString(filter, out param);
+            var gws = getBannedUrlWhereString(filter, out param);
+            sb.Append(gws);
 
             var defaultOrder = new SxOrder { FieldName = "dbu.DateCreate", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM D_BANNED_URL AS dbu ");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxVMBannedUrl>(query, param: param);
+                var data = conn.Query<SxBannedUrl>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
-            }
-        }
-
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM D_BANNED_URL AS dbu ";
-
-            object param = null;
-            query += getBannedUrlWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<int>(query, param: param).Single();
-                return data;
-            }
-        }
-
-        public string[] GetAllUrls()
-        {
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<string>("get_banned_urls").ToArray();
-                return data;
             }
         }
 
         private static string getBannedUrlWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            query += " WHERE (dbu.Url LIKE '%'+@url+'%' OR @url IS NULL) ";
-            query += " AND (dbu.Couse LIKE '%'+@couse+'%' OR @couse IS NULL) ";
+            var query = new StringBuilder();
+            query.Append(" WHERE (dbu.Url LIKE '%'+@url+'%' OR @url IS NULL) ");
+            query.Append(" AND (dbu.Couse LIKE '%'+@couse+'%' OR @couse IS NULL) ");
 
             var url = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Url != null ? (string)filter.WhereExpressionObject.Url : null;
             var couse = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Couse != null ? (string)filter.WhereExpressionObject.Couse : null;
@@ -68,7 +58,16 @@ namespace SX.WebCore.Repositories
                 couse= couse
             };
 
-            return query;
+            return query.ToString();
+        }
+
+        public string[] GetAllUrls()
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<string>("dbo.get_banned_urls").ToArray();
+                return data;
+            }
         }
     }
 }

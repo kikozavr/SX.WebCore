@@ -23,13 +23,12 @@ namespace SX.WebCore.MvcControllers
         {
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { MaterialId = mid, ModelCoreType = mct, Order = defaultOrder };
-            var totalItems = _repo.Count(filter);
-            filter.PagerInfo.TotalItems = totalItems;
+
+            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxMaterialTag, SxVMMaterialTag>(x)).ToArray();
+
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
             ViewBag.ModelCoreType = mct;
-
-            var viewModel = _repo.Query(filter).Select(x=>Mapper.Map<SxMaterialTag, SxVMMaterialTag>(x)).ToArray();
 
             return PartialView("_GridView", viewModel);
         }
@@ -39,14 +38,14 @@ namespace SX.WebCore.MvcControllers
         {
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order==null || order.Direction==SortDirection.Unknown?defaultOrder:order, WhereExpressionObject = filterModel, MaterialId = mid, ModelCoreType = mct };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
+
+            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxMaterialTag, SxVMMaterialTag>(x)).ToArray();
+
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
             ViewBag.ModelCoreType = mct;
 
-            var viewModel = _repo.Query(filter).Select(x => Mapper.Map<SxMaterialTag, SxVMMaterialTag>(x)).ToArray();
-
-            return PartialView("~/views/MaterialTags/_GridView.cshtml", viewModel);
+            return PartialView("_GridView.cshtml", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

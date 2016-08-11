@@ -19,7 +19,8 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual ActionResult Index()
         {
-            var data = _repo.Query(null).ToArray();
+            var filter = new SxFilter();
+            var data = _repo.Read(filter).ToArray();
             var parents = data.Where(x => !x.ParentStepId.HasValue)
                 .Select(x => Mapper.Map<SxProjectStep, SxVMProjectStep>(x)).ToArray();
             if (parents.Any())

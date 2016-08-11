@@ -7,7 +7,7 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoProjectStep<TDbContext> : SxDbRepository<int, SxProjectStep, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxProjectStep[] Query(SxFilter filter)
+        public override SxProjectStep[] Read(SxFilter filter)
         {
             var query = @"WITH j(Id, [Level]) AS (
          SELECT dps.Id,
@@ -30,22 +30,14 @@ FROM   j                    AS j
 ORDER BY
        dps.[Order] DESC";
 
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                var data = connection.Query<SxProjectStep>(query);
-                return data.ToArray();
-            }
-        }
-
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(dps.Id)
+            var queryCount= @"SELECT COUNT(dps.Id)
 FROM   D_PROJECT_STEP AS dps";
 
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = connection.Query<int>(query).Single();
-                return data;
+                var data = connection.Query<SxProjectStep>(query);
+                filter.PagerInfo.TotalItems = connection.Query<int>(queryCount).SingleOrDefault();
+                return data.ToArray();
             }
         }
 

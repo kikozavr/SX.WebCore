@@ -4,51 +4,52 @@ using SX.WebCore.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
     public sealed class SxRepo301Redirect<TDbContext> : SxDbRepository<Guid, Sx301Redirect, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxVM301Redirect[] Query<SxVM301Redirect>(SxFilter filter)
+        public override Sx301Redirect[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString(new string[] { "dr.Id", "dr.OldUrl", "dr.NewUrl", "dr.DateCreate" });
-            query += " FROM   D_REDIRECT dr";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString(new string[] {
+                "dr.Id",
+                "dr.OldUrl",
+                "dr.NewUrl",
+                "dr.DateCreate"
+            }));
+            sb.Append(@" FROM D_REDIRECT AS dr ");
 
             object param = null;
-            query += get301RedirectWhereString(filter, out param);
+            var gws = get301RedirectWhereString(filter, out param);
+            sb.Append(gws);
 
             var defaultOrder = new SxOrder { FieldName = "dr.DateCreate", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM D_REDIRECT AS dr ");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxVM301Redirect>(query, param: param);
+                var data = conn.Query<Sx301Redirect>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
-            }
-        }
-
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM   D_REDIRECT dr";
-
-            object param = null;
-            query += get301RedirectWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                return conn.Query<int>(query, param: param).Single();
             }
         }
 
         private static string get301RedirectWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            query += " WHERE (dr.OldUrl LIKE '%'+@old_url+'%' OR @old_url IS NULL)";
-            query += " AND (dr.NewUrl LIKE '%'+@new_url+'%' OR @new_url IS NULL)";
+            var query = new StringBuilder();
+            query.Append(" WHERE (dr.OldUrl LIKE '%'+@old_url+'%' OR @old_url IS NULL)");
+            query.Append(" AND (dr.NewUrl LIKE '%'+@new_url+'%' OR @new_url IS NULL)");
 
             var oldUrl = filter.WhereExpressionObject != null && filter.WhereExpressionObject.OldUrl != null ? (string)filter.WhereExpressionObject.OldUrl : null;
             var newUrl = filter.WhereExpressionObject != null && filter.WhereExpressionObject.NewUrl != null ? (string)filter.WhereExpressionObject.NewUrl : null;
@@ -59,7 +60,7 @@ namespace SX.WebCore.Repositories
                 new_url = newUrl
             };
 
-            return query;
+            return query.ToString();
         }
 
         /// <summary>
@@ -71,7 +72,7 @@ namespace SX.WebCore.Repositories
             Sx301Redirect result = new Sx301Redirect();
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<Sx301Redirect>("get_redirect @url", new { url= url }).SingleOrDefault();
+                var data = conn.Query<Sx301Redirect>("dbo.get_redirect @url", new { url= url }).SingleOrDefault();
                 if (data != null)
                     result = data;
             }

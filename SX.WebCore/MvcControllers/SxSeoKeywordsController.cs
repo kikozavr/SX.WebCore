@@ -21,9 +21,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order=order, AddintionalInfo=new object[] { stid } };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
 
-            var viewModel = _repo.Query(filter)
+            var viewModel = _repo.Read(filter)
                 .Select(x=>Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x))
                 .ToArray();
 
@@ -37,15 +36,15 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult Index(int stid, SxVMSeoKeyword filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { stid } };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-            ViewBag.PagerInfo = filter.PagerInfo;
-
-            var viewModel = _repo.Query(filter)
+            
+            var viewModel = _repo.Read(filter)
                 .Select(x => Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x))
                 .ToArray();
 
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+
             ViewBag.Filter = filter;
+            ViewBag.PagerInfo = filter.PagerInfo;
             ViewBag.SeoTagsId = stid;
 
             return PartialView("_GridView", viewModel);

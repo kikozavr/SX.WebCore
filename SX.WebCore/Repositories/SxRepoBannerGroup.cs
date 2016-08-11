@@ -4,43 +4,38 @@ using SX.WebCore.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoBannerGroup<TDbContext> : SxDbRepository<Guid, SxBannerGroup, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxBannerGroup[] Query(SxFilter filter)
+        public override SxBannerGroup[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString();
-            query += " FROM D_BANNER_GROUP AS dbg ";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString());
+            sb.Append(@" FROM D_BANNER_GROUP AS dbg ");
 
             object param = null;
-            query += getBannerGroupWhereString(filter, out param);
+            var gws = getBannerGroupWhereString(filter, out param);
+            sb.Append(gws);
 
-            var defaultOrder = new SxOrder { FieldName= "dbg.DateCreate", Direction=SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            var defaultOrder = new SxOrder { FieldName = "dbg.DateCreate", Direction = SortDirection.Desc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append(@"SELECT COUNT(1) FROM D_BANNER_GROUP AS dbg ");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxBannerGroup>(query, param: param);
+                var data = conn.Query<SxBannerGroup>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
-            }
-        }
-
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM D_BANNER_GROUP AS dbg ";
-
-            object param = null;
-            query += getBannerGroupWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<int>(query, param: param).Single();
-                return data;
             }
         }
 

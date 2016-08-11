@@ -119,26 +119,9 @@ namespace SX.WebCore.Abstract
             }
         }
 
-        [Obsolete("Надо заменить на Read")]
-        public virtual TModel[] Query(SxFilter filter)
+        public virtual TModel[] Read(SxFilter filter)
         {
             return new TModel[0];
-        }
-
-        public virtual TModel[] Read(SxFilter filter, out int count)
-        {
-            count = 0;
-            return new TModel[0];
-        }
-
-        public virtual T[] Query<T>(SxFilter filter)
-        {
-            return new T[0];
-        }
-
-        public virtual int Count(SxFilter filter)
-        {
-            return All.Count();
         }
 
         public virtual TModel GetByKey(params object[] id)

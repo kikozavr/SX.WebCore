@@ -9,54 +9,47 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoSiteTest<TDbContext> : SxDbRepository<int, SxSiteTest, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxSiteTest[] Query(SxFilter filter)
+        public override SxSiteTest[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString();
-            query += " FROM D_SITE_TEST AS dst ";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString());
+            sb.Append(" FROM D_SITE_TEST AS dst ");
 
             object param = null;
-            query += getSiteTestWhereString(filter, out param);
+            var gws = getSiteTestWhereString(filter, out param);
+            sb.Append(gws);
 
             var defaultOrder = new SxOrder { FieldName = "dst.DateCreate", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM D_SITE_TEST AS dst ");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTest>(query, param: param);
+                var data = conn.Query<SxSiteTest>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
-            }
-        }
-
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM D_SITE_TEST AS dst ";
-
-            object param = null;
-            query += getSiteTestWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<int>(query, param: param).Single();
-                return data;
             }
         }
 
         private static string getSiteTestWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            query += " WHERE (dst.Title LIKE '%'+@title+'%' OR @title IS NULL) ";
-            query += " AND (dst.Description LIKE '%'+@desc+'%' OR @desc IS NULL) ";
-            query += " AND (dst.Show=@show OR @show IS NULL) ";
+            var query = new StringBuilder();
+            query.Append(" WHERE (dst.Title LIKE '%'+@title+'%' OR @title IS NULL) ");
+            query.Append(" AND (dst.Description LIKE '%'+@desc+'%' OR @desc IS NULL) ");
+            query.Append(" AND (dst.Show=@show OR @show IS NULL) ");
 
             var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Title != null ? (string)filter.WhereExpressionObject.Title : null;
             var desc = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Description != null ? (string)filter.WhereExpressionObject.Description : null;
@@ -68,7 +61,7 @@ namespace SX.WebCore.Repositories
                 show = filter.OnlyShow
             };
 
-            return query;
+            return query.ToString();
         }
 
         public dynamic[] RandomList(int amount = 3)
@@ -76,7 +69,7 @@ namespace SX.WebCore.Repositories
             using (var conn = new SqlConnection(ConnectionString))
             {
 
-                var data = conn.Query("get_random_site_tests @amount", new { amount = amount });
+                var data = conn.Query("dbo.get_random_site_tests @amount", new { amount = amount });
                 return data.ToArray();
             }
         }
@@ -106,7 +99,7 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("del_site_test @testId", new { testId = id[0] });
+                conn.Execute("dbo.del_site_test @testId", new { testId = id[0] });
             }
         }
 
@@ -115,7 +108,7 @@ namespace SX.WebCore.Repositories
             var result = new DataTable();
             using (var conn = new SqlConnection(ConnectionString))
             {
-                using (SqlDataAdapter adp = new SqlDataAdapter("get_site_test_matrix @testId, @page, @pageSize, @count OUTPUT", conn))
+                using (SqlDataAdapter adp = new SqlDataAdapter("dbo.get_site_test_matrix @testId, @page, @pageSize, @count OUTPUT", conn))
                 {
                     adp.SelectCommand.Parameters.AddWithValue("testId", testId);
                     adp.SelectCommand.Parameters.AddWithValue("page", page);
@@ -136,7 +129,7 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("revert_site_test_matrix_value @subjectTitle, @questionText, @value", new
+                conn.Execute("dbo.revert_site_test_matrix_value @subjectTitle, @questionText, @value", new
                 {
                     subjectTitle = subjectTitle,
                     questionText = questionText,
@@ -149,7 +142,7 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTest>("add_site_test @title, @desc, @rules, @titleUrl, @type", new
+                var data = conn.Query<SxSiteTest>("dbo.add_site_test @title, @desc, @rules, @titleUrl, @type", new
                 {
                     title = model.Title,
                     desc = model.Description,
@@ -179,7 +172,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_next_guess_step", (a, q, s, t) =>
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("dbo.get_site_test_next_guess_step", (a, q, s, t) =>
                 {
                     a.Question = q;
                     q.Test = t;
@@ -210,7 +203,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_next_normal_step", (a, q, s, t) =>
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("dbo.get_site_test_next_normal_step", (a, q, s, t) =>
                 {
                     a.Question = q;
                     q.Test = t;

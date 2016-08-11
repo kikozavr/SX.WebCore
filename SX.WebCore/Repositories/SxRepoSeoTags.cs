@@ -3,6 +3,7 @@ using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -10,49 +11,43 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoSeoTags<TDbContext> : SxDbRepository<int, SxSeoTags, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxSeoTags[] Query(SxFilter filter)
+        public override SxSeoTags[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString(new string[] { "dsi.Id", "dsi.RawUrl" });
-            query += " FROM D_SEO_TAGS AS dsi ";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString(new string[] { "dsi.Id", "dsi.RawUrl" }));
+            sb.Append(" FROM D_SEO_TAGS AS dsi ");
 
             object param = null;
-            query += getSeoInfoWhereString(filter, out param);
+            var gws = getSeoTagsWhereString(filter, out param);
+            sb.Append(gws);
 
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM D_SEO_TAGS AS dsi ");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSeoTags>(query, param: param);
+                var data = conn.Query<SxSeoTags>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }
 
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM D_SEO_TAGS as dsi";
-
-            object param = null;
-            query += getSeoInfoWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<int>(query, param: param).Single();
-                return data;
-            }
-        }
-
-        private static string getSeoInfoWhereString(SxFilter filter, out object param)
+        private static string getSeoTagsWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            query += " WHERE (dsi.RawUrl LIKE '%'+@raw_url+'%' OR @raw_url IS NULL) ";
-            query += " AND (dsi.SeoTitle LIKE '%'+@title+'%' OR @title IS NULL) ";
-            query += " AND (dsi.SeoDescription LIKE '%'+@desc+'%' OR @desc IS NULL) ";
-            query += " AND (dsi.H1 LIKE '%'+@h1+'%' OR @h1 IS NULL) ";
-            query += " AND (dsi.MAterialId IS NULL) ";
+            var query = new StringBuilder();
+            query.Append(" WHERE (dsi.RawUrl LIKE '%'+@raw_url+'%' OR @raw_url IS NULL) ");
+            query.Append(" AND (dsi.SeoTitle LIKE '%'+@title+'%' OR @title IS NULL) ");
+            query.Append(" AND (dsi.SeoDescription LIKE '%'+@desc+'%' OR @desc IS NULL) ");
+            query.Append(" AND (dsi.H1 LIKE '%'+@h1+'%' OR @h1 IS NULL) ");
+            query.Append(" AND (dsi.MAterialId IS NULL) ");
 
             var rawUrl = filter.WhereExpressionObject != null && filter.WhereExpressionObject.RawUrl != null ? (string)filter.WhereExpressionObject.RawUrl : null;
             var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.SeoTitle != null ? (string)filter.WhereExpressionObject.SeoTitle : null;
@@ -67,7 +62,7 @@ namespace SX.WebCore.Repositories
                 h1 = h1
             };
 
-            return query;
+            return query.ToString();
         }
 
 
@@ -80,7 +75,7 @@ namespace SX.WebCore.Repositories
         public void DeleteMaterialSeoInfo(int mid, ModelCoreType mct)
         {
             var query = "UPDATE DV_MATERIAL SET SeoTagsId=NULL WHERE Id=@mid AND ModelCoreType=@mct;";
-            query += "DELETE FROM D_SEO_TAGS WHERE Id IN (SELECT dsi.Id FROM D_SEO_TAGS AS dsi WHERE MaterialId=@mid AND ModelCoreType=@mct)";
+            query += " DELETE FROM D_SEO_TAGS WHERE Id IN (SELECT dsi.Id FROM D_SEO_TAGS AS dsi WHERE MaterialId=@mid AND ModelCoreType=@mct)";
             using (var connection = new SqlConnection(ConnectionString))
             {
                 connection.Execute(query, new { mid = mid, mct = mct });
@@ -112,10 +107,10 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSeoTags>("get_page_seo_info @url", new { url = url }).SingleOrDefault();
+                var data = conn.Query<SxSeoTags>("dbo.get_page_seo_info @url", new { url = url }).SingleOrDefault();
                 if (data != null)
                 {
-                    data.Keywords = conn.Query<SxSeoKeyword>("get_page_seo_info_keywords @seoTagsId", new { seoTagsId = data.Id }).ToArray();
+                    data.Keywords = conn.Query<SxSeoKeyword>("dbo.get_page_seo_info_keywords @seoTagsId", new { seoTagsId = data.Id }).ToArray();
                 }
 
                 return data ?? new SxSeoTags();
@@ -132,10 +127,10 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSeoTags>("get_material_seo_info @mid, @mct", new { mid = mid, mct = mct }).SingleOrDefault();
+                var data = conn.Query<SxSeoTags>("dbo.get_material_seo_info @mid, @mct", new { mid = mid, mct = mct }).SingleOrDefault();
                 if (data != null)
                 {
-                    data.Keywords = conn.Query<SxSeoKeyword>("get_page_seo_info_keywords @seoInfoId", new { seoInfoId = data.Id }).ToArray();
+                    data.Keywords = conn.Query<SxSeoKeyword>("dbo.get_page_seo_info_keywords @seoInfoId", new { seoInfoId = data.Id }).ToArray();
                 }
 
                 return data ?? new SxSeoTags();

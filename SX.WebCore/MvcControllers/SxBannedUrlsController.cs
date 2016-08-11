@@ -22,8 +22,8 @@ namespace SX.WebCore.MvcControllers
         {
             var order = new SxOrder { FieldName = "dbu.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
-            var viewModel = _repo.Query<SxVMBannedUrl>(filter);
+
+            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxBannedUrl, SxVMBannedUrl>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -34,9 +34,10 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult Index(SxVMBannedUrl filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            filter.PagerInfo.TotalItems = _repo.Count(filter);
+            
+            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxBannedUrl, SxVMBannedUrl>(x)).ToArray();
+
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
-            var viewModel = _repo.Query<SxVMBannedUrl>(filter);
 
             ViewBag.Filter = filter;
 

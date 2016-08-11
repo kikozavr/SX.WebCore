@@ -4,54 +4,56 @@ using SX.WebCore.Providers;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
     public class SxRepoPicture<TDbContext> : SxDbRepository<Guid, SxPicture, TDbContext> where TDbContext : SxDbContext
     {
-        public override SxVMPicture[] Query<SxVMPicture>(SxFilter filter)
+        public override SxPicture[] Read(SxFilter filter)
         {
-            var query = SxQueryProvider.GetSelectString(new string[] { "dp.Id", "dp.Caption", "dp.[Description]", "dp.Width", "dp.Height", "dp.Size" });
-            query += " FROM D_PICTURE AS dp";
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString(new string[] {
+                "dp.Id",
+                "dp.Caption",
+                "dp.[Description]",
+                "dp.Width",
+                "dp.Height",
+                "dp.Size"
+            }));
+            sb.Append(" FROM D_PICTURE AS dp ");
 
             object param = null;
-            query += getPictureWhereString(filter, out param);
+            var gws = getPicturesWhereString(filter, out param);
+            sb.Append(gws);
 
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
-            query += SxQueryProvider.GetOrderString(defaultOrder, filter.Order);
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            query += " OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY";
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM D_PICTURE AS dp ");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxVMPicture>(query, param: param);
+                var data = conn.Query<SxPicture>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }
 
-        public override int Count(SxFilter filter)
-        {
-            var query = @"SELECT COUNT(1) FROM D_PICTURE as dp";
-
-            object param = null;
-            query += getPictureWhereString(filter, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                var data = conn.Query<int>(query, param: param).Single();
-                return data;
-            }
-        }
-
-        private static string getPictureWhereString(SxFilter filter, out object param)
+        private static string getPicturesWhereString(SxFilter filter, out object param)
         {
             param = null;
-            string query = null;
-            query += " WHERE (dp.Caption LIKE '%'+@caption+'%' OR @caption IS NULL)";
-            query += " AND (dp.[Description] LIKE '%'+@desc+'%' OR @desc IS NULL)";
-            query += " AND (dp.Width >=@w OR @w=0)";
-            query += " AND (dp.Height >=@h OR @h=0)";
+            var query = new StringBuilder();
+            query.Append(" WHERE (dp.Caption LIKE '%'+@caption+'%' OR @caption IS NULL)");
+            query.Append(" AND (dp.[Description] LIKE '%'+@desc+'%' OR @desc IS NULL)");
+            query.Append(" AND (dp.Width >=@w OR @w=0)");
+            query.Append(" AND (dp.Height >=@h OR @h=0)");
 
             var caption = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Caption != null ? (string)filter.WhereExpressionObject.Caption : null;
             var desc = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Description != null ? (string)filter.WhereExpressionObject.Description : null;
@@ -66,7 +68,7 @@ namespace SX.WebCore.Repositories
                 h = h
             };
 
-            return query;
+            return query.ToString();
         }
 
         public override SxPicture GetByKey(params object[] id)

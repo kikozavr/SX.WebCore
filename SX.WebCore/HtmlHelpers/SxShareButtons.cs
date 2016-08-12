@@ -65,7 +65,7 @@ namespace SX.WebCore.HtmlHelpers
                     throw new ArgumentNullException("Не задана функция получения типа материала");
 
                 li = new TagBuilder("li");
-                li.MergeAttribute("onclick", string.Format("sendLikeButtonClick(this, {0}, '{1}', '{2}', '{3}')", lbSettings.MaterialId(), lbSettings.ModelCoreType, UserClickType.Like, LikeDirection.Up));
+                //li.MergeAttribute("onclick", string.Format("sendLikeButtonClick(this, {0}, '{1}', '{2}', '{3}')", lbSettings.MaterialId(), lbSettings.ModelCoreType, UserClickType.Like, LikeDirection.Up));
                 li.AddCssClass("share-buttons__like-btn");
                 btn = new TagBuilder("button");
                 btn.AddCssClass("btn btn-sm btn-info");
@@ -75,7 +75,7 @@ namespace SX.WebCore.HtmlHelpers
                 ul.InnerHtml += li;
 
                 li = new TagBuilder("li");
-                li.MergeAttribute("onclick", string.Format("sendLikeButtonClick(this, {0}, '{1}', '{2}', '{3}')", lbSettings.MaterialId(), lbSettings.ModelCoreType, UserClickType.Like, LikeDirection.Down));
+                //li.MergeAttribute("onclick", string.Format("sendLikeButtonClick(this, {0}, '{1}', '{2}', '{3}')", lbSettings.MaterialId(), lbSettings.ModelCoreType, UserClickType.Like, LikeDirection.Down));
                 li.AddCssClass("share-buttons__like-btn");
                 btn = new TagBuilder("button");
                 btn.AddCssClass("btn btn-sm btn-info");

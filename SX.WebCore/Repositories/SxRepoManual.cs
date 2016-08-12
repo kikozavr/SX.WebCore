@@ -1,5 +1,4 @@
 ﻿using System.Linq;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using System.Data.SqlClient;
 using Dapper;
@@ -8,8 +7,10 @@ using System.Text;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoManual<TDbContext> : SxDbRepository<int, SxManual, TDbContext> where TDbContext: SxDbContext
+    public class SxRepoManual<TDbContext> : SxRepoMaterial<SxManual, TDbContext> where TDbContext: SxDbContext
     {
+        public SxRepoManual() : base(Enums.ModelCoreType.Manual) { }
+
         public override SxManual[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
@@ -44,7 +45,6 @@ namespace SX.WebCore.Repositories
                 return data.ToArray();
             }
         }
-
         private static string getManualWhereString(SxFilter filter, out object param)
         {
             param = null;
@@ -61,7 +61,7 @@ namespace SX.WebCore.Repositories
             return query.ToString();
         }
 
-        public SxManual[] GetManualsByCategoryId(string categoryId)
+        public virtual SxManual[] GetManualsByCategoryId(string categoryId)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
@@ -70,6 +70,17 @@ namespace SX.WebCore.Repositories
                 }, param: new { cat= categoryId });
                 return data.ToArray();
             }
+        }
+
+        public override void Delete(SxManual model)
+        {
+            var query = "DELETE FROM D_MANUAL WHERE Id=@mid AND ModelCoreType=@mct";
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute(query, new { mid = model.Id, mct = model.ModelCoreType });
+            }
+
+            base.Delete(model);
         }
     }
 }

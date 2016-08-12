@@ -277,7 +277,6 @@
     <Compile Include="Repositories\SxRepoBanner.cs" />
     <Compile Include="Repositories\SxRepoProjectStep.cs" />
     <Compile Include="Repositories\SxRepoStatistic.cs" />
-    <Compile Include="Repositories\SxRepoUserClick.cs" />
     <Compile Include="Repositories\SxRepoRequest.cs" />
     <Compile Include="Resources\Files.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -329,8 +328,6 @@
     <Compile Include="SxSiteMapUrl.cs" />
     <Compile Include="SxSiteSetting.cs" />
     <Compile Include="SxStatistic.cs" />
-    <Compile Include="SxUserClick.cs" />
-    <Compile Include="SxUserClickResult.cs" />
     <Compile Include="SxSiteTest.cs" />
     <Compile Include="SxVideo.cs" />
     <Compile Include="SxVideoLink.cs" />

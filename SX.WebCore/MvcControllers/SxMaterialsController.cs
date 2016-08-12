@@ -22,6 +22,7 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
+        private static SxRepoMaterial<TModel, TDbContext> _repo;
         private static SxRepoSeoTags<TDbContext> _repoSeoTags;
         protected SxMaterialsController(ModelCoreType mct)
         {
@@ -30,7 +31,6 @@ namespace SX.WebCore.MvcControllers
                 _repoSeoTags = new SxRepoSeoTags<TDbContext>();
         }
 
-        private static SxRepoMaterial<TModel, TDbContext> _repo;
         protected static SxRepoMaterial<TModel, TDbContext> Repo
         {
             get
@@ -50,17 +50,14 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
-        [HttpGet]
-#if !DEBUG
-        [OutputCache(Duration = 3600)]
-#endif
-        public async Task<JsonResult> DateStatistic()
+        [HttpPost, ValidateAntiForgeryToken]
+        public virtual async Task<ActionResult> Delete(TModel model)
         {
-            return await Task.Run(() =>
-            {
-                var data = (Repo as SxRepoMaterial<TModel, TDbContext>).DateStatistic;
-                return Json(data, JsonRequestBehavior.AllowGet);
-            });
+            if (await _repo.GetByKeyAsync(model.Id, model.ModelCoreType)==null)
+                return new HttpNotFoundResult();
+
+            await _repo.DeleteAsync(model);
+            return RedirectToAction("Index");
         }
 
         [HttpGet, AllowAnonymous]
@@ -68,18 +65,6 @@ namespace SX.WebCore.MvcControllers
         {
             var viewModel = default(TModel);
             return View(viewModel);
-        }
-
-        [HttpGet, ValidateAntiForgeryToken]
-        public virtual async Task<ActionResult> Delete(TModel model)
-        {
-            if (await _repo.GetByKeyAsync(model.Id, model.ModelCoreType)==null)
-                return new HttpNotFoundResult();
-
-            _repoSeoTags.DeleteMaterialSeoInfo(model.Id, model.ModelCoreType);
-
-            await _repo.DeleteAsync(model);
-            return RedirectToAction("Index");
         }
 
         [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]
@@ -127,6 +112,19 @@ namespace SX.WebCore.MvcControllers
         {
             [JsonProperty("success")]
             public string Success { get; set; }
+        }
+
+        [HttpGet]
+#if !DEBUG
+        [OutputCache(Duration = 3600)]
+#endif
+        public async Task<JsonResult> DateStatistic()
+        {
+            return await Task.Run(() =>
+            {
+                var data = (Repo as SxRepoMaterial<TModel, TDbContext>).DateStatistic;
+                return Json(data, JsonRequestBehavior.AllowGet);
+            });
         }
     }
 }

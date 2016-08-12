@@ -2,19 +2,17 @@
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxManualsController<TDbContext>: SxBaseController<TDbContext> where TDbContext: SxDbContext
+    public abstract class SxManualsController<TDbContext>: SxMaterialsController<SxManual, TDbContext> where TDbContext: SxDbContext
     {
-        private static SxRepoManual<TDbContext> _repo;
-        public SxManualsController()
+        public SxManualsController() :base(Enums.ModelCoreType.Manual)
         {
-            if (_repo == null)
-                _repo = new SxRepoManual<TDbContext>();
+            if (Repo == null)
+                Repo = new SxRepoManual<TDbContext>();
         }
 
         private static int _pageSize = 20;
@@ -25,7 +23,7 @@ namespace SX.WebCore.MvcControllers
             var defaultOrder = new SxOrder { FieldName = "dm.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = defaultOrder };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxManual, SxVMManual>(x)).ToArray();
+            var viewModel = Repo.Read(filter).Select(x => Mapper.Map<SxManual, SxVMManual>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -38,7 +36,7 @@ namespace SX.WebCore.MvcControllers
             var defaultOrder = new SxOrder { FieldName = "dm.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order == null || order.Direction == SortDirection.Unknown ? defaultOrder : order, WhereExpressionObject = filterModel };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxManual, SxVMManual>(x)).ToArray();
+            var viewModel = Repo.Read(filter).Select(x => Mapper.Map<SxManual, SxVMManual>(x)).ToArray();
 
             ViewBag.Filter = filter;
 
@@ -48,7 +46,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual ViewResult Edit(int? id)
         {
-            var model = id.HasValue ? _repo.GetByKey(id, Enums.ModelCoreType.Manual) : new SxManual { ModelCoreType = Enums.ModelCoreType.Manual };
+            var model = id.HasValue ? Repo.GetByKey(id, Enums.ModelCoreType.Manual) : new SxManual { ModelCoreType = Enums.ModelCoreType.Manual };
             var viewModel = Mapper.Map<SxManual, SxVMEditManual>(model);
             ViewBag.ModelCoreType = model.ModelCoreType;
             if (model.Category != null)
@@ -71,27 +69,17 @@ namespace SX.WebCore.MvcControllers
                     var titleUrl = Url.SeoFriendlyUrl(model.Title);
                     redactModel.UserId = User.Identity.GetUserId();
                     redactModel.TitleUrl = titleUrl;
-                    newModel = _repo.Create(redactModel);
+                    newModel = Repo.Create(redactModel);
                 }
                 else
                 {
-                    newModel = _repo.Update(redactModel, true, "Title", "Html", "Foreword", "CategoryId");
+                    newModel = Repo.Update(redactModel, true, "Title", "Html", "Foreword", "CategoryId");
                 }
 
                 return RedirectToAction("Index");
             }
             else
                 return View(model);
-        }
-
-        [HttpPost, ValidateAntiForgeryToken]
-        public virtual async Task<ActionResult> Delete(SxManual model)
-        {
-            if (await _repo.GetByKeyAsync(model.Id, model.ModelCoreType) == null)
-                return new HttpNotFoundResult();
-
-            await _repo.DeleteAsync(model);
-            return RedirectToAction("Index");
         }
     }
 }

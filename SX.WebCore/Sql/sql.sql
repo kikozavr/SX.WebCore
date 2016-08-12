@@ -2879,6 +2879,25 @@ END
 GO
 
 /*******************************************
+ * Удалить материал
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_material', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_material;
+GO
+CREATE PROCEDURE dbo.del_material
+	@mid INT,
+	@mct INT
+AS
+BEGIN TRANSACTION
+	--удалить комменты материала
+	--удаляем seo тег материала
+	EXEC dbo.del_material_seo_tags @mid, @mct
+	--удаляем материал
+	DELETE FROM DV_MATERIAL WHERE Id=@mid AND ModelCoreType=@mct
+COMMIT TRANSACTION
+GO
+
+/*******************************************
  * Удалить ключевое слово
  *******************************************/
 IF OBJECT_ID(N'dbo.del_seo_keywords', N'P') IS NOT NULL

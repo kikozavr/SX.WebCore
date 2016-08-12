@@ -9,7 +9,7 @@ using static SX.WebCore.Enums;
 namespace SX.WebCore.Repositories
 {
     public class SxRepoMaterial<TModel, TDbContext> : SxDbRepository<int, TModel, TDbContext>
-        where TModel : SxDbModel<int>
+        where TModel : SxMaterial
         where TDbContext : SxDbContext
     {
         private static ModelCoreType _mct;
@@ -60,7 +60,15 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("add_material_view @mid, @mct", new { mid = mid, mct = mct });
+                conn.Execute("dbo.add_material_view @mid, @mct", new { mid = mid, mct = mct });
+            }
+        }
+
+        public override void Delete(TModel model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_material @mid, @mct", new { mid = model.Id, mct = model.ModelCoreType });
             }
         }
     }

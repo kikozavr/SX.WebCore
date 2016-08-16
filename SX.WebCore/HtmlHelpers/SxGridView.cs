@@ -193,7 +193,6 @@ namespace SX.WebCore.HtmlHelpers
             TagBuilder tr;
             SxGridViewColumn<TModel> column;
             TagBuilder td;
-            object value;
             Type type;
             string rowCssClass;
             if (settings.HasRow)

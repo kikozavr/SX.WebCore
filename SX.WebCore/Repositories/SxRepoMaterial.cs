@@ -79,11 +79,37 @@ namespace SX.WebCore.Repositories
             {
                 using (var connection = new SqlConnection(ConnectionString))
                 {
-                    var data = connection.Query<int>("dbo.add_material_like @ld, @mid, @mct", new { ld= ld, mid=mid, mct=mct });
+                    var data = connection.Query<int>("dbo.add_material_like @ld, @mid, @mct", new { ld = ld, mid = mid, mct = mct });
                     return data.SingleOrDefault();
                 }
             });
 
+        }
+
+        public virtual SxVMMaterial[] GetLikeMaterial(SxFilter filter, int amount=10)
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxVMMaterial, SxVMAppUser, SxVMMaterial>("dbo.get_like_materials @amount, @mid, @mct", (m, u) =>
+                {
+                    m.User = u;
+                    return m;
+                }, new { mid = filter.MaterialId, mct = filter.ModelCoreType, amount = amount }, splitOn: "Id");
+                return data.ToArray();
+            }
+        }
+
+        public virtual SxVMMaterial[] GetByDateMaterials(int mid, ModelCoreType mct, bool dir = false, int amount = 3)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var data = connection.Query<SxVMMaterial, SxVMAppUser, SxVMMaterial>("dbo.get_other_materials @mid, @mct, @dir, @amount", (m, u) => {
+                    m.User = u;
+                    return m;
+                }, new { mid = mid, mct = mct, dir = dir, amount = amount }, splitOn: "UserId").ToArray();
+
+                return data;
+            }
         }
     }
 }

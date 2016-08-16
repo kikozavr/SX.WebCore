@@ -1,10 +1,10 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 16.08.2016 8:51:05
+ * Time: 16.08.2016 16:31:14
  ************************************************************/
 
 /*******************************************
- * clear html tags
+ * очистить теги html
  *******************************************/
 IF OBJECT_ID(N'dbo.func_strip_html', N'FN') IS NOT NULL
     DROP FUNCTION dbo.func_strip_html;
@@ -198,48 +198,6 @@ END
 GO
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*******************************************
  * Превью материалов
  *******************************************/
@@ -426,6 +384,7 @@ BEGIN
 	RETURN @res
 END
 GO
+
 
 
 
@@ -910,7 +869,10 @@ GO
 IF OBJECT_ID(N'dbo.get_popular_materials', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_popular_materials;
 GO
-CREATE PROCEDURE dbo.get_popular_materials(@mid INT, @mct INT, @amount INT)
+CREATE PROCEDURE dbo.get_popular_materials
+	@mid INT,
+	@mct INT,
+	@amount INT
 AS
 BEGIN
 	SELECT TOP(@amount)
@@ -919,11 +881,11 @@ BEGIN
 	       dm.Title,
 	       dm.TitleUrl,
 	       dm.ModelCoreType,
-	       COUNT(dc.Id)            AS CommentsCount,
-	       SUM(dm.LikeUpCount+dm.LikeDownCount)            AS LikesCount,
-	       SUM(dm.ViewsCount)         ViewsCount
-	FROM   DV_MATERIAL             AS dm
-	       LEFT JOIN D_COMMENT     AS dc
+	       COUNT(dc.Id)         AS CommentsCount,
+	       SUM(dm.LikeUpCount + dm.LikeDownCount) AS LikesCount,
+	       SUM(dm.ViewsCount)      ViewsCount
+	FROM   DV_MATERIAL          AS dm
+	       LEFT JOIN D_COMMENT  AS dc
 	            ON  dc.ModelCoreType = dm.ModelCoreType
 	            AND dc.MaterialId = dm.Id
 	WHERE  dm.ModelCoreType = @mct
@@ -937,7 +899,8 @@ BEGIN
 	       dm.Title,
 	       dm.TitleUrl,
 	       dm.ModelCoreType
-	HAVING SUM(dm.LikeUpCount+dm.LikeDownCount) > 0 OR COUNT(dm.ViewsCount) > 0
+	HAVING SUM(dm.LikeUpCount + dm.LikeDownCount) > 0 OR COUNT(dm.ViewsCount) > 
+	       0
 	ORDER BY
 	       dm.IsTop DESC,
 	       CommentsCount DESC,
@@ -2961,8 +2924,43 @@ AS
 	FROM   DV_MATERIAL AS dm
 	WHERE  dm.Id = @mid
 	       AND dm.ModelCoreType = @mct
-	       
+	
 	SELECT @result
 	
 	COMMIT TRANSACTION
+GO
+
+/*******************************************
+ * Получить похожие материалы
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_like_materials', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_like_materials;
+GO
+CREATE PROCEDURE dbo.get_like_materials
+	@amount INT,
+	@mid INT,
+	@mct INT
+AS
+	SELECT DISTINCT TOP(@amount)
+	       dm.DateCreate,
+	       dm.TitleUrl,
+	       dm.Title,
+	       dm.ModelCoreType,
+	       SUBSTRING(dm.Foreword, 0, 200) AS Foreword,
+	       dm.UserId,
+	       anu.Id,
+	       anu.NikName
+	FROM   D_MATERIAL_TAG    AS dmt
+	       JOIN DV_MATERIAL  AS dm
+	            ON  dm.Id = dmt.MaterialId
+	            AND dm.ModelCoreType = dmt.ModelCoreType
+	            AND dm.Id NOT IN (@mid)
+	       JOIN AspNetUsers  AS anu
+	            ON  anu.Id = dm.UserId
+	WHERE  dmt.Id IN (SELECT dmt2.Id
+	                  FROM   D_MATERIAL_TAG AS dmt2
+	                  WHERE  dmt2.MaterialId = @mid
+	                         AND dmt2.ModelCoreType = @mct)
+	ORDER BY
+	       dm.DateCreate DESC
 GO

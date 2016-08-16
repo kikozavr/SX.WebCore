@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SX.WebCore.Abstract;
+using SX.WebCore.Attrubutes;
 using SX.WebCore.Repositories;
 using System.Configuration;
 using System.Net;
@@ -132,6 +133,23 @@ namespace SX.WebCore.MvcControllers
         {
             var data = await _repo.AddLikeAsync(ld, mid, _mct);
             return Json(data);
+        }
+
+        [HttpGet, ChildActionOnly]
+        public virtual PartialViewResult LikeMaterials(SxFilter filter, int amount = 10)
+        {
+            var viewModel = _repo.GetLikeMaterial(filter, amount);
+            ViewBag.ModelCoreType = filter.ModelCoreType;
+
+            return PartialView("~/Views/Shared/_LikeMaterial.cshtml", viewModel);
+        }
+
+        [HttpGet, NotLogRequest]
+        public virtual PartialViewResult ByDateMaterial(int mid, ModelCoreType mct, bool dir = false, int amount = 3)
+        {
+            var viewModel = _repo.GetByDateMaterials(mid, mct, dir, amount);
+            ViewBag.ModelCoreType = mct;
+            return PartialView("~/Views/Shared/_ByDateMaterial.cshtml", viewModel);
         }
     }
 }

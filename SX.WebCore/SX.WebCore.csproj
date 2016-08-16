@@ -168,6 +168,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstract\IHasLikes.cs" />
     <Compile Include="Abstract\IHasViewsCount.cs" />
     <Compile Include="Abstract\IHierarchy.cs" />
     <Compile Include="Abstract\ISxMaterial.cs" />
@@ -273,7 +274,6 @@
     <Compile Include="Repositories\SxRepoBannerGroup.cs" />
     <Compile Include="Repositories\SxRepoManual.cs" />
     <Compile Include="Repositories\SxRepoMaterialCategory.cs" />
-    <Compile Include="Repositories\SxRepoLike.cs" />
     <Compile Include="Repositories\SxRepoBanner.cs" />
     <Compile Include="Repositories\SxRepoProjectStep.cs" />
     <Compile Include="Repositories\SxRepoStatistic.cs" />
@@ -307,7 +307,6 @@
     <Compile Include="SxShareButton.cs" />
     <Compile Include="SxNet.cs" />
     <Compile Include="SxOrder.cs" />
-    <Compile Include="SxLike.cs" />
     <Compile Include="SxSiteTestAnswer.cs" />
     <Compile Include="SxSiteTestSubject.cs" />
     <Compile Include="SxSiteTestQuestion.cs" />

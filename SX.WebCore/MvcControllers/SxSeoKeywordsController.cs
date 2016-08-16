@@ -34,11 +34,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual async Task<PartialViewResult> Index(int stid, SxVMSeoKeyword filterModel, SxOrder order, int page = 1)
+        public virtual PartialViewResult Index(int stid, SxVMSeoKeyword filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { stid } };
             
-            var viewModel = (await _repo.ReadAsync(filter))
+            var viewModel = _repo.Read(filter)
                 .Select(x => Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x))
                 .ToArray();
 

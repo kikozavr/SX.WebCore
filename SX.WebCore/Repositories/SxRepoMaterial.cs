@@ -4,6 +4,7 @@ using SX.WebCore.ViewModels;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 using static SX.WebCore.Enums;
 
 namespace SX.WebCore.Repositories
@@ -70,6 +71,19 @@ namespace SX.WebCore.Repositories
             {
                 connection.Execute("dbo.del_material @mid, @mct", new { mid = model.Id, mct = model.ModelCoreType });
             }
+        }
+
+        public async Task<int> AddLikeAsync(bool ld, int mid, ModelCoreType mct)
+        {
+            return await Task.Run(() =>
+            {
+                using (var connection = new SqlConnection(ConnectionString))
+                {
+                    var data = connection.Query<int>("dbo.add_material_like @ld, @mid, @mct", new { ld= ld, mid=mid, mct=mct });
+                    return data.SingleOrDefault();
+                }
+            });
+
         }
     }
 }

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SX.WebCore.Abstract
 {
     [Table("DV_MATERIAL")]
-    public abstract class SxMaterial : SxDbUpdatedModel<int>, ISxMaterial
+    public abstract class SxMaterial : SxDbUpdatedModel<int>, ISxMaterial, IHasLikes
     {
         [Index]
         public DateTime DateOfPublication { get; set; }
@@ -49,5 +49,9 @@ namespace SX.WebCore.Abstract
 
         [MaxLength(255)]
         public string SourceUrl { get; set; }
+
+        public int LikeUpCount { get; set; }
+
+        public int LikeDownCount { get; set; }
     }
 }

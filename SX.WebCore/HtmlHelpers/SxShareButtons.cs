@@ -37,9 +37,9 @@ namespace SX.WebCore.HtmlHelpers
 
             public Func<int> LikeDownCount { get; set; }
 
-            public Func<int> MaterialId { get; set; }
+            public Func<string> UrlUp { get; set; }
 
-            public ModelCoreType ModelCoreType { get; set; }
+            public Func<string> UrlDown { get; set; }
         }
 
         public static MvcHtmlString SxShareButtons(this HtmlHelper htmlHelper, SxShareButton[] buttons, Dictionary<string, SxShareButtonsSettings> settings = null, SxLikeButtonsSettings lbSettings=null )
@@ -59,13 +59,15 @@ namespace SX.WebCore.HtmlHelpers
                     throw new ArgumentNullException("Не задана функция получения количества положительных лайков");
                 if (lbSettings.LikeDownCount == null)
                     throw new ArgumentNullException("Не задана функция получения количества отрицательных лайков");
-                if (lbSettings.MaterialId == null)
-                    throw new ArgumentNullException("Не задана функция получения идентификатора материала");
-                if (lbSettings.ModelCoreType == ModelCoreType.Unknown)
-                    throw new ArgumentNullException("Не задана функция получения типа материала");
+                if (lbSettings.UrlUp == null)
+                    throw new ArgumentNullException("Не задана функция получения Url положительных лайков материала");
+                if (lbSettings.UrlDown == null)
+                    throw new ArgumentNullException("Не задана функция получения Url отрицательных лайков материала");
 
                 li = new TagBuilder("li");
-                //li.MergeAttribute("onclick", string.Format("sendLikeButtonClick(this, {0}, '{1}', '{2}', '{3}')", lbSettings.MaterialId(), lbSettings.ModelCoreType, UserClickType.Like, LikeDirection.Up));
+
+                li.MergeAttribute("data-url", lbSettings.UrlUp());
+                li.MergeAttribute("onclick", "sendLike(this)");
                 li.AddCssClass("share-buttons__like-btn");
                 btn = new TagBuilder("button");
                 btn.AddCssClass("btn btn-sm btn-info");
@@ -75,7 +77,8 @@ namespace SX.WebCore.HtmlHelpers
                 ul.InnerHtml += li;
 
                 li = new TagBuilder("li");
-                //li.MergeAttribute("onclick", string.Format("sendLikeButtonClick(this, {0}, '{1}', '{2}', '{3}')", lbSettings.MaterialId(), lbSettings.ModelCoreType, UserClickType.Like, LikeDirection.Down));
+                li.MergeAttribute("data-url", lbSettings.UrlDown());
+                li.MergeAttribute("onclick", "sendLike(this)");
                 li.AddCssClass("share-buttons__like-btn");
                 btn = new TagBuilder("button");
                 btn.AddCssClass("btn btn-sm btn-info");

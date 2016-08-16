@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 11.08.2016 12:51:32
+ * Time: 16.08.2016 8:51:05
  ************************************************************/
 
 /*******************************************
@@ -235,6 +235,11 @@ GO
 
 
 
+
+
+
+
+
 /*******************************************
  * Превью материалов
  *******************************************/
@@ -312,24 +317,6 @@ BEGIN
 	            ELSE SUBSTRING(dbo.FUNC_STRIP_HTML(dm.Html), 0, 200) +
 	                 '...'
 	       END                    AS Foreword,
-	       (
-	           SELECT ISNULL(SUM(1), 0)
-	           FROM   D_USER_CLICK  AS duc
-	                  JOIN D_LIKE   AS dl
-	                       ON  dl.UserClickId = duc.Id
-	           WHERE  duc.MaterialId = dm.Id
-	                  AND duc.ModelCoreType = dm.ModelCoreType
-	                  AND dl.Direction = 1
-	       )                      AS LikeUpCount,
-	       (
-	           SELECT ISNULL(SUM(1), 0)
-	           FROM   D_USER_CLICK  AS duc
-	                  JOIN D_LIKE   AS dl
-	                       ON  dl.UserClickId = duc.Id
-	           WHERE  duc.MaterialId = dm.Id
-	                  AND duc.ModelCoreType = dm.ModelCoreType
-	                  AND dl.Direction = 2
-	       )                      AS LikeDownCount,
 	       (
 	           SELECT COUNT(1)
 	           FROM   D_COMMENT AS dc
@@ -439,6 +426,11 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
+
+
+
 
 
 
@@ -928,17 +920,12 @@ BEGIN
 	       dm.TitleUrl,
 	       dm.ModelCoreType,
 	       COUNT(dc.Id)            AS CommentsCount,
-	       COUNT(dl.Id)            AS LikesCount,
+	       SUM(dm.LikeUpCount+dm.LikeDownCount)            AS LikesCount,
 	       SUM(dm.ViewsCount)         ViewsCount
 	FROM   DV_MATERIAL             AS dm
 	       LEFT JOIN D_COMMENT     AS dc
 	            ON  dc.ModelCoreType = dm.ModelCoreType
 	            AND dc.MaterialId = dm.Id
-	       LEFT JOIN D_USER_CLICK  AS duc
-	            ON  duc.MaterialId = dm.Id
-	            AND duc.ModelCoreType = dm.ModelCoreType
-	       LEFT JOIN D_LIKE        AS dl
-	            ON  dl.UserClickId = duc.Id
 	WHERE  dm.ModelCoreType = @mct
 	       AND dm.Show = 1
 	       AND dm.DateOfPublication <= GETDATE()
@@ -950,7 +937,7 @@ BEGIN
 	       dm.Title,
 	       dm.TitleUrl,
 	       dm.ModelCoreType
-	HAVING COUNT(dc.Id) > 0 OR COUNT(dl.Id) > 0 OR COUNT(dm.ViewsCount) > 0
+	HAVING SUM(dm.LikeUpCount+dm.LikeDownCount) > 0 OR COUNT(dm.ViewsCount) > 0
 	ORDER BY
 	       dm.IsTop DESC,
 	       CommentsCount DESC,
@@ -1047,7 +1034,9 @@ CREATE PROCEDURE dbo.del_banned_url
 	@bannedUrlId INT
 AS
 BEGIN
-	DELETE FROM D_BANNED_URL WHERE Id=@bannedUrlId
+	DELETE 
+	FROM   D_BANNED_URL
+	WHERE  Id = @bannedUrlId
 END
 GO
 
@@ -1601,7 +1590,9 @@ CREATE PROCEDURE dbo.del_redirect
 	@redirectId UNIQUEIDENTIFIER
 AS
 BEGIN
-	DELETE FROM D_REDIRECT WHERE Id=@redirectId
+	DELETE 
+	FROM   D_REDIRECT
+	WHERE  Id = @redirectId
 END
 GO
 
@@ -1667,7 +1658,9 @@ CREATE PROCEDURE dbo.del_material_seo_tags
 	@mct INT
 AS
 	BEGIN TRANSACTION
-	EXEC dbo.update_material_seo_tags @mid, @mct, NULL
+	EXEC dbo.update_material_seo_tags @mid,
+	     @mct,
+	     NULL
 	
 	DELETE 
 	FROM   D_SEO_TAGS
@@ -1688,7 +1681,9 @@ GO
 CREATE PROCEDURE dbo.del_seo_tags
 	@seoTagsId INT
 AS
-	DELETE FROM D_SEO_TAGS WHERE Id=@seoTagsId
+	DELETE 
+	FROM   D_SEO_TAGS
+	WHERE  Id = @seoTagsId
 GO
 
 /*******************************************
@@ -2888,13 +2883,18 @@ CREATE PROCEDURE dbo.del_material
 	@mid INT,
 	@mct INT
 AS
-BEGIN TRANSACTION
+	BEGIN TRANSACTION
 	--удалить комменты материала
 	--удаляем seo тег материала
-	EXEC dbo.del_material_seo_tags @mid, @mct
+	EXEC dbo.del_material_seo_tags @mid,
+	     @mct
 	--удаляем материал
-	DELETE FROM DV_MATERIAL WHERE Id=@mid AND ModelCoreType=@mct
-COMMIT TRANSACTION
+	DELETE 
+	FROM   DV_MATERIAL
+	WHERE  Id = @mid
+	       AND ModelCoreType = @mct
+	
+	COMMIT TRANSACTION
 GO
 
 /*******************************************
@@ -2906,7 +2906,9 @@ GO
 CREATE PROCEDURE dbo.del_seo_keywords
 	@id INT
 AS
-	DELETE FROM D_SEO_KEYWORD WHERE Id=@id
+	DELETE 
+	FROM   D_SEO_KEYWORD
+	WHERE  Id = @id
 GO
 
 /*******************************************
@@ -2918,5 +2920,49 @@ GO
 CREATE PROCEDURE dbo.del_video
 	@videoId UNIQUEIDENTIFIER
 AS
-	DELETE FROM D_VIDEO WHERE Id=@videoId
+	DELETE 
+	FROM   D_VIDEO
+	WHERE  Id = @videoId
+GO
+
+/*******************************************
+ * Добавить лайк материала
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_material_like', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_material_like;
+GO
+CREATE PROCEDURE dbo.add_material_like
+	@ld BIT,
+	@mid INT,
+	@mct INT
+AS
+	BEGIN TRANSACTION
+	
+	SET NOCOUNT ON
+	
+	UPDATE DV_MATERIAL
+	SET    LikeUpCount = CASE 
+	                          WHEN @ld = 1 THEN dm.LikeUpCount + 1
+	                          ELSE dm.LikeUpCount
+	                     END,
+	       LikeDownCount = CASE 
+	                            WHEN @ld = 1 THEN dm.LikeDownCount
+	                            ELSE dm.LikeDownCount + 1
+	                       END
+	FROM   DV_MATERIAL AS dm
+	WHERE  dm.Id = @mid
+	       AND dm.ModelCoreType = @mct
+	
+	DECLARE @result INT
+	SELECT @result = CASE 
+	                      WHEN @ld = 1 THEN dm.LikeUpCount
+	                      ELSE dm.LikeDownCount
+	                 END
+	FROM   DV_MATERIAL AS dm
+	WHERE  dm.Id = @mid
+	       AND dm.ModelCoreType = @mct
+	       
+	SELECT @result
+	
+	COMMIT TRANSACTION
 GO

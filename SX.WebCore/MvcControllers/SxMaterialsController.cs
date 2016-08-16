@@ -126,5 +126,12 @@ namespace SX.WebCore.MvcControllers
                 return Json(data, JsonRequestBehavior.AllowGet);
             });
         }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public async Task<JsonResult> AddLike(int mid, bool ld)
+        {
+            var data = await _repo.AddLikeAsync(ld, mid, _mct);
+            return Json(data);
+        }
     }
 }

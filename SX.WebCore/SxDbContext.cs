@@ -82,8 +82,6 @@ namespace SX.WebCore
 
             modelBuilder.Entity<SxSeoTags>().HasOptional(x => x.Material).WithMany().HasForeignKey(x => new { x.MaterialId, x.ModelCoreType });
 
-            modelBuilder.Entity<SxLike>().HasRequired(x => x.Material).WithMany().HasForeignKey(x=> new { x.MaterialId, x.ModelCoreType});
-
             modelBuilder.Entity<SxMaterialCategory>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.None);
 
             modelBuilder.Entity<SxStatisticUserLogin>().HasKey(x => new { x.StatisticId, x.UserId });

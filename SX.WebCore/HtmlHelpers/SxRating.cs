@@ -27,8 +27,9 @@ namespace SX.WebCore.HtmlHelpers
                 li = new TagBuilder("li");
 
                 a = new TagBuilder("a");
-                a.MergeAttribute("href", funcAddRatingUrl + "?value=" + i.ToString());
+                a.MergeAttribute("data-url", funcAddRatingUrl + "?value=" + i.ToString());
                 a.MergeAttribute("data-index", (i-1).ToString());
+                a.MergeAttribute("href", "javascript:void(0)");
 
                 if (value>=i)
                     a.InnerHtml += "<i class=\"fa fa-star\" aria-hidden=\"true\"></i>";

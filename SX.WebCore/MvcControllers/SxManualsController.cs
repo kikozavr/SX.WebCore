@@ -7,7 +7,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxManualsController<TDbContext>: SxMaterialsController<SxManual, TDbContext> where TDbContext: SxDbContext
+    public abstract class SxManualsController<TDbContext>: SxMaterialsController<SxManual, SxVMMaterial, TDbContext> where TDbContext: SxDbContext
     {
         public SxManualsController() :base(Enums.ModelCoreType.Manual)
         {

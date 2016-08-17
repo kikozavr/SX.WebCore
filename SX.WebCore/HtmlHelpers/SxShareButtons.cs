@@ -70,7 +70,7 @@ namespace SX.WebCore.HtmlHelpers
                 li.MergeAttribute("onclick", "sendLike(this)");
                 li.AddCssClass("share-buttons__like-btn");
                 btn = new TagBuilder("button");
-                btn.AddCssClass("btn btn-sm btn-info");
+                btn.AddCssClass("btn btn-xs btn-info");
                 btn.InnerHtml += "<span class=\"share-buttons__icon\"><i class=\"fa fa-thumbs-o-up text-success\"></i></span>";
                 btn.InnerHtml += "<span class=\"badge share-buttons__counter\">"+ lbSettings.LikeUpCount() + "</span>";
                 li.InnerHtml += btn;
@@ -81,7 +81,7 @@ namespace SX.WebCore.HtmlHelpers
                 li.MergeAttribute("onclick", "sendLike(this)");
                 li.AddCssClass("share-buttons__like-btn");
                 btn = new TagBuilder("button");
-                btn.AddCssClass("btn btn-sm btn-info");
+                btn.AddCssClass("btn btn-xs btn-info");
                 btn.InnerHtml += "<span class=\"share-buttons__icon\"><i class=\"fa fa-thumbs-o-down text-danger\"></i></span>";
                 btn.InnerHtml += "<span class=\"badge share-buttons__counter\">"+ lbSettings.LikeDownCount() + "</span>";
                 li.InnerHtml += btn;
@@ -111,7 +111,7 @@ namespace SX.WebCore.HtmlHelpers
 
                 btn = new TagBuilder("button");
                 btn.MergeAttribute("style", "background-color:" + button.Net.Color);
-                btn.AddCssClass("btn btn-sm btn-default");
+                btn.AddCssClass("btn btn-xs btn-default");
                 btn.InnerHtml += "<span class=\"share-buttons__icon\"><i class=\"" + button.Net.LogoCssClass + "\"></i></span>";
                 btn.InnerHtml += "<span class=\"share-buttons__title\">" + button.Net.Name + "</span>";
                 if (button.Net.HasCounter && button.ShowCounter)

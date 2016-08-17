@@ -10,6 +10,7 @@ namespace SX.WebCore.HtmlHelpers
             if (banner == null) return null;
 
             var div = new TagBuilder("div");
+            div.AddCssClass("bnr");
 
             var figure = new TagBuilder("figure");
             figure.MergeAttribute("data-href", banner.Url);

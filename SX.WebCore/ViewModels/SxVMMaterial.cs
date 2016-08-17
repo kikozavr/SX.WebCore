@@ -60,5 +60,7 @@ namespace SX.WebCore.ViewModels
         public int CommentsCount { get; set; }
 
         public int Rating { get; set; }
+
+        public string SourceUrl { get; set; }
     }
 }

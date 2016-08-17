@@ -2,16 +2,21 @@
 using SX.WebCore.Abstract;
 using SX.WebCore.Attrubutes;
 using SX.WebCore.Repositories;
+using SX.WebCore.ViewModels;
+using System;
 using System.Configuration;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.Enums;
+using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxMaterialsController<TModel, TDbContext> : SxBaseController<TDbContext>
+    public abstract class SxMaterialsController<TModel, TViewModel, TDbContext> : SxBaseController<TDbContext>
         where TModel : SxMaterial
+        where TViewModel : SxVMMaterial
         where TDbContext : SxDbContext
     {
         private static ModelCoreType _mct;
@@ -23,7 +28,7 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
-        private static SxRepoMaterial<TModel, TDbContext> _repo;
+        private static SxRepoMaterial<TModel, TViewModel, TDbContext> _repo;
         private static SxRepoSeoTags<TDbContext> _repoSeoTags;
         protected SxMaterialsController(ModelCoreType mct)
         {
@@ -32,7 +37,7 @@ namespace SX.WebCore.MvcControllers
                 _repoSeoTags = new SxRepoSeoTags<TDbContext>();
         }
 
-        protected static SxRepoMaterial<TModel, TDbContext> Repo
+        protected static SxRepoMaterial<TModel, TViewModel, TDbContext> Repo
         {
             get
             {
@@ -49,6 +54,36 @@ namespace SX.WebCore.MvcControllers
             {
                 return _repoSeoTags;
             }
+        }
+
+        protected Func<SxFilter, bool> BeforeSelectListAction { get; set; }
+        [HttpGet]
+        public virtual ActionResult List(SxFilter filter)
+        {
+            var routeDataValues = Request.RequestContext.RouteData.Values;
+            var page = routeDataValues["page"] != null ? Convert.ToInt32(routeDataValues["page"]) : 1;
+            filter.PagerInfo.Page = page;
+            filter.PagerInfo.PageSize = 10;
+
+            if (BeforeSelectListAction != null && !BeforeSelectListAction(filter))
+                return new HttpNotFoundResult();
+
+            var viewModel = new SxPagedCollection<TViewModel>();
+            var tag = Request.QueryString.Get("tag");
+            if (!string.IsNullOrEmpty(tag))
+            {
+                filter.Tag = tag;
+                ViewBag.Tag = tag;
+            }
+
+            viewModel.Collection = Repo.Read(filter).Select(x=>Mapper.Map<TModel, TViewModel>(x)).ToArray();
+            viewModel.PagerInfo = new SxPagerInfo(filter.PagerInfo.Page, filter.PagerInfo.PageSize)
+            {
+                PagerSize = 3,
+                TotalItems = filter.PagerInfo.TotalItems
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -123,12 +158,12 @@ namespace SX.WebCore.MvcControllers
         {
             return await Task.Run(() =>
             {
-                var data = (Repo as SxRepoMaterial<TModel, TDbContext>).DateStatistic;
+                var data = Repo.DateStatistic;
                 return Json(data, JsonRequestBehavior.AllowGet);
             });
         }
 
-        [HttpPost, ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<JsonResult> AddLike(int mid, bool ld)
         {
             var data = await _repo.AddLikeAsync(ld, mid, _mct);
@@ -150,6 +185,18 @@ namespace SX.WebCore.MvcControllers
             var viewModel = _repo.GetByDateMaterials(mid, mct, dir, amount);
             ViewBag.ModelCoreType = mct;
             return PartialView("~/Views/Shared/_ByDateMaterial.cshtml", viewModel);
+        }
+
+#if !DEBUG
+        [OutputCache(Duration =900, VaryByParam ="mct;mid;amount")]
+#endif
+        [HttpGet, ChildActionOnly]
+        public virtual PartialViewResult Popular(ModelCoreType mct, int mid, int amount = 4)
+        {
+            var viewModel = Repo.GetPopular(mct, mid, amount);
+            ViewData["ModelCoreType"] = mct;
+
+            return PartialView("~/Views/Shared/_PopularMaterials.cshtml", viewModel);
         }
     }
 }

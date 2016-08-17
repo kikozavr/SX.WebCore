@@ -9,8 +9,9 @@ using static SX.WebCore.Enums;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoMaterial<TModel, TDbContext> : SxDbRepository<int, TModel, TDbContext>
+    public class SxRepoMaterial<TModel, TViewModel, TDbContext> : SxDbRepository<int, TModel, TDbContext>
         where TModel : SxMaterial
+        where TViewModel : SxVMMaterial
         where TDbContext : SxDbContext
     {
         private static ModelCoreType _mct;
@@ -31,21 +32,15 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        [Obsolete]
-        public virtual TViewModel GetByTitleUrl<TViewModel>(int year, string month, string day, string titleUrl) where TViewModel : SxVMMaterial
+        public virtual TViewModel GetByTitleUrl(int year, string month, string day, string titleUrl)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<TViewModel>("get_material_by_url @year, @month, @day, @title_url, @mct", new { year = year, month = month, day = day, title_url = titleUrl, mct = _mct }).SingleOrDefault();
+                var data = conn.Query<TViewModel>("dbo.get_material_by_url @year, @month, @day, @title_url, @mct", new { year = year, month = month, day = day, title_url = titleUrl, mct = _mct }).SingleOrDefault();
                 if (data != null)
-                    data.Videos = conn.Query<SxVideo>("get_material_videos @mid, @mct", new { mid = data.Id, mct = data.ModelCoreType }).ToArray();
+                    data.Videos = conn.Query<SxVideo>("dbo.get_material_videos @mid, @mct", new { mid = data.Id, mct = data.ModelCoreType }).ToArray();
                 return data;
             }
-        }
-
-        public virtual TModel GetByTitleUrl(int year, string month, string day, string titleUrl)
-        {
-            return null;
         }
 
         public bool ExistsMaterialByTitleUrl(string titleUrl)
@@ -86,11 +81,11 @@ namespace SX.WebCore.Repositories
 
         }
 
-        public virtual SxVMMaterial[] GetLikeMaterial(SxFilter filter, int amount=10)
+        public virtual TViewModel[] GetLikeMaterial(SxFilter filter, int amount=10)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxVMMaterial, SxVMAppUser, SxVMMaterial>("dbo.get_like_materials @amount, @mid, @mct", (m, u) =>
+                var data = conn.Query<TViewModel, SxVMAppUser, TViewModel>("dbo.get_like_materials @amount, @mid, @mct", (m, u) =>
                 {
                     m.User = u;
                     return m;
@@ -99,16 +94,25 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public virtual SxVMMaterial[] GetByDateMaterials(int mid, ModelCoreType mct, bool dir = false, int amount = 3)
+        public virtual TViewModel[] GetByDateMaterials(int mid, ModelCoreType mct, bool dir = false, int amount = 3)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = connection.Query<SxVMMaterial, SxVMAppUser, SxVMMaterial>("dbo.get_other_materials @mid, @mct, @dir, @amount", (m, u) => {
+                var data = connection.Query<TViewModel, SxVMAppUser, TViewModel>("dbo.get_other_materials @mid, @mct, @dir, @amount", (m, u) => {
                     m.User = u;
                     return m;
                 }, new { mid = mid, mct = mct, dir = dir, amount = amount }, splitOn: "UserId").ToArray();
 
                 return data;
+            }
+        }
+
+        public virtual TViewModel[] GetPopular(ModelCoreType mct, int mid, int amount)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var data = connection.Query<TViewModel>("dbo.get_popular_materials @mid, @mct, @amount", new { mct = mct, mid = mid, amount = amount });
+                return data.ToArray();
             }
         }
     }

@@ -7,21 +7,19 @@ namespace SX.WebCore
 {
     public static class SxBBCodeParser
     {
-        public static string GetHtml(string inputHtml)
+        public static void ReplaceValutes(ref string inputHtml)
         {
             //usd
             Regex re = new Regex(@"\[USD\](.*?)\[\/USD\]");
-            var res = re.Replace(inputHtml, "<a title=\"Узнать курс в рублях\" class=\"currency\" href=\"javascript:void(0)\" data-value=\"$1\" data-currency-cc=\"USD\">$1 <i class=\"fa fa-usd\"></i></a>");
+            inputHtml = re.Replace(inputHtml, "<a title=\"Узнать курс в рублях\" class=\"currency\" href=\"javascript:void(0)\" data-value=\"$1\" data-currency-cc=\"USD\">$1 <i class=\"fa fa-usd\"></i></a>");
 
             //eur
             re = new Regex(@"\[EUR\](.*?)\[\/EUR\]");
-            res = re.Replace(res, "<a title=\"Узнать курс в рублях\" class=\"currency\" href=\"javascript:void(0)\" data-value=\"$1\" data-currency-cc=\"EUR\">$1 <i class=\"fa fa-eur\"></i></a>");
-
-            return res;
+            inputHtml = re.Replace(inputHtml, "<a title=\"Узнать курс в рублях\" class=\"currency\" href=\"javascript:void(0)\" data-value=\"$1\" data-currency-cc=\"EUR\">$1 <i class=\"fa fa-eur\"></i></a>");
         }
 
-        public static string ReplaceBanners(
-            string inputHtml,
+        public static void ReplaceBanners(
+            ref string inputHtml,
             SxBannerCollection banners,
             Func<SxBanner, string> bannerPictureUrl,
             Func<SxBanner, Func<SxBanner, string>, string> bannerTemplate = null,
@@ -56,15 +54,13 @@ namespace SX.WebCore
                 else
                     inputHtml = inputHtml.Replace(string.Format("[BANNERG]{0}[/BANNERG]", id), null);
             }
-
-            return inputHtml;
         }
 
-        public static string ReplaceVideo(string inputHtml, SxVideo[] videos, Func<SxVideo, string> videoTemplate=null)
+        public static void ReplaceVideo(ref string inputHtml, SxVideo[] videos, Func<SxVideo, string> videoTemplate=null)
         {
-            if (inputHtml == null) return null;
+            if (inputHtml == null) return;
             if (videos == null || !videos.Any())
-                return inputHtml;
+                return;
 
             var reVideo = new Regex(@"\[VIDEO\](.*?)\[\/VIDEO\]");
             var matchesVideo = Regex.Matches(inputHtml, reVideo.ToString());
@@ -81,8 +77,6 @@ namespace SX.WebCore
                     inputHtml = inputHtml.Replace(string.Format("[VIDEO]{0}[/VIDEO]", id), null);
                 }
             }
-
-            return inputHtml;
         }
 
         private static string getBannerTemplate(SxBanner banner, Func<SxBanner, string> bannerPictureUrl)

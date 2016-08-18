@@ -14,43 +14,21 @@ namespace SX.WebCore.MvcControllers
     [Authorize]
     public abstract class SxAccountController<TDbContext> : SxBaseController<TDbContext> where TDbContext: SxDbContext
     {
-        private SxAppSignInManager _signInManager;
-        private SxAppUserManager _userManager;
-
         protected virtual Action<SxVMLogin> ActionLogin { get; }
         protected virtual Action ActionLogOff { get; }
-
-        public SxAccountController()
-        {
-        }
-
-        public SxAccountController(SxAppUserManager userManager, SxAppSignInManager signInManager)
-        {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
 
         public SxAppSignInManager SignInManager
         {
             get
             {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<SxAppSignInManager>();
-            }
-            private set
-            {
-                _signInManager = value;
+                return HttpContext.GetOwinContext().Get<SxAppSignInManager>();
             }
         }
-
         public SxAppUserManager UserManager
         {
             get
             {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<SxAppUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
+                return HttpContext.GetOwinContext().GetUserManager<SxAppUserManager>();
             }
         }
 
@@ -409,26 +387,6 @@ namespace SX.WebCore.MvcControllers
         public virtual ActionResult ExternalLoginFailure()
         {
             return View();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-
-                if (_signInManager != null)
-                {
-                    _signInManager.Dispose();
-                    _signInManager = null;
-                }
-            }
-
-            base.Dispose(disposing);
         }
 
         #region Helpers

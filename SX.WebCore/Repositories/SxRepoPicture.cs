@@ -1,10 +1,12 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
@@ -45,7 +47,6 @@ namespace SX.WebCore.Repositories
                 return data.ToArray();
             }
         }
-
         private static string getPicturesWhereString(SxFilter filter, out object param)
         {
             param = null;
@@ -85,6 +86,58 @@ namespace SX.WebCore.Repositories
             {
                 connection.Execute("dbo.del_picture @pictureId", new { pictureId = model.Id });
             }
+        }
+
+        protected Action<StringBuilder> InsertNotFreePictures { get; set; }
+        public virtual SxVMPicture[] GetFreePictures(SxFilter filter)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("DECLARE @result TABLE(Id UNIQUEIDENTIFIER)");
+            if (InsertNotFreePictures != null)
+                InsertNotFreePictures(sb);
+            sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT anu.AvatarId FROM AspNetUsers AS anu)");
+            sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT db.PictureId FROM D_BANNER AS db)");
+            sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT dmc.FrontPictureId FROM D_MATERIAL_CATEGORY AS dmc)");
+            sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT dsts.PictureId FROM D_SITE_TEST_SUBJECT AS dsts)");
+            sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT dm.FrontPictureId FROM DV_MATERIAL AS dm)");
+            sb.AppendLine(" DECLARE @value NVARCHAR(MAX) DECLARE c CURSOR LOCAL FORWARD_ONLY FAST_FORWARD FOR SELECT dss.[Value] FROM   D_SITE_SETTING AS dss OPEN c FETCH NEXT FROM c INTO @value WHILE @@FETCH_STATUS = 0 BEGIN DECLARE @pictureId UNIQUEIDENTIFIER BEGIN TRY SET @pictureId = CAST(@value AS UNIQUEIDENTIFIER) IF EXISTS( SELECT * FROM   D_PICTURE AS dp WHERE  dp.Id = @pictureId ) INSERT INTO @result VALUES ( @pictureId ) END TRY BEGIN CATCH END CATCH FETCH NEXT FROM c INTO @value END CLOSE c DEALLOCATE c");
+
+            object param = null;
+            var gws = getPicturesWhereString(filter, out param);
+
+            //count
+            sb.Append(" SELECT @count= COUNT(DISTINCT dp.Id) FROM D_PICTURE AS dp ");
+            sb.Append(gws);
+            sb.Append(" AND dp.Id NOT IN (SELECT Id FROM @result) ");
+
+
+            sb.Append(" SELECT DISTINCT dp.Id, dp.Caption, dp.[Description], dp.Width, dp.Height, dp.Size, dp.DateCreate");
+            sb.Append(" FROM D_PICTURE AS dp ");
+            sb.Append(gws);
+            sb.Append(" AND dp.Id NOT IN (SELECT Id FROM @result) ");
+
+            var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
+
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            var p = new DynamicParameters();
+            p.AddDynamicParams(param);
+            p.Add("count", dbType: System.Data.DbType.Int32, direction: System.Data.ParameterDirection.Output);
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxVMPicture>(sb.ToString(), param: p);
+                filter.PagerInfo.TotalItems = p.Get<int>("count");
+                return data.ToArray();
+            }
+        }
+
+        public virtual async Task<SxVMPicture[]> GetFreePicturesAsync(SxFilter filter)
+        {
+            return await Task.Run(()=> {
+                return GetFreePictures(filter);
+            });
         }
     }
 }

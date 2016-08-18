@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 16.08.2016 16:31:14
+ * Time: 18.08.2016 11:39:19
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,8 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
 
 
 /*******************************************
@@ -412,6 +414,8 @@ GO
 
 
 
+
+
 /*******************************************
  * добавить комментарии материала
  *******************************************/
@@ -521,7 +525,7 @@ BEGIN
 	           FrontPictureId = @pictureId
 	    WHERE  Id = @oldCategoryId
 	    
-	    COMMIT TRANSACTION
+	    ROLLBACK TRANSACTION
 	END
 	
 	EXEC dbo.get_material_category @categoryId
@@ -638,7 +642,7 @@ BEGIN
 	WHERE  Id IN (SELECT fd.Id
 	              FROM   @idForDel fd) 
 	
-	COMMIT TRANSACTION
+	ROLLBACK TRANSACTION
 END
 GO
 
@@ -899,7 +903,7 @@ BEGIN
 	       dm.Title,
 	       dm.TitleUrl,
 	       dm.ModelCoreType
-	HAVING SUM(dm.LikeUpCount + dm.LikeDownCount) > 0 OR COUNT(dm.ViewsCount) > 
+	HAVING SUM(dm.LikeUpCount + dm.LikeDownCount) > 0 OR COUNT(dm.ViewsCount) >
 	       0
 	ORDER BY
 	       dm.IsTop DESC,
@@ -1632,7 +1636,7 @@ AS
 	              WHERE  MaterialId = @mid
 	                     AND ModelCoreType = @mct)
 	
-	COMMIT TRANSACTION
+	ROLLBACK TRANSACTION
 GO
 
 /*******************************************
@@ -1750,7 +1754,7 @@ AS
 	FROM   D_PICTURE
 	WHERE  Id = @pictureId
 	
-	COMMIT TRANSACTION
+	ROLLBACK TRANSACTION
 GO
 
 /*******************************************
@@ -1885,7 +1889,7 @@ AS
 	FROM   D_SITE_TEST
 	WHERE  Id = @testId
 	
-	COMMIT TRANSACTION
+	ROLLBACK TRANSACTION
 GO
 
  /*******************************************
@@ -2031,7 +2035,7 @@ AS
 	FROM   D_SITE_TEST_QUESTION
 	WHERE  Id = @questionId
 	
-	COMMIT TRANSACTION
+	ROLLBACK TRANSACTION
 GO
 
  /*******************************************
@@ -2053,7 +2057,7 @@ AS
 	FROM   D_SITE_TEST_SUBJECT
 	WHERE  Id = @subjectId
 	
-	COMMIT TRANSACTION
+	ROLLBACK TRANSACTION
 GO
 
 /*******************************************
@@ -2857,7 +2861,7 @@ AS
 	WHERE  Id = @mid
 	       AND ModelCoreType = @mct
 	
-	COMMIT TRANSACTION
+	ROLLBACK TRANSACTION
 GO
 
 /*******************************************
@@ -2927,7 +2931,7 @@ AS
 	
 	SELECT @result
 	
-	COMMIT TRANSACTION
+	ROLLBACK TRANSACTION
 GO
 
 /*******************************************

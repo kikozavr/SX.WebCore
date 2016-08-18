@@ -78,13 +78,16 @@ namespace SX.WebCore.Repositories
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("get_site_test_page @titleUrl", (a, q, s, t) =>
+                var data = conn.Query<SxSiteTestAnswer, SxSiteTestQuestion, SxSiteTestSubject, SxSiteTest, SxSiteTestAnswer>("dbo.get_site_test_page @titleUrl", (a, q, s, t) =>
                 {
                     a.Question = q;
                     q.Test = t;
                     a.Subject = s;
                     return a;
                 }, new { titleUrl = titleUrl }, splitOn: "Id").SingleOrDefault();
+
+                if (data == null)
+                    return null;
 
                 if (Equals(data.Question.Test.Type, SxSiteTest.SiteTestType.Normal) || Equals(data.Question.Test.Type, SxSiteTest.SiteTestType.NormalImage))
                 {

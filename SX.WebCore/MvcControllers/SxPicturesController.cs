@@ -22,6 +22,17 @@ namespace SX.WebCore.MvcControllers
     public abstract class SxPicturesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoPicture<TDbContext> _repo;
+        protected static SxRepoPicture<TDbContext> Repo
+        {
+            get
+            {
+                return _repo;
+            }
+            set
+            {
+                _repo = value;
+            }
+        }
         private static CacheItemPolicy _defaultPolicy
         {
             get
@@ -33,7 +44,7 @@ namespace SX.WebCore.MvcControllers
             }
         }
         private static object _lck = new object();
-        static SxPicturesController()
+        public SxPicturesController()
         {
             if(_repo==null)
                 _repo = new SxRepoPicture<TDbContext>();

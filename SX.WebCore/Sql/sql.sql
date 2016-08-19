@@ -2821,6 +2821,7 @@ BEGIN
 	                          0 END
 	                  )               AS IsCurrent
 	           FROM   D_MATERIAL_TAG  AS dmt
+	           JOIN DV_MATERIAL AS dm ON dm.Id = dmt.MaterialId AND dm.ModelCoreType = dmt.ModelCoreType AND dm.Show=1 AND dm.DateOfPublication<=GETDATE()
 	           WHERE  dmt.ModelCoreType = @mct
 	           GROUP BY
 	                  dmt.Id,

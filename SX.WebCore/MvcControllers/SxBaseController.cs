@@ -101,7 +101,8 @@ namespace SX.WebCore.MvcControllers
             writePageBanners();
 
             //пишем информацию о запросе
-            if (Equals(filterContext.HttpContext.Cache["APP_LoggingRequest"],true) && SxAreaName!="admin")
+            var loggingRequest = SxApplication<TDbContext>.LoggingRequest;
+            if (Equals(loggingRequest, true) && SxAreaName!="admin")
             {
                 writeRequestInfo();
             }

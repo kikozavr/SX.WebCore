@@ -184,6 +184,7 @@
     <Compile Include="HtmlHelpers\SxRating.cs" />
     <Compile Include="HtmlHelpers\SxShareButtons.cs" />
     <Compile Include="Hubs\SxChatHub.cs" />
+    <Compile Include="Managers\SxCacheExpirationManager.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
     <Compile Include="MvcControllers\SxManualsController.cs" />

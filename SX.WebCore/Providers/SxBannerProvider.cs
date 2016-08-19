@@ -6,10 +6,18 @@ namespace SX.WebCore.Providers
 {
     public class SxBannerProvider
     {
-        private static Func<SxBanner[]> _banners;
-        public SxBannerProvider(Func<SxBanner[]> banners)
+        private static Func<SxBannerCollection> _collection;
+        public SxBannerProvider(Func<SxBannerCollection> collection)
         {
-            _banners = banners;
+            _collection = collection;
+        }
+
+        public SxBannerCollection BannerCollection
+        {
+            get
+            {
+                return _collection();
+            }
         }
 
         public SxBanner[] GetPageBanners(string rawUrl)
@@ -38,7 +46,7 @@ namespace SX.WebCore.Providers
         private static SxBanner getPlaceBanner(SxBanner.BannerPlace place, List<SxBanner> existBanners, string rawUrl = null)
         {
             SxBanner banner = null;
-            var data = _banners().Where(x => (x.Place == place || (x.Place == place && x.RawUrl == rawUrl)) && existBanners.SingleOrDefault(b=>b.PictureId==x.PictureId)==null).ToArray();
+            var data = _collection().Banners.Where(x => (x.Place == place || (x.Place == place && x.RawUrl == rawUrl)) && existBanners.SingleOrDefault(b=>b.PictureId==x.PictureId)==null).ToArray();
             banner = getRandomBanner(data, rawUrl);
             return banner;
         }

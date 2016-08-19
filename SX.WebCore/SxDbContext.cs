@@ -8,13 +8,7 @@ namespace SX.WebCore
 {
     public class SxDbContext : IdentityDbContext<SxAppUser>
     {
-        //Строка поделючения задается здесь
-        private static string _nameOrConnectionString;
-        public SxDbContext(string nameOrConnectionString)
-            : base(nameOrConnectionString)
-        {
-            _nameOrConnectionString = nameOrConnectionString;
-        }
+        public SxDbContext(string connectionString) : base(connectionString) { }
 
         public static TDbContext Create<TDbContext>()
         {
@@ -60,7 +54,7 @@ namespace SX.WebCore
 
         public DbSet<SxSiteTest> SiteTests { get; set; }
 
-        public DbSet<SxSiteTestQuestion> SxSiteTestQuestions { get; set; }
+        public DbSet<SxSiteTestQuestion> SiteTestQuestions { get; set; }
 
         public DbSet<SxStatistic> Statistic { get; set; }
 

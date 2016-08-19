@@ -127,8 +127,7 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_GridView", viewModel);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public PartialViewResult UsersOnSite()
         {
             var emails = SxApplication<TDbContext>.UsersOnSite.Select(x => x.Value).Distinct().ToArray();

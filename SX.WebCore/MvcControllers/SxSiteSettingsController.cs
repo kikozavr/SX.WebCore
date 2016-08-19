@@ -8,15 +8,15 @@ using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
-    [Authorize(Roles ="admin")]
-    public abstract class SxSiteSettingsController<TDbContext> : SxBaseController<TDbContext> where TDbContext: SxDbContext
+    [Authorize(Roles = "admin")]
+    public abstract class SxSiteSettingsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private const string __notSetSettingValue = "Настройка не определена";
         private static SxRepoSiteSetting<TDbContext> _repo;
         private static SxRepoPicture<TDbContext> _repoPicture;
         public SxSiteSettingsController()
         {
-            if(_repo==null)
+            if (_repo == null)
                 _repo = new SxRepoSiteSetting<TDbContext>();
             if (_repoPicture == null)
                 _repoPicture = new SxRepoPicture<TDbContext>();
@@ -63,7 +63,7 @@ namespace SX.WebCore.MvcControllers
                 SiteName = settings.ContainsKey(Settings.siteName) ? settings[Settings.siteName].Value : null,
                 SiteBgPath = settings.ContainsKey(Settings.siteBgPath) ? settings[Settings.siteBgPath].Value : null,
                 SiteFaveiconPath = settings.ContainsKey(Settings.siteFaveiconPath) ? settings[Settings.siteFaveiconPath].Value : null,
-                SiteDesc= settings.ContainsKey(Settings.siteDesc) ? settings[Settings.siteDesc].Value : null,
+                SiteDesc = settings.ContainsKey(Settings.siteDesc) ? settings[Settings.siteDesc].Value : null,
             };
 
             viewModel.OldSiteDomain = viewModel.SiteDomain;
@@ -125,7 +125,7 @@ namespace SX.WebCore.MvcControllers
                     }
 
                     TempData["EditEmptyGameMessage"] = "Настройки успешно сохранены";
-                    SxApplication<TDbContext>.SiteDomain=model.SiteDomain;
+                    SxApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
                     return RedirectToAction("editsite");
                 }
                 else if (isExists && isModified)
@@ -138,7 +138,7 @@ namespace SX.WebCore.MvcControllers
                     _repo.Update(new SxSiteSetting { Id = Settings.siteFaveiconPath, Value = model.SiteFaveiconPath }, true, "Value");
                     _repo.Update(new SxSiteSetting { Id = Settings.siteDesc, Value = model.SiteDesc }, true, "Value");
                     TempData["EditEmptyGameMessage"] = "Настройки успешно обновлены";
-                    SxApplication<TDbContext>.SiteDomain = model.SiteDomain;
+                    SxApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
                     return RedirectToAction("editsite");
                 }
                 else

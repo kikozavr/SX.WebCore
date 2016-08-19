@@ -15,5 +15,11 @@ namespace SX.WebCore.Providers
         {
             return _settings == null || !_settings().ContainsKey(key) ? null : _settings()[key];
         }
+
+        public void Set(string key, string value)
+        {
+            if (_settings == null || !_settings().ContainsKey(key)) return;
+            _settings()[key].Value = value;
+        }
     }
 }

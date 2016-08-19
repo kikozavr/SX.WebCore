@@ -20,27 +20,9 @@ namespace SX.WebCore.MvcControllers
         private static SxRepoAffiliateLink<TDbContext> _repoAffiliateLink;
         private static SxRepoRequest<TDbContext> _repoRequest;
 
-        private static CacheItemPolicy _defaultPolicy15Min
-        {
-            get
-            {
-                return new CacheItemPolicy
-                {
-                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(15)
-                };
-            }
-        }
-
         protected static IMapper Mapper { get; set; }
 
-        private static Action<SxBaseController<TDbContext>> _writeBreadcrumbs;
-        protected static Action<SxBaseController<TDbContext>> WriteBreadcrumbs
-        {
-            set
-            {
-                _writeBreadcrumbs = value;
-            }
-        }
+        protected static Action<SxBaseController<TDbContext>> WriteBreadcrumbs { get; set;}
 
         public SxBaseController()
         {
@@ -57,6 +39,7 @@ namespace SX.WebCore.MvcControllers
         public string SxActionName { get; set; }
         public string SxSessionId { get; set; }
         public string SxRawUrl { get; set; }
+        public Uri SxUrlReferrer { get; set; }
 
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
@@ -67,25 +50,22 @@ namespace SX.WebCore.MvcControllers
             var session = filterContext.RequestContext.HttpContext.Session;
             SxSessionId = session?.SessionID;
             SxRawUrl = Request.RawUrl.ToLower();
-            
+            SxUrlReferrer = Request.UrlReferrer;
+
+            //если экшн является дочерним или задан аттрибут нелогирования запроса
+            var notLogRequest = filterContext.ActionDescriptor.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(NotLogRequestAttribute)) != null;
+            if (filterContext.IsChildAction || notLogRequest) return;
+
             //забаненные адреса
-            var urlRef = Request.UrlReferrer;
-            if (urlRef != null)
+            if (SxUrlReferrer != null)
             {
-                if (SxApplication<TDbContext>.GetBannedUrls().Contains(urlRef.ToString()))
+                if (SxApplication<TDbContext>.GetBannedUrls().Contains(SxUrlReferrer.ToString()))
                 {
                     filterContext.Result = new HttpStatusCodeResult(403);
                     return;
                 }
             }
-
-            //если экшн является дочерним или задан аттрибут нелогирования запроса
-            var notLogRequest = filterContext.ActionDescriptor.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(NotLogRequestAttribute)) != null;
-            if (filterContext.IsChildAction || notLogRequest) return;
             
-            //пишем куки партнерок
-            writeAffiliateCookies();
-
             //редирект, если есть
             var redirect = get301Redirect();
             if (redirect != null && redirect.NewUrl != null)
@@ -99,24 +79,26 @@ namespace SX.WebCore.MvcControllers
 
             //пишем баннеры страницы
             writePageBanners();
+            
+            //пишем хлебные крошки
+            if (WriteBreadcrumbs != null)
+                WriteBreadcrumbs(this);
+
+            //пишем куки партнерок
+            writeAffiliateCookies();
 
             //пишем информацию о запросе
-            var loggingRequest = SxApplication<TDbContext>.LoggingRequest;
-            if (Equals(loggingRequest, true) && SxAreaName!="admin")
+            if (Equals(SxApplication<TDbContext>.LoggingRequest, true) && SxAreaName!="admin")
             {
                 writeRequestInfo();
             }
-
-            //пишем хлебные крошки
-            if (_writeBreadcrumbs!=null)
-                _writeBreadcrumbs(this);
 
             base.OnActionExecuting(filterContext);
         }
 
         private Sx301Redirect get301Redirect(CacheItemPolicy cip = null)
         {
-            cip = cip ?? _defaultPolicy15Min;
+            cip = cip ?? Managers.SxCacheExpirationManager.GetExpiration(minutes:60);
             var redirect = (Sx301Redirect)SxApplication<TDbContext>.AppCache["CACHE_REDIRECT_"+SxRawUrl];
             if(redirect==null)
             {
@@ -217,8 +199,7 @@ namespace SX.WebCore.MvcControllers
         }
         private static HttpCookie getAffiliateCookie(List<string> list)
         {
-            var cookie = new HttpCookie(_affiliateCookieName, JsonConvert.SerializeObject(list));
-            return cookie;
+            return new HttpCookie(_affiliateCookieName, JsonConvert.SerializeObject(list));
         }
     }
 }

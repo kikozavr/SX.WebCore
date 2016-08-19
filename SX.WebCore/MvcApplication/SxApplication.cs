@@ -18,6 +18,7 @@ namespace SX.WebCore.MvcApplication
     public abstract class SxApplication<TDbContext> : HttpApplication where TDbContext : SxDbContext
     {
         private static readonly string _logDirectoryPath = "~/logs";
+        public static DateTime LastStartDate { get; set; }
         public static MemoryCache AppCache { get; set; }
         public static SxErrorProvider ErrorProvider { get; set; }
         public static bool LoggingRequest { get; set; }
@@ -30,7 +31,7 @@ namespace SX.WebCore.MvcApplication
 
             if (cacheBanners == null)
             {
-                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes:15);
+                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes:60);
                 cacheBanners = new SxBannerCollection();
                 cacheBanners.Banners = new SxRepoBanner<TDbContext>().All.ToArray();
                 cacheBanners.BannerGroups = new SxRepoBannerGroup<TDbContext>().All.ToArray();
@@ -47,30 +48,41 @@ namespace SX.WebCore.MvcApplication
             var data = (Dictionary<string, SxSiteSetting>)AppCache["CACHE_SITE_SETTINGS"];
             if (data == null)
             {
-                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 15);
-                data = new SxRepoSiteSetting<TDbContext>().GetByKeys(
-                        Settings.siteName,
-                        Settings.siteLogoPath,
-                        Settings.siteBgPath,
-                        Settings.emptyGameIconPath,
-                        Settings.emptyGameGoodImagePath,
-                        Settings.emptyGameBadImagePath,
-                        Settings.robotsFileSetting,
-                        Settings.siteFaveiconPath,
-                        Settings.defH1,
-                        Settings.siteDesc
-                    );
+                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
+                data = new SxRepoSiteSetting<TDbContext>().GetAll();
                 AppCache.Add("CACHE_SITE_SETTINGS", data, cip);
             }
 
             return data;
         }
 
+        public static string[] GetBannedUrls(CacheItemPolicy cip = null)
+        {
+            var data = (string[])AppCache["CACHE_SITE_BANNED_URL"];
 
+            if (data == null)
+            {
+                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
+                data = new SxRepoBannedUrl<TDbContext>().GetAllUrls();
+                AppCache.Add("CACHE_SITE_BANNED_URL", data, cip);
+            }
 
+            return data;
+        }
 
-
-
+        public static SxShareButton[] ShareButtons
+        {
+            get
+            {
+                var list = (SxShareButton[])AppCache.Get("CACHE_LIKE_BUTTONS");
+                if (list == null)
+                {
+                    list = new SxRepoShareButton<TDbContext>().ShareButtonsList;
+                    AppCache.Add("CACHE_LIKE_BUTTONS", list, SxCacheExpirationManager.GetExpiration(minutes: 60));
+                }
+                return list;
+            }
+        }
 
         public static Dictionary<string, string> UsersOnSite
         {
@@ -87,54 +99,11 @@ namespace SX.WebCore.MvcApplication
             }
         }
 
-        private static string _siteDomain;
-        public static string SiteDomain
-        {
-            get
-            {
-                return _siteDomain;
-            }
-            set
-            {
-                _siteDomain = value;
-            }
-        }
-
-        public static string[] GetBannedUrls(CacheItemPolicy cip = null)
-        {
-            var data = (string[])AppCache["CACHE_SITE_BANNED_URL"];
-
-            if (data == null)
-            {
-                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 15);
-                data = new SxRepoBannedUrl<TDbContext>().GetAllUrls();
-                AppCache.Add("CACHE_SITE_BANNED_URL", data, cip);
-            }
-
-            return data;
-        }
-
-        
-
-        public static SxShareButton[] ShareButtons
-        {
-            get
-            {
-                var list = (SxShareButton[])AppCache.Get("CACHE_LIKE_BUTTONS");
-                if(list==null)
-                {
-                    list = new SxRepoShareButton<TDbContext>().ShareButtonsList;
-                    AppCache.Add("CACHE_LIKE_BUTTONS", list, SxCacheExpirationManager.GetExpiration(minutes: 15));
-                }
-                return list;
-            }
-        }
-
         protected virtual void Application_Start(object sender, EventArgs e)
         {
             createLogDirectory();
             AppCache = new MemoryCache("APPLICATION_CACHE");
-            ErrorProvider = new SxErrorProvider(_logDirectoryPath);
+            ErrorProvider = new SxErrorProvider(Server.MapPath(_logDirectoryPath));
 
             var args = (SxApplicationEventArgs)e;
             LoggingRequest = args.LoggingRequest;
@@ -145,6 +114,8 @@ namespace SX.WebCore.MvcApplication
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(args.WebApiConfigRegister);
             args.RegisterRoutes(RouteTable.Routes);
+
+            LastStartDate = DateTime.Now;
 
         }
         private void createLogDirectory()
@@ -171,7 +142,7 @@ namespace SX.WebCore.MvcApplication
         }
     }
 
-    public class SxApplicationEventArgs : EventArgs
+    public sealed class SxApplicationEventArgs : EventArgs
     {
         public Action<HttpConfiguration> WebApiConfigRegister { get; set; }
         public Action<RouteCollection> RegisterRoutes { get; set; }

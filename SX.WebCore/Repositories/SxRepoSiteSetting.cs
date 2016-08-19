@@ -9,6 +9,23 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoSiteSetting<TDbContext> : SxDbRepository<string, SxSiteSetting, TDbContext> where TDbContext : SxDbContext
     {
+        public override SxSiteSetting GetByKey(params object[] id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                return connection.Query<SxSiteSetting>("SELECT * FROM D_SITE_SETTING AS dss WHERE dss.Id=@id", new { id = id[0] }).SingleOrDefault();
+            }
+        }
+
+        public Dictionary<string, SxSiteSetting> GetAll()
+        {
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxSiteSetting>("dbo.get_site_settings");
+                return data.ToDictionary(x => x.Id);
+            }
+        }
+
         public Dictionary<string, SxSiteSetting> GetByKeys(params string[] keys)
         {
             if (keys == null || !keys.Any()) return new Dictionary<string, SxSiteSetting>();
@@ -24,7 +41,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteSetting>("get_site_settings @keys", new { keys=sb.ToString()});
+                var data = conn.Query<SxSiteSetting>("dbo.get_site_settings_by_keys @keys", new { keys = sb.ToString() });
                 return data.ToDictionary(x => x.Id);
             }
         }

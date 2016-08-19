@@ -1373,13 +1373,27 @@ END
 GO
 
 /*******************************************
- * Список настроек сайта
+ * Список всех настроек сайта
  *******************************************/
 IF OBJECT_ID(N'dbo.get_site_settings', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_site_settings;
 GO
 CREATE PROCEDURE dbo.get_site_settings
-	@keys VARCHAR(MAX)
+AS
+BEGIN
+	SELECT *
+	FROM   D_SITE_SETTING AS dss
+END
+GO
+
+/*******************************************
+ * Список настроек сайта по ключам
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_settings_by_keys', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_settings_by_keys;
+GO
+CREATE PROCEDURE dbo.get_site_settings_by_keys
+	@keys NVARCHAR(MAX)
 AS
 BEGIN
 	EXEC (

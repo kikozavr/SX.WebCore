@@ -20,13 +20,11 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual ViewResult EditRobotsFile()
         {
-            var settings = _repo.GetByKeys(
-                                Settings.robotsFileSetting
-                            );
+            var settings = _repo.GetByKey(Settings.robotsFileSetting);
 
             var viewModel = new SxVMRobotsFile
             {
-                FileContent = settings.ContainsKey(Settings.robotsFileSetting) ? settings[Settings.robotsFileSetting].Value : null,
+                FileContent = settings?.Value
             };
             viewModel.OldFileContent = viewModel.FileContent;
             return View(viewModel);

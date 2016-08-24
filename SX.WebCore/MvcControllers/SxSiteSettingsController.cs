@@ -3,6 +3,7 @@ using SX.WebCore.Repositories;
 using SX.WebCore.Resources;
 using SX.WebCore.ViewModels;
 using System;
+using System.IO;
 using System.Text;
 using System.Web.Mvc;
 
@@ -30,16 +31,11 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
-        [AllowAnonymous]
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public virtual FileResult ReleaseNotes()
         {
-            int pageCode = 1251;
-            Encoding encoding = Encoding.GetEncoding(pageCode);
-            var file = Files.ReleaseNotes;
-            byte[] encodedBytes = encoding.GetBytes(file);
-
-            return File(encodedBytes, "txt");
+            byte[] encodedBytes = Encoding.UTF8.GetBytes(Files.ReleaseNotes);
+            return File(encodedBytes, "text/plain");
         }
 
         [Authorize(Roles = "admin")]

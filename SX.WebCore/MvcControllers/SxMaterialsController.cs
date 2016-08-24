@@ -198,5 +198,14 @@ namespace SX.WebCore.MvcControllers
 
             return PartialView("~/Views/Shared/_PopularMaterials.cshtml", viewModel);
         }
+
+#if !DEBUG
+        [OutputCache(Duration =900, VaryByParam ="mct;amount")]
+#endif
+        public virtual PartialViewResult Last(ModelCoreType? mct=null, int amount=5)
+        {
+            var viewModel = Repo.Last(mct, amount);
+            return PartialView("_Last", viewModel);
+        }
     }
 }

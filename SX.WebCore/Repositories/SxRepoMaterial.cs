@@ -115,5 +115,10 @@ namespace SX.WebCore.Repositories
                 return data.ToArray();
             }
         }
+
+        public virtual TViewModel[] Last(ModelCoreType? mct=null, int amount=5)
+        {
+            return new TViewModel[0];
+        }
     }
 }

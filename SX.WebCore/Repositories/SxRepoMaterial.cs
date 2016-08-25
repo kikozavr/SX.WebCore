@@ -107,7 +107,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public virtual TViewModel[] GetPopular(ModelCoreType mct, int mid, int amount)
+        public virtual TViewModel[] GetPopular(ModelCoreType mct, int? mid=null, int amount=10)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {

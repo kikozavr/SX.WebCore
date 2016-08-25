@@ -375,6 +375,7 @@
     <Compile Include="ViewModels\SxVMSiteTestStepNormal.cs" />
     <Compile Include="ViewModels\SxVMSiteTestSubject.cs" />
     <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />
+    <Compile Include="ViewModels\SxVMSubscriber.cs" />
     <Compile Include="ViewModels\SxVMValute.cs" />
     <Compile Include="ViewModels\SxVMMaterialTag.cs" />
     <Compile Include="UrlHelper.cs" />

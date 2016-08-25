@@ -191,10 +191,10 @@ namespace SX.WebCore.MvcControllers
         [OutputCache(Duration =900, VaryByParam ="mct;mid;amount")]
 #endif
         [HttpGet, ChildActionOnly]
-        public virtual PartialViewResult Popular(ModelCoreType mct, int mid, int amount = 4)
+        public virtual PartialViewResult Popular(int? mid = default(int?), int amount = 4)
         {
-            var viewModel = Repo.GetPopular(mct, mid, amount);
-            ViewData["ModelCoreType"] = mct;
+            var viewModel = Repo.GetPopular(_mct, mid, amount);
+            ViewData["ModelCoreType"] = _mct;
 
             return PartialView("~/Views/Shared/_PopularMaterials.cshtml", viewModel);
         }

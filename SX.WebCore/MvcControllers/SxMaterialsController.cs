@@ -190,8 +190,8 @@ namespace SX.WebCore.MvcControllers
 #if !DEBUG
         [OutputCache(Duration =900, VaryByParam ="mct;mid;amount")]
 #endif
-        [HttpGet, ChildActionOnly]
-        public virtual PartialViewResult Popular(int? mid = default(int?), int amount = 4)
+        [ChildActionOnly]
+        public virtual PartialViewResult Popular(int? mid = null, int amount = 4)
         {
             var viewModel = Repo.GetPopular(_mct, mid, amount);
             ViewData["ModelCoreType"] = _mct;

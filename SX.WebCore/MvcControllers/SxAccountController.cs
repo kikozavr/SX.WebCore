@@ -8,15 +8,15 @@ using Microsoft.AspNet.Identity;
 using System.Linq;
 using Microsoft.Owin.Security;
 using System;
+using SX.WebCore.MvcApplication;
+using SX.WebCore.Hubs;
+using Newtonsoft.Json;
 
 namespace SX.WebCore.MvcControllers
 {
     [Authorize]
     public abstract class SxAccountController<TDbContext> : SxBaseController<TDbContext> where TDbContext: SxDbContext
     {
-        protected virtual Action<SxVMLogin> ActionLogin { get; }
-        protected virtual Action ActionLogOff { get; }
-
         public SxAppSignInManager SignInManager
         {
             get
@@ -59,8 +59,7 @@ namespace SX.WebCore.MvcControllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    if (ActionLogin != null)
-                        ActionLogin(model);
+                    await registerLoginUser(model);
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
@@ -71,6 +70,35 @@ namespace SX.WebCore.MvcControllers
                     ModelState.AddModelError("Email", "Неверная комбинация логина и пароля");
                     return View(model);
             }
+        }
+        private async Task registerLoginUser(SxVMLogin model)
+        {
+            var date = DateTime.Now;
+            var identityCookie = IdentityCookieValue;
+            var usersOnSite = SxApplication<TDbContext>.UsersOnSite;
+            if (!usersOnSite.ContainsKey(identityCookie))
+                usersOnSite.Add(identityCookie, model.Email);
+            else
+            {
+                if (usersOnSite.ContainsValue(model.Email))
+                {
+                    var key = usersOnSite.SingleOrDefault(x => x.Value == model.Email).Key;
+                    usersOnSite.Remove(key);
+                }
+
+                usersOnSite[identityCookie] = model.Email;
+            }
+
+            await addStatisticUserLoginAsync(date, model.Email);
+        }
+        private async Task addStatisticUserLoginAsync(DateTime date, string email)
+        {
+            var user = await UserManager.FindByEmailAsync(email);
+            RepoStatistic.CreateStatisticUserLogin(date, user.Id);
+
+            var context = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<SxChatHub>();
+            var json = JsonConvert.SerializeObject(Mapper.Map<SxAppUser, SxVMAppUser>(user));
+            context.Clients.All.addUserToChatList(json);
         }
 
         //
@@ -375,10 +403,22 @@ namespace SX.WebCore.MvcControllers
         [ValidateAntiForgeryToken]
         public virtual ActionResult LogOff()
         {
-            if (ActionLogOff != null)
-                ActionLogOff();
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            unregisterLoginUser();
             return RedirectToAction("Index", "Home");
+        }
+        private void unregisterLoginUser()
+        {
+            var identityCookie = IdentityCookieValue;
+            var usersOnSite = SxApplication<TDbContext>.UsersOnSite;
+            if (usersOnSite.ContainsKey(identityCookie))
+            {
+                var email = usersOnSite[identityCookie];
+                usersOnSite.Remove(identityCookie);
+
+                var context = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<SxChatHub>();
+                context.Clients.All.removeUserFromChatList(email);
+            }
         }
 
         //

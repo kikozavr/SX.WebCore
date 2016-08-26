@@ -34,11 +34,37 @@ namespace SX.WebCore.Repositories
 
         public virtual TViewModel GetByTitleUrl(int year, string month, string day, string titleUrl)
         {
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<TViewModel>("dbo.get_material_by_url @year, @month, @day, @title_url, @mct", new { year = year, month = month, day = day, title_url = titleUrl, mct = _mct }).SingleOrDefault();
+                var data = connection.Query<TViewModel, SxVMMaterialCategory, SxVMAppUser, SxVMPicture, SxVMSeoTags, TViewModel>(
+                    "dbo.get_material_by_url @year, @month, @day, @title_url, @mct",
+                    (m, c, u, p, st)=> {
+                        m.Category = c;
+                        m.User = u;
+                        m.FrontPicture = p;
+                        m.SeoTags = st;
+                        return m;
+                    },
+                    new {
+                        year = year,
+                        month = month,
+                        day = day,
+                        title_url = titleUrl,
+                        mct = _mct
+                    },
+                    splitOn:"Id"
+                    )
+                    .SingleOrDefault();
+
                 if (data != null)
-                    data.Videos = conn.Query<SxVideo>("dbo.get_material_videos @mid, @mct", new { mid = data.Id, mct = data.ModelCoreType }).ToArray();
+                {
+                    //kewords
+                    if (data.SeoTags != null)
+                        data.SeoTags.Keywords = connection.Query<SxVMSeoKeyword>("dbo.get_page_seo_info_keywords @seoTagsId", new { seoTagsId = (int)data.SeoTagsId }).ToArray();
+
+                    //videos
+                    data.Videos = connection.Query<SxVideo>("dbo.get_material_videos @mid, @mct", new { mid = data.Id, mct = data.ModelCoreType }).ToArray();
+                }
                 return data;
             }
         }

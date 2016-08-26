@@ -7,10 +7,10 @@ namespace SX.WebCore.ViewModels
     {
         public Guid Id { get; set; }
 
-        [Display(Name = "Название")]
+        [Display(Name = "Название"), Required]
         public string Caption { get; set; }
 
-        [Display(Name = "Описание"), DataType(DataType.MultilineText)]
+        [Display(Name = "Описание"), Required, DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
         [Required]

@@ -83,10 +83,12 @@ namespace SX.WebCore.MvcControllers
 
         [Authorize(Roles = "photo-redactor")]
         [HttpGet]
-        public virtual ViewResult Edit(Guid? id)
+        public virtual ActionResult Edit(Guid? id)
         {
-            var model = id.HasValue ? _repo.GetByKey(id) : new SxPicture();
-            return View(Mapper.Map<SxPicture, SxVMEditPicture>(model));
+            var viewModel = id.HasValue ? _repo.GetByKey(id) : new SxPicture();
+            if (id.HasValue && viewModel == null)
+                return new HttpNotFoundResult();
+            return View(Mapper.Map<SxPicture, SxVMEditPicture>(viewModel));
         }
 
         [Authorize(Roles = "photo-redactor")]
@@ -145,7 +147,7 @@ namespace SX.WebCore.MvcControllers
                         _repo.Update(redactModel, true, "Caption", "Description");
                     }
                 }
-                return RedirectToAction("index");
+                return RedirectToAction("Index");
             }
 
             return View(picture);

@@ -267,6 +267,7 @@ namespace SX.WebCore.HtmlHelpers
             else
             {
                 tr = new TagBuilder("tr");
+                tr.AddCssClass("empty-data-row");
                 td = new TagBuilder("td");
                 tr.InnerHtml += td;
 

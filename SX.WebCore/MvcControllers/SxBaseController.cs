@@ -12,17 +12,28 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.SessionState;
 
 namespace SX.WebCore.MvcControllers
 {
+    [SessionState(SessionStateBehavior.Disabled)]
     public abstract class SxBaseController<TDbContext> : Controller where TDbContext : SxDbContext
     {
         private static SxRepoAffiliateLink<TDbContext> _repoAffiliateLink;
         private static SxRepoRequest<TDbContext> _repoRequest;
 
+        private static SxRepoStatistic<TDbContext> _repoStatistic;
+        protected static SxRepoStatistic<TDbContext> RepoStatistic
+        {
+            get
+            {
+                return _repoStatistic;
+            }
+        }
+
         protected static IMapper Mapper { get; set; }
 
-        protected static Action<SxBaseController<TDbContext>> WriteBreadcrumbs { get; set;}
+        protected static Action<SxBaseController<TDbContext>> WriteBreadcrumbs { get; set; }
 
         public SxBaseController()
         {
@@ -32,12 +43,13 @@ namespace SX.WebCore.MvcControllers
                 _repoAffiliateLink = new SxRepoAffiliateLink<TDbContext>();
             if (_repoRequest == null)
                 _repoRequest = new SxRepoRequest<TDbContext>();
+            if (_repoStatistic == null)
+                _repoStatistic = new SxRepoStatistic<TDbContext>();
         }
 
         public string SxAreaName { get; set; }
         public string SxControllerName { get; set; }
         public string SxActionName { get; set; }
-        public string SxSessionId { get; set; }
         public string SxRawUrl { get; set; }
         public Uri SxUrlReferrer { get; set; }
 
@@ -47,8 +59,6 @@ namespace SX.WebCore.MvcControllers
             SxAreaName = routeDataValues["area"]?.ToString().ToLower();
             SxControllerName = routeDataValues["controller"].ToString().ToLower();
             SxActionName = routeDataValues["action"].ToString().ToLower();
-            var session = filterContext.RequestContext.HttpContext.Session;
-            SxSessionId = session?.SessionID;
             SxRawUrl = Request.RawUrl.ToLower();
             SxUrlReferrer = Request.UrlReferrer;
 
@@ -65,7 +75,7 @@ namespace SX.WebCore.MvcControllers
                     return;
                 }
             }
-            
+
             //редирект, если есть
             var redirect = get301Redirect();
             if (redirect != null && redirect.NewUrl != null)
@@ -79,18 +89,21 @@ namespace SX.WebCore.MvcControllers
 
             //пишем баннеры страницы
             writePageBanners();
-            
+
             //пишем хлебные крошки
             if (WriteBreadcrumbs != null)
                 WriteBreadcrumbs(this);
+
+            //пишем идентификационный куки
+            var identityCookie = checkIdentityCookie(Request, Response);
 
             //пишем куки партнерок
             writeAffiliateCookies();
 
             //пишем информацию о запросе
-            if (Equals(SxApplication<TDbContext>.LoggingRequest, true) && SxAreaName!="admin")
+            if (Equals(SxApplication<TDbContext>.LoggingRequest, true) && SxAreaName != "admin")
             {
-                writeRequestInfo();
+                writeRequestInfo(identityCookie);
             }
 
             base.OnActionExecuting(filterContext);
@@ -98,9 +111,9 @@ namespace SX.WebCore.MvcControllers
 
         private Sx301Redirect get301Redirect(CacheItemPolicy cip = null)
         {
-            cip = cip ?? Managers.SxCacheExpirationManager.GetExpiration(minutes:60);
-            var redirect = (Sx301Redirect)SxApplication<TDbContext>.AppCache["CACHE_REDIRECT_"+SxRawUrl];
-            if(redirect==null)
+            cip = cip ?? Managers.SxCacheExpirationManager.GetExpiration(minutes: 60);
+            var redirect = (Sx301Redirect)SxApplication<TDbContext>.AppCache["CACHE_REDIRECT_" + SxRawUrl];
+            if (redirect == null)
             {
                 redirect = new SxRepo301Redirect<TDbContext>().Get301Redirect(SxRawUrl);
                 SxApplication<TDbContext>.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect, cip);
@@ -112,7 +125,7 @@ namespace SX.WebCore.MvcControllers
         private SxSeoTags getPageSeoTags(CacheItemPolicy cip = null)
         {
             var seoTags = (SxSeoTags)SxApplication<TDbContext>.AppCache["CACHE_SEOTAGS_" + SxRawUrl];
-            if(seoTags==null)
+            if (seoTags == null)
             {
                 seoTags = new SxRepoSeoTags<TDbContext>().GetSeoTags(SxRawUrl);
                 SxApplication<TDbContext>.AppCache.Add("CACHE_SEOTAGS_" + SxRawUrl, seoTags, cip);
@@ -126,7 +139,7 @@ namespace SX.WebCore.MvcControllers
 
             ViewBag.Title = seoTags.SeoTitle;
             ViewBag.Description = seoTags.SeoDescription;
-            if(seoTags.Keywords.Any())
+            if (seoTags.Keywords.Any())
             {
                 var sb = new StringBuilder();
                 foreach (var k in seoTags.Keywords)
@@ -141,7 +154,7 @@ namespace SX.WebCore.MvcControllers
             ViewBag.H1CssClass = seoTags.H1CssClass;
         }
 
-        private void writeRequestInfo()
+        private void writeRequestInfo(string identityCookie)
         {
             Task.Run(() =>
             {
@@ -152,7 +165,7 @@ namespace SX.WebCore.MvcControllers
                     RawUrl = Request.RawUrl.ToLowerInvariant(),
                     RequestType = Request.RequestType,
                     UrlRef = Request.UrlReferrer != null ? Request.UrlReferrer.AbsoluteUri.ToLower() : null,
-                    SessionId = Request.RequestContext.HttpContext.Session.SessionID,
+                    SessionId = identityCookie,
                     UserAgent = Request.UserAgent
                 };
                 _repoRequest.Create(requestInstance);
@@ -181,12 +194,12 @@ namespace SX.WebCore.MvcControllers
             if (!string.IsNullOrEmpty(ak))
                 _repoAffiliateLink.AddViewAsync(akGuid);
 
-            if(cookies==null && !string.IsNullOrEmpty(ak))
+            if (cookies == null && !string.IsNullOrEmpty(ak))
             {
                 var list = new List<string>() { ak };
                 Response.Cookies.Add(getAffiliateCookie(list));
             }
-            else if(cookies != null && !string.IsNullOrEmpty(ak))
+            else if (cookies != null && !string.IsNullOrEmpty(ak))
             {
                 var list = JsonConvert.DeserializeObject<List<string>>(cookies.Value);
                 if (!list.Contains(ak))
@@ -200,6 +213,27 @@ namespace SX.WebCore.MvcControllers
         private static HttpCookie getAffiliateCookie(List<string> list)
         {
             return new HttpCookie(_affiliateCookieName, JsonConvert.SerializeObject(list));
+        }
+
+        private static readonly string _identityCookieName = "sx_id";
+        private static string checkIdentityCookie(HttpRequestBase request, HttpResponseBase response)
+        {
+            var identityCookie = request.Cookies[_identityCookieName];
+            if (identityCookie != null) return identityCookie.Value;
+
+            var guid = Guid.NewGuid().ToString().ToLower();
+            identityCookie = new HttpCookie(_identityCookieName, guid);
+            response.Cookies.Add(identityCookie);
+            return identityCookie.Value;
+        }
+
+        protected string IdentityCookieValue
+        {
+            get
+            {
+                var identityCookie = Request.Cookies[_identityCookieName];
+                return identityCookie?.Value;
+            }
         }
     }
 }

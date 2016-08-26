@@ -269,46 +269,78 @@ CREATE PROCEDURE dbo.get_material_by_url(
 )
 AS
 BEGIN
+	--SELECT dm.*,
+	--       dh.UserName,
+	--       dg.TitleUrl            AS GameTitleUrl,
+	--       CASE 
+	--            WHEN dm.Foreword IS NOT NULL THEN dm.Foreword
+	--            ELSE SUBSTRING(dbo.FUNC_STRIP_HTML(dm.Html), 0, 200) +
+	--                 '...'
+	--       END                    AS Foreword,
+	--       (
+	--           SELECT COUNT(1)
+	--           FROM   D_COMMENT AS dc
+	--           WHERE  dc.MaterialId = dm.Id
+	--                  AND dc.ModelCoreType = dm.ModelCoreType
+	--       )                      AS CommentsCount,
+	--       anu.NikName            AS UserNikName
+	--FROM   DV_MATERIAL            AS dm
+	--       LEFT JOIN D_ARTICLE    AS da
+	--            ON  da.ModelCoreType = dm.ModelCoreType
+	--            AND da.Id = dm.Id
+	--       LEFT JOIN D_NEWS       AS dn
+	--            ON  dn.Id = dm.Id
+	--            AND dn.ModelCoreType = dm.ModelCoreType
+	--       LEFT JOIN D_HUMOR      AS dh
+	--            ON  dh.ModelCoreType = dm.ModelCoreType
+	--            AND dh.Id = dm.Id
+	--       LEFT JOIN D_GAME       AS dg
+	--            ON  (dg.Id = da.GameId OR dg.Id = dn.GameId)
+	--       LEFT JOIN AspNetUsers  AS anu
+	--            ON  anu.Id = dm.UserId
+	--WHERE  dm.TitleUrl = @title_url
+	--       AND dm.Show = 1
+	--       AND dm.DateOfPublication <= GETDATE()
+	--       AND dm.ModelCoreType = @mct
+	--       AND (
+	--               YEAR(dm.DateCreate) = @year
+	--               AND MONTH(dm.DateCreate) = @month
+	--               AND DAY(dm.DateCreate) = @day
+	--           )
 	SELECT dm.*,
-	       dh.UserName,
-	       dg.TitleUrl            AS GameTitleUrl,
-	       CASE 
-	            WHEN dm.Foreword IS NOT NULL THEN dm.Foreword
-	            ELSE SUBSTRING(dbo.FUNC_STRIP_HTML(dm.Html), 0, 200) +
-	                 '...'
-	       END                    AS Foreword,
 	       (
 	           SELECT COUNT(1)
 	           FROM   D_COMMENT AS dc
 	           WHERE  dc.MaterialId = dm.Id
-	                  AND dc.ModelCoreType = dm.ModelCoreType
-	       )                      AS CommentsCount,
-	       anu.NikName            AS UserNikName
-	FROM   DV_MATERIAL            AS dm
-	       LEFT JOIN D_ARTICLE    AS da
-	            ON  da.ModelCoreType = dm.ModelCoreType
-	            AND da.Id = dm.Id
-	       LEFT JOIN D_NEWS       AS dn
-	            ON  dn.Id = dm.Id
-	            AND dn.ModelCoreType = dm.ModelCoreType
-	       LEFT JOIN D_HUMOR      AS dh
-	            ON  dh.ModelCoreType = dm.ModelCoreType
-	            AND dh.Id = dm.Id
-	       LEFT JOIN D_GAME       AS dg
-	            ON  (dg.Id = da.GameId OR dg.Id = dn.GameId)
-	       LEFT JOIN AspNetUsers  AS anu
+	                  AND dc.ModelCoreType = @mct
+	       )                              AS CommentsCount,
+	       dmc.*,
+	       anu.*,
+	       dp.Id,
+	       dp.Width,
+	       dp.Height,
+	       dst.*
+	FROM   DV_MATERIAL                    AS dm
+	       LEFT JOIN D_MATERIAL_CATEGORY  AS dmc
+	            ON  dmc.Id = dm.CategoryId
+	       LEFT JOIN AspNetUsers          AS anu
 	            ON  anu.Id = dm.UserId
-	WHERE  dm.TitleUrl = @title_url
-	       AND dm.Show = 1
-	       AND dm.DateOfPublication <= GETDATE()
+	       LEFT JOIN D_PICTURE            AS dp
+	            ON  dp.Id = dm.FrontPictureId
+	       LEFT JOIN D_SEO_TAGS           AS dst
+	            ON  dst.MaterialId = dm.Id
+	            AND dst.ModelCoreType = @mct
+	WHERE  (
+	           YEAR(dm.DateCreate) = @year
+	           AND MONTH(dm.DateCreate) = @month
+	           AND DAY(dm.DateCreate) = @day
+	       )
+	       AND dm.TitleUrl = @title_url
 	       AND dm.ModelCoreType = @mct
-	       AND (
-	               YEAR(dm.DateCreate) = @year
-	               AND MONTH(dm.DateCreate) = @month
-	               AND DAY(dm.DateCreate) = @day
-	           )
-END
-GO
+	       AND dm.DateOfPublication <= GETDATE()
+	
+	END
+	GO
 
 /*******************************************
  * получить видео материала
@@ -525,7 +557,7 @@ BEGIN
 	           FrontPictureId = @pictureId
 	    WHERE  Id = @oldCategoryId
 	    
-	    ROLLBACK TRANSACTION
+	    COMMIT TRANSACTION
 	END
 	
 	EXEC dbo.get_material_category @categoryId
@@ -642,7 +674,7 @@ BEGIN
 	WHERE  Id IN (SELECT fd.Id
 	              FROM   @idForDel fd) 
 	
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 END
 GO
 
@@ -1650,7 +1682,7 @@ AS
 	              WHERE  MaterialId = @mid
 	                     AND ModelCoreType = @mct)
 	
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 GO
 
 /*******************************************
@@ -1756,9 +1788,10 @@ AS
 	SET    FrontPictureId = NULL
 	WHERE  FrontPictureId = @pictureId
 	
-	UPDATE D_AUTHOR_APHORISM
-	SET    PictureId = NULL
-	WHERE  PictureId = @pictureId
+	--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	--UPDATE D_AUTHOR_APHORISM
+	--SET    PictureId = NULL
+	--WHERE  PictureId = @pictureId
 	
 	UPDATE D_SITE_TEST_SUBJECT
 	SET    PictureId = NULL
@@ -1768,7 +1801,7 @@ AS
 	FROM   D_PICTURE
 	WHERE  Id = @pictureId
 	
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 GO
 
 /*******************************************
@@ -1903,7 +1936,7 @@ AS
 	FROM   D_SITE_TEST
 	WHERE  Id = @testId
 	
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 GO
 
  /*******************************************
@@ -2049,7 +2082,7 @@ AS
 	FROM   D_SITE_TEST_QUESTION
 	WHERE  Id = @questionId
 	
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 GO
 
  /*******************************************
@@ -2071,7 +2104,7 @@ AS
 	FROM   D_SITE_TEST_SUBJECT
 	WHERE  Id = @subjectId
 	
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 GO
 
 /*******************************************
@@ -2876,7 +2909,7 @@ AS
 	WHERE  Id = @mid
 	       AND ModelCoreType = @mct
 	
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 GO
 
 /*******************************************
@@ -2946,7 +2979,7 @@ AS
 	
 	SELECT @result
 	
-	ROLLBACK TRANSACTION
+	COMMIT TRANSACTION
 GO
 
 /*******************************************

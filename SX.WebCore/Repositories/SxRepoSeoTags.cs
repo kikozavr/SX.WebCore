@@ -15,7 +15,7 @@ namespace SX.WebCore.Repositories
         public override SxSeoTags[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
-            sb.Append(SxQueryProvider.GetSelectString(new string[] { "dsi.Id", "dsi.RawUrl" }));
+            sb.Append(SxQueryProvider.GetSelectString());
             sb.Append(" FROM D_SEO_TAGS AS dsi ");
 
             object param = null;

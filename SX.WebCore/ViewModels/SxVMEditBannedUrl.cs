@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace SX.WebCore.ViewModels
 {
@@ -7,7 +8,7 @@ namespace SX.WebCore.ViewModels
         [Display(Name = "Адрес")]
         public int Id { get; set; }
 
-        [Required, MaxLength(255), Display(Name = "Адрес"), DataType(DataType.Url)]
+        [Required, MaxLength(255), Display(Name = "Адрес"), DataType(DataType.Url, ErrorMessage ="Введите валидный url")]
         public string Url { get; set; }
 
         [Required, MaxLength(255), Display(Name = "Причина бана"), DataType(DataType.MultilineText)]

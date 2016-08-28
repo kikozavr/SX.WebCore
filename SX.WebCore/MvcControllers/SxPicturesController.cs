@@ -111,7 +111,7 @@ namespace SX.WebCore.MvcControllers
             });
         }
 
-        private static int maxSize = 153600;
+        private static int maxSize = 204800;
         private static string[] allowFormats= new string[] {
                 "image/jpeg",
                 "image/png",

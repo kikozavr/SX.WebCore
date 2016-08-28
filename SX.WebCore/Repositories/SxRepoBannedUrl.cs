@@ -16,7 +16,8 @@ namespace SX.WebCore.Repositories
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
                 "dbu.Id",
                 "dbu.Url",
-                "dbu.Couse"
+                "dbu.Couse",
+                "dbu.DateCreate"
             }));
             sb.Append(" FROM D_BANNED_URL AS dbu ");
 

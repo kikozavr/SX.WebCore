@@ -90,7 +90,12 @@ namespace SX.WebCore.Abstract
 
         public virtual TModel Update(TModel model)
         {
-            throw new NotImplementedException("Не поддерживается в данном контексте");
+            var dbContext = Activator.CreateInstance<TDbContext>();
+            dbContext.Configuration.AutoDetectChangesEnabled = false;
+            dbContext.Entry(model).State = EntityState.Modified;
+            dbContext.Configuration.AutoDetectChangesEnabled = true;
+            dbContext.SaveChanges();
+            return model;
         }
 
         public virtual void Delete(TModel model)

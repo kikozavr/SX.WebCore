@@ -138,10 +138,12 @@ namespace SX.WebCore.MvcControllers
                 else
                     _repo.Update(redactModel, oldId: oldId);
 
-                return RedirectToAction("Index", new { mct=model.ModelCoreType });
+                return RedirectToAction("Index", new { mct = model.ModelCoreType });
             }
             else
+            {
                 return View(model);
+            }
         }
 
         [HttpPost, ValidateAntiForgeryToken]

@@ -1,11 +1,14 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
+using SX.WebCore.Providers;
 using SX.WebCore.ViewModels;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using static SX.WebCore.Enums;
+using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
@@ -30,6 +33,62 @@ namespace SX.WebCore.Repositories
                     return data.ToArray();
                 }
             }
+        }
+
+        public override TModel[] Read(SxFilter filter)
+        {
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString(new string[] {
+                "dm.*",
+                "dmc.*",
+                "anu.*",
+                "dp.Id", "dp.Width", "dp.Height"
+            }));
+            sb.Append(" FROM DV_MATERIAL AS dm ");
+            sb.Append(" LEFT JOIN D_MATERIAL_CATEGORY AS dmc ON dmc.Id = dm.CategoryId ");
+            sb.Append(" LEFT JOIN AspNetUsers AS anu ON anu.Id = dm.UserId ");
+            sb.Append(" LEFT JOIN D_PICTURE AS dp ON dp.Id = dm.FrontPictureId ");
+
+            object param = null;
+            var gws = getMaterialsWhereString(filter, out param);
+            sb.Append(gws);
+
+            var defaultOrder = new SxOrder { FieldName = "dm.DateCreate", Direction = SortDirection.Desc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
+
+            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.Append("SELECT COUNT(1) FROM DV_MATERIAL AS dm ");
+            sbCount.Append(gws);
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<TModel, SxMaterialCategory, SxAppUser, SxPicture, TModel>(sb.ToString(), (m, c, u, p)=> {
+                    m.Category = c;
+                    m.User = u;
+                    m.FrontPicture = p;
+                    return m;
+                }, param: param, splitOn:"Id");
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                return data.ToArray();
+            }
+        }
+        private static string getMaterialsWhereString(SxFilter filter, out object param)
+        {
+            param = null;
+            var query = new StringBuilder();
+            query.Append(" WHERE (dm.Title LIKE '%'+@title+'%' OR @title IS NULL) ");
+
+            var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Title != null ? (string)filter.WhereExpressionObject.Title : null;
+
+            param = new
+            {
+                title = title
+            };
+
+            return query.ToString();
         }
 
         public virtual TViewModel GetByTitleUrl(int year, string month, string day, string titleUrl)

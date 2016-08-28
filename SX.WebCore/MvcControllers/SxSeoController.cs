@@ -48,18 +48,18 @@ namespace SX.WebCore.MvcControllers
                         _repo.Create(settings[i]);
                     }
 
-                    TempData["EditEmptyGameMessage"] = "Настройки успешно сохранены";
-                    return (ActionResult)RedirectToAction("editrobotsfile");
+                    ViewBag.EditEmptyGameMessage = "Настройки успешно сохранены";
+                    return RedirectToAction("editrobotsfile");
                 }
                 else if (isExists && isModified)
                 {
                     _repo.Update(new SxSiteSetting { Id = Settings.robotsFileSetting, Value = model.FileContent }, true, "Value");
-                    TempData["EditEmptyGameMessage"] = "Настройки успешно обновлены";
+                    ViewBag.EditEmptyGameMessage = "Настройки успешно обновлены";
                     return RedirectToAction("editrobotsfile");
                 }
                 else
                 {
-                    TempData["EditEmptyGameMessage"] = "В настройках нет изменений";
+                    ViewBag.EditEmptyGameMessage = "В настройках нет изменений";
                     return View(model);
                 }
             }

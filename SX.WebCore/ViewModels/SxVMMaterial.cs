@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using static SX.WebCore.Enums;
 
@@ -14,22 +15,27 @@ namespace SX.WebCore.ViewModels
         public int Id { get; set; }
         public ModelCoreType ModelCoreType { get; set; }
 
+        [UIHint("EditDate")]
         public DateTime DateOfPublication { get; set; }
 
         public DateTime DateCreate { get; set; }
 
         public DateTime DateUpdate { get; set; }
 
+        [Required]
         public string Title { get; set; }
 
         public string TitleUrl { get; set; }
 
+        [DataType(DataType.MultilineText), AllowHtml, Required]
         public string Html { get; set; }
 
+        [DataType(DataType.MultilineText)]
         public string Foreword { get; set; }
 
         public bool Show { get; set; }
 
+        [UIHint("PicturesLookupGrid")]
         public Guid? FrontPictureId { get; set; }
         public virtual SxVMPicture FrontPicture { get; set; }
 
@@ -44,6 +50,7 @@ namespace SX.WebCore.ViewModels
         public int? SeoTagsId { get; set; }
 
         public virtual SxVMMaterialCategory Category { get; set; }
+        [UIHint("MaterialCategoryLookupGrid")]
         public string CategoryId { get; set; }
 
         public SxVideo[] Videos { get; set; }
@@ -62,5 +69,7 @@ namespace SX.WebCore.ViewModels
         public int Rating { get; set; }
 
         public string SourceUrl { get; set; }
+
+        public bool IsTop { get; set; }
     }
 }

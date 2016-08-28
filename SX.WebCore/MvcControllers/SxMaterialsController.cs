@@ -16,7 +16,7 @@ namespace SX.WebCore.MvcControllers
 {
     public abstract class SxMaterialsController<TModel, TViewModel, TDbContext> : SxBaseController<TDbContext>
         where TModel : SxMaterial
-        where TViewModel : SxVMMaterial
+        where TViewModel : SxVMMaterial, new()
         where TDbContext : SxDbContext
     {
         private static ModelCoreType _mct;
@@ -56,6 +56,60 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
+        private static readonly int _pageSize = 10;
+        [HttpGet]
+        public virtual ViewResult Index(int page = 1)
+        {
+            var order = new SxOrder { FieldName = "dm.DateCreate", Direction = SortDirection.Desc };
+            var filter = new SxFilter(page, _pageSize) { Order = order };
+
+            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxMaterial, TViewModel>(x)).ToArray();
+
+            ViewBag.Filter = filter;
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public virtual ActionResult Edit(int? id = null)
+        {
+            var viewModel = id.HasValue
+                ? Mapper.Map<TModel, TViewModel>(_repo.GetByKey(id, _mct))
+                : new TViewModel();
+            if (id.HasValue && viewModel == null) return new HttpNotFoundResult();
+
+            ViewBag.ModelCoreType = _mct;
+
+            return View(viewModel);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult Edit(TViewModel model)
+        {
+            model.ModelCoreType = _mct;
+
+            var isNew = model.Id == 0;
+            if (isNew || (!isNew && string.IsNullOrEmpty(model.TitleUrl)))
+                model.TitleUrl = Url.SeoFriendlyUrl(model.Title);
+
+            if (ModelState.IsValid)
+            {
+                var redactModel = Mapper.Map<TViewModel, TModel>(model);
+                
+                if (isNew)
+                    _repo.Create(redactModel);
+                else
+                    _repo.Update(redactModel);
+
+                return RedirectToAction("Index", "Articles");
+            }
+            else
+            {
+                ViewBag.ModelCoreType = _mct;
+                return View(model);
+            }
+        }
+
         protected Func<SxFilter, bool> BeforeSelectListAction { get; set; }
         [HttpGet]
         public virtual ActionResult List(SxFilter filter)
@@ -76,7 +130,7 @@ namespace SX.WebCore.MvcControllers
                 ViewBag.Tag = tag;
             }
 
-            viewModel.Collection = Repo.Read(filter).Select(x=>Mapper.Map<TModel, TViewModel>(x)).ToArray();
+            viewModel.Collection = Repo.Read(filter).Select(x => Mapper.Map<TModel, TViewModel>(x)).ToArray();
             viewModel.PagerInfo = new SxPagerInfo(filter.PagerInfo.Page, filter.PagerInfo.PageSize)
             {
                 PagerSize = 3,
@@ -89,7 +143,7 @@ namespace SX.WebCore.MvcControllers
         [HttpPost, ValidateAntiForgeryToken]
         public virtual async Task<ActionResult> Delete(TModel model)
         {
-            if (await _repo.GetByKeyAsync(model.Id, model.ModelCoreType)==null)
+            if (await _repo.GetByKeyAsync(model.Id, model.ModelCoreType) == null)
                 return new HttpNotFoundResult();
 
             await _repo.DeleteAsync(model);
@@ -120,7 +174,7 @@ namespace SX.WebCore.MvcControllers
             titleUrlProp.SetValue(model, Url.SeoFriendlyUrl(titleUrl));
 
             var existsMaterialByTitleUrl = _repo.ExistsMaterialByTitleUrl(titleUrl);
-            if(existsMaterialByTitleUrl)
+            if (existsMaterialByTitleUrl)
             {
                 ModelState.AddModelError("Title", "Материал с таким названием уже существует в БД. Выберите другое название");
                 return View(model);
@@ -202,7 +256,7 @@ namespace SX.WebCore.MvcControllers
 #if !DEBUG
         [OutputCache(Duration =900, VaryByParam ="mct;amount")]
 #endif
-        public virtual PartialViewResult Last(ModelCoreType? mct=null, int amount=5)
+        public virtual PartialViewResult Last(ModelCoreType? mct = null, int amount = 5)
         {
             var viewModel = Repo.Last(mct, amount);
             return PartialView("_Last", viewModel);

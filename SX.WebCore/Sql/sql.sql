@@ -255,7 +255,7 @@ END
 GO
 
 /*******************************************
- * получить материал
+ * получить материал по TitleUrl
  *******************************************/
 IF OBJECT_ID(N'dbo.get_material_by_url', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_material_by_url;
@@ -341,6 +341,42 @@ BEGIN
 	
 	END
 	GO
+	
+/*******************************************
+ * получить материал по id
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_material_by_id', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_material_by_id;
+GO
+CREATE PROCEDURE dbo.get_material_by_id
+	@id INT,
+	@mct INT
+AS
+BEGIN
+	SELECT dm.*,
+	       (
+	           SELECT COUNT(1)
+	           FROM   D_COMMENT AS dc
+	           WHERE  dc.MaterialId = dm.Id
+	                  AND dc.ModelCoreType = @mct
+	       )                              AS CommentsCount,
+	       dmc.*,
+	       anu.*,
+	       dp.Id,
+	       dp.Width,
+	       dp.Height,
+	       dp.Caption
+	FROM   DV_MATERIAL                    AS dm
+	       LEFT JOIN D_MATERIAL_CATEGORY  AS dmc
+	            ON  dmc.Id = dm.CategoryId
+	       LEFT JOIN AspNetUsers          AS anu
+	            ON  anu.Id = dm.UserId
+	       LEFT JOIN D_PICTURE            AS dp
+	            ON  dp.Id = dm.FrontPictureId
+	WHERE  dm.Id = @id
+	       AND dm.ModelCoreType = @mct
+END
+GO
 
 /*******************************************
  * получить видео материала
@@ -375,16 +411,8 @@ GO
 CREATE PROCEDURE dbo.get_material_comments(@mid INT, @mct INT)
 AS
 BEGIN
-	SELECT dc.Id,
-	       dc.MaterialId,
-	       dc.ModelCoreType,
-	       dc.UserId,
-	       dc.Html,
-	       dc.DateCreate,
-	       dc.UserName,
-	       anu.Id,
-	       anu.AvatarId,
-	       anu.NikName
+	SELECT dc.*,
+	       anu.*
 	FROM   D_COMMENT              AS dc
 	       LEFT JOIN AspNetUsers  AS anu
 	            ON  anu.Id = dc.UserId

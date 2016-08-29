@@ -10,6 +10,7 @@ namespace SX.WebCore.ViewModels
         public SxVMMaterial()
         {
             Videos = new SxVideo[0];
+            MaterialTags = new SxVMMaterialTag[0];
         }
 
         public int Id { get; set; }
@@ -71,5 +72,7 @@ namespace SX.WebCore.ViewModels
         public string SourceUrl { get; set; }
 
         public bool IsTop { get; set; }
+
+        public SxVMMaterialTag[] MaterialTags { get; set; }
     }
 }

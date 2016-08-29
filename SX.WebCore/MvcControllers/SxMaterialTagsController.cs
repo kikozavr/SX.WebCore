@@ -59,14 +59,14 @@ namespace SX.WebCore.MvcControllers
                 if (_repo.GetByKey(model.Id, model.MaterialId, model.ModelCoreType) != null)
                 {
                     ModelState.AddModelError("Id", "Такой тег уже добавлен для материала");
-                    return RedirectToAction("index", new { mid = model.MaterialId, mct = model.ModelCoreType });
+                    return RedirectToAction("Index", "MaterialTags", new { mid = model.MaterialId, mct = model.ModelCoreType });
                 }
 
                 var redactModel = Mapper.Map<SxVMEditMaterialTag, SxMaterialTag>(model);
                 _repo.Create(redactModel);
             }
 
-            return RedirectToAction("index", new { mid = model.MaterialId, mct = model.ModelCoreType });
+            return RedirectToAction("Index", "MaterialTags", new { mid = model.MaterialId, mct = model.ModelCoreType });
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -79,7 +79,7 @@ namespace SX.WebCore.MvcControllers
                 return new HttpNotFoundResult();
 
             _repo.Delete(model);
-            return RedirectToAction("index", new { mid = model.MaterialId, mct = model.ModelCoreType });
+            return RedirectToAction("Index", "MaterialTags", new { mid = model.MaterialId, mct = model.ModelCoreType });
         }
     }
 }

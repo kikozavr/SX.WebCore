@@ -187,6 +187,7 @@
     <Compile Include="Managers\SxCacheExpirationManager.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
+    <Compile Include="MvcControllers\SxCommentsController.cs" />
     <Compile Include="MvcControllers\SxManualsController.cs" />
     <Compile Include="MvcControllers\SxMaterialsController.cs" />
     <Compile Include="MvcControllers\SxRatingController.cs" />
@@ -337,11 +338,13 @@
     <Compile Include="ViewModels\SxVMBanner.cs" />
     <Compile Include="ViewModels\SxVMBannerGroup.cs" />
     <Compile Include="ViewModels\SxVMBreadcrumb.cs" />
+    <Compile Include="ViewModels\SxVMComment.cs" />
     <Compile Include="ViewModels\SxVMEdit301Redirect.cs" />
     <Compile Include="ViewModels\SxVMEditAffiliateLink.cs" />
     <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMEditBanner.cs" />
     <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />
+    <Compile Include="ViewModels\SxVMEditComment.cs" />
     <Compile Include="ViewModels\SxVMEditManual.cs" />
     <Compile Include="ViewModels\SxVMEditMaterialCategory.cs" />
     <Compile Include="ViewModels\SxVMEditShareButton.cs" />

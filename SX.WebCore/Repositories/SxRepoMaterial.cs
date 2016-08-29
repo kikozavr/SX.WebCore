@@ -18,6 +18,14 @@ namespace SX.WebCore.Repositories
         where TDbContext : SxDbContext
     {
         private static ModelCoreType _mct;
+        protected static ModelCoreType ModelCoreType
+        {
+            get
+            {
+                return _mct;
+            }
+        }
+
         public SxRepoMaterial(ModelCoreType mct)
         {
             _mct = mct;
@@ -91,7 +99,7 @@ namespace SX.WebCore.Repositories
             return query.ToString();
         }
 
-        public virtual TViewModel GetByTitleUrl(int year, string month, string day, string titleUrl)
+        public virtual TViewModel GetByTitleUrl(int year, string month, string day, string titleUrl, int materialTagsCount=20)
         {
             using (var connection = new SqlConnection(ConnectionString))
             {
@@ -123,8 +131,28 @@ namespace SX.WebCore.Repositories
 
                     //videos
                     data.Videos = connection.Query<SxVideo>("dbo.get_material_videos @mid, @mct", new { mid = data.Id, mct = data.ModelCoreType }).ToArray();
+
+                    //cloud
+                    data.MaterialTags = connection.Query<SxVMMaterialTag>("dbo.get_material_cloud @amount, @mid, @mct", new { amount = materialTagsCount, mid = data.Id, mct = data.ModelCoreType }).ToArray();
                 }
                 return data;
+            }
+        }
+
+        public override TModel GetByKey(params object[] id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var data = connection.Query<TModel, SxMaterialCategory, SxAppUser, SxPicture, TModel>("dbo.get_material_by_id @id, @mct",
+                    (m, c, u, p)=> {
+                        m.Category = c;
+                        m.User = u;
+                        m.FrontPicture = p;
+                        return m;
+                    },
+                    new { id = id[0], mct = _mct },
+                    splitOn:"Id");
+                return data.SingleOrDefault();
             }
         }
 
@@ -166,7 +194,7 @@ namespace SX.WebCore.Repositories
 
         }
 
-        public virtual TViewModel[] GetLikeMaterial(SxFilter filter, int amount=10)
+        public virtual TViewModel[] GetLikeMaterials(SxFilter filter, int amount=10)
         {
             using (var conn = new SqlConnection(ConnectionString))
             {
@@ -201,7 +229,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public virtual TViewModel[] Last(ModelCoreType? mct=null, int amount=5)
+        public virtual TViewModel[] Last(ModelCoreType? mct=null, int amount=5, int? mid=null)
         {
             return new TViewModel[0];
         }

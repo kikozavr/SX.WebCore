@@ -5,6 +5,7 @@ using SX.WebCore.Providers;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
+using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -111,7 +112,7 @@ namespace SX.WebCore.MvcControllers
             });
         }
 
-        private static int maxSize = 204800;
+        private static int maxSize = int.Parse(ConfigurationManager.AppSettings["MaxPictureLength"]);
         private static string[] allowFormats= new string[] {
                 "image/jpeg",
                 "image/png",

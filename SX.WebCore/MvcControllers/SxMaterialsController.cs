@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNet.Identity;
+using Newtonsoft.Json;
 using SX.WebCore.Abstract;
 using SX.WebCore.Attrubutes;
 using SX.WebCore.Repositories;
@@ -74,9 +75,14 @@ namespace SX.WebCore.MvcControllers
         public virtual ActionResult Edit(int? id = null)
         {
             var viewModel = id.HasValue
-                ? Mapper.Map<TModel, TViewModel>(_repo.GetByKey(id, _mct))
+                ? Mapper.Map<TModel, TViewModel>(_repo.GetByKey(id))
                 : new TViewModel();
             if (id.HasValue && viewModel == null) return new HttpNotFoundResult();
+
+            if (viewModel.Category != null)
+                ViewBag.MaterialCategoryTitle = viewModel.Category.Title;
+            if (viewModel.FrontPicture != null)
+                ViewData["FrontPictureIdCaption"] = viewModel.FrontPicture.Caption;
 
             ViewBag.ModelCoreType = _mct;
 
@@ -87,6 +93,7 @@ namespace SX.WebCore.MvcControllers
         public ActionResult Edit(TViewModel model)
         {
             model.ModelCoreType = _mct;
+            model.UserId = User.Identity.GetUserId();
 
             var isNew = model.Id == 0;
             if (isNew || (!isNew && string.IsNullOrEmpty(model.TitleUrl)))
@@ -224,13 +231,13 @@ namespace SX.WebCore.MvcControllers
             return Json(data);
         }
 
-        [HttpGet, ChildActionOnly]
+        [ChildActionOnly]
         public virtual PartialViewResult LikeMaterials(SxFilter filter, int amount = 10)
         {
-            var viewModel = _repo.GetLikeMaterial(filter, amount);
+            var viewModel = _repo.GetLikeMaterials(filter, amount);
             ViewBag.ModelCoreType = filter.ModelCoreType;
 
-            return PartialView("~/Views/Shared/_LikeMaterial.cshtml", viewModel);
+            return PartialView("_LikeMaterials", viewModel);
         }
 
         [HttpGet, NotLogRequest]
@@ -256,7 +263,7 @@ namespace SX.WebCore.MvcControllers
 #if !DEBUG
         [OutputCache(Duration =900, VaryByParam ="mct;amount")]
 #endif
-        public virtual PartialViewResult Last(ModelCoreType? mct = null, int amount = 5)
+        public virtual PartialViewResult Last(ModelCoreType? mct = null, int amount = 5, int? mid = null)
         {
             var viewModel = Repo.Last(mct, amount);
             return PartialView("_Last", viewModel);

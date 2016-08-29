@@ -222,12 +222,12 @@ namespace SX.WebCore.MvcControllers
 
             if (rolesForDelete.Any() || rolesForAdd.Any())
             {
-                TempData["UserRoleMessage"] = "Роли успешно заданы";
+                ViewBag.UserRoleMessage = "Роли успешно заданы";
                 data = UserManager.FindById(userId);
             }
 
             var viewModel = getEditUser(data, allRoles);
-            return PartialView("~/views/Users/_UserRoles.cshtml", viewModel);
+            return PartialView("_UserRoles", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -248,12 +248,12 @@ namespace SX.WebCore.MvcControllers
                 var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray();
                 var viewModel = getEditUser(oldUser, allRoles);
                 if (viewModel.Avatar != null)
-                    ViewBag.PictureCaption = viewModel.Avatar.Caption;
-                TempData["UserInfoMessage"] = "Информация обновлена";
-                return PartialView("~/views/Users/_UserInfo.cshtml", viewModel);
+                    ViewData["AvatarIdCaption"] = viewModel.Avatar.Caption;
+                ViewBag.UserRoleMessage = "Информация обновлена";
+                return PartialView("_UserInfo", viewModel);
             }
             else
-                return PartialView("~/views/Users/_UserInfo.cshtml", user);
+                return PartialView("_UserInfo", user);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
@@ -261,11 +261,11 @@ namespace SX.WebCore.MvcControllers
         {
             if (ModelState.IsValid)
             {
-                TempData["UserInfoMessage"] = "Информация обновлена";
-                return PartialView("~/views/Users/_UserReports.cshtml", reportsId);
+                ViewBag.UserRoleMessage = "Информация обновлена";
+                return PartialView("_UserReports", reportsId);
             }
             else
-                return PartialView("~/views/Users/_UserReports.cshtml", reportsId);
+                return PartialView("_UserReports", reportsId);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

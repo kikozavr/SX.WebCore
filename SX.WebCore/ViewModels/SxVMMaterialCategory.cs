@@ -6,6 +6,11 @@ namespace SX.WebCore.ViewModels
 {
     public class SxVMMaterialCategory : IHierarchy<SxVMMaterialCategory>
     {
+        public SxVMMaterialCategory()
+        {
+            ChildCategories = new SxVMMaterialCategory[0];
+        }
+
         public string Id { get; set; }
 
         public string Title { get; set; }

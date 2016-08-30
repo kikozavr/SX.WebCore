@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using static SX.WebCore.Enums;
 
@@ -60,9 +61,14 @@ namespace SX.WebCore.ViewModels
 
         public int LikeDownCount { get; set; }
 
-        public virtual string Url(UrlHelper url)
+        public virtual string GetUrl(UrlHelper urlHelper)
         {
-            throw new NotImplementedException("Url не поддерживается в данном контексте");
+            return "#";
+        }
+
+        public string GetForewordFromHtml(int maxLettersCount)
+        {
+            return Regex.Replace(Html.Length <= maxLettersCount ? Html : Html.Substring(0, maxLettersCount) + "...", "<.*?>", string.Empty);
         }
 
         public int CommentsCount { get; set; }

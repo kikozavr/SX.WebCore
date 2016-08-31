@@ -38,8 +38,7 @@ namespace SX.WebCore.MvcControllers
             return File(encodedBytes, "text/plain");
         }
 
-        [Authorize(Roles = "admin")]
-        [HttpGet]
+        [HttpGet, Authorize(Roles = "admin")]
         public virtual ViewResult EditSite()
         {
 
@@ -120,7 +119,7 @@ namespace SX.WebCore.MvcControllers
                         _repo.Create(setting);
                     }
 
-                    TempData["EditEmptyGameMessage"] = "Настройки успешно сохранены";
+                    ViewBag.EditSiteSettingsMessage = "Настройки успешно сохранены";
                     SxApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
                     return RedirectToAction("editsite");
                 }
@@ -133,13 +132,13 @@ namespace SX.WebCore.MvcControllers
                     _repo.Update(new SxSiteSetting { Id = Settings.siteBgPath, Value = model.SiteBgPath }, true, "Value");
                     _repo.Update(new SxSiteSetting { Id = Settings.siteFaveiconPath, Value = model.SiteFaveiconPath }, true, "Value");
                     _repo.Update(new SxSiteSetting { Id = Settings.siteDesc, Value = model.SiteDesc }, true, "Value");
-                    TempData["EditEmptyGameMessage"] = "Настройки успешно обновлены";
+                    ViewBag.EditSiteSettingsMessage = "Настройки успешно обновлены";
                     SxApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
                     return RedirectToAction("editsite");
                 }
                 else
                 {
-                    TempData["EditEmptyGameMessage"] = "В настройках нет изменений";
+                    ViewBag.EditSiteSettingsMessage = "В настройках нет изменений";
                     return View(model);
                 }
             }

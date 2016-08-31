@@ -7,13 +7,14 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoPicture<TDbContext> : SxDbRepository<Guid, SxPicture, TDbContext> where TDbContext : SxDbContext
+    public class SxRepoPicture<TDbContext> : SxDbRepository<Guid, SxPicture, TDbContext, SxVMPicture> where TDbContext : SxDbContext
     {
-        public override SxPicture[] Read(SxFilter filter)
+        public override SxVMPicture[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
@@ -42,7 +43,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxPicture>(sb.ToString(), param: param);
+                var data = conn.Query<SxVMPicture>(sb.ToString(), param: param);
                 filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
@@ -138,6 +139,97 @@ namespace SX.WebCore.Repositories
             return await Task.Run(()=> {
                 return GetFreePictures(filter);
             });
+        }
+
+        public virtual SxVMPicture[] LinkedPictures(SxFilter filter, bool forMaterial)
+        {
+            var sb = new StringBuilder();
+            sb.Append(SxQueryProvider.GetSelectString(new string[] { "dp.*" }));
+            sb.AppendFormat(@" FROM D_PICTURE AS dp {0} JOIN D_PICTURE_LINK AS dpl ON dpl.PictureId = dp.Id ", forMaterial ? "" : @"LEFT");
+
+            object param = null;
+            sb.Append(getLinkedPictureWhereString(filter, forMaterial, out param));
+
+            var defaultOrder = new SxOrder { FieldName = "dp.DateCreate", Direction = SortDirection.Desc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
+            sb.Append(" OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY");
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                var data = conn.Query<SxVMPicture>(sql: sb.ToString(), param: param);
+                return data.ToArray();
+            }
+        }
+        public virtual int LinkedPicturesCount(SxFilter filter, bool forMaterial)
+        {
+            var query = @"SELECT COUNT(1) FROM D_PICTURE AS dp " + (forMaterial ? "" : @"LEFT") + @" JOIN D_PICTURE_LINK AS dpl ON dpl.PictureId = dp.Id ";
+
+            object param = null;
+            query += getLinkedPictureWhereString(filter, forMaterial, out param);
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                return conn.Query<int>(query, param: param).Single();
+            }
+        }
+        private static string getLinkedPictureWhereString(SxFilter filter, bool forMaterial, out object param)
+        {
+            checkLinkedPhotoFilter(filter);
+
+            param = null;
+            var query = new StringBuilder();
+            query.Append(" WHERE (dp.Caption LIKE '%'+@caption+'%' OR @caption IS NULL) ");
+            if (forMaterial)
+            {
+                query.Append(" AND (dpl.ModelCoreType = @mct) ");
+                query.Append(" AND (dpl.Materialid = @mid) ");
+            }
+            else
+                query.Append(" AND (dp.Id NOT IN (SELECT dpl2.PictureId FROM D_PICTURE_LINK AS dpl2 WHERE dpl2.MaterialId=@mid AND dpl2.ModelCoreType=@mct)) ");
+
+
+            var caption = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Caption != null ? (string)filter.WhereExpressionObject.Caption : null;
+
+            param = new
+            {
+                caption = caption,
+                mid = filter.AddintionalInfo[0],
+                mct = filter.AddintionalInfo[1]
+            };
+
+            return query.ToString();
+        }
+        private static void checkLinkedPhotoFilter(SxFilter filter)
+        {
+            if (filter.AddintionalInfo == null)
+                throw new ArgumentNullException("AddintionalInfo");
+            if (filter.AddintionalInfo[0] == null)
+                throw new ArgumentNullException("AddintionalInfo.MaterialId");
+            if (filter.AddintionalInfo[1] == null)
+                throw new ArgumentNullException("AddintionalInfo.ModelCoreType");
+        }
+        public virtual void AddMaterialPicture(int mid, ModelCoreType mct, Guid pid)
+        {
+            var query = @"INSERT INTO D_PICTURE_LINK
+VALUES
+(
+	@mid,
+	@mct,
+	@pid
+)";
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                conn.Execute(query, param: new { mid = mid, mct = mct, pid = pid });
+            }
+        }
+        public virtual void DeleteMaterialPicture(int mid, ModelCoreType mct, Guid pid)
+        {
+            var query = @"DELETE FROM D_PICTURE_LINK
+WHERE MaterialId=@mid AND ModelCoreType=@mct AND PictureId=@pid";
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                conn.Execute(query, param: new { mid = mid, mct = mct, pid = pid });
+            }
         }
     }
 }

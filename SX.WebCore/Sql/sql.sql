@@ -1052,7 +1052,7 @@ END
 GO
 
 /*******************************************
- * Получить забаненный адрес
+ * Удалить забаненный адрес
  *******************************************/
 IF OBJECT_ID(N'dbo.del_banned_url', N'P') IS NOT NULL
     DROP PROCEDURE dbo.del_banned_url;
@@ -1064,6 +1064,138 @@ BEGIN
 	DELETE 
 	FROM   D_BANNED_URL
 	WHERE  Id = @bannedUrlId
+END
+GO
+
+/*******************************************
+ * Получить забаненный адрес
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_banned_url', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_banned_url;
+GO
+CREATE PROCEDURE dbo.get_banned_url
+	@bannedUrlId INT
+AS
+BEGIN
+	SELECT*FROM D_BANNED_URL AS dbu WHERE dbu.Id=@bannedUrlId
+END
+GO
+
+/*******************************************
+ * Добавить забаненный адрес
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_banned_url', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_banned_url;
+GO
+CREATE PROCEDURE dbo.add_banned_url
+	@url NVARCHAR(255),
+	@couse NVARCHAR(255)
+AS
+BEGIN
+	IF NOT EXISTS (
+	       SELECT dbu.Id
+	       FROM   D_BANNED_URL AS dbu
+	       WHERE  dbu.[Url] = @url
+	   )
+	BEGIN
+	    DECLARE @date DATETIME = GETDATE()
+	    INSERT INTO D_BANNED_URL
+	      (
+	        [Url],
+	        Couse,
+	        DateUpdate,
+	        DateCreate
+	      )
+	    VALUES
+	      (
+	        @url,
+	        @couse,
+	        @date,
+	        @date
+	      )
+	    
+	    DECLARE @id INT
+	    SELECT @id = @@identity
+	    
+	    EXEC dbo.get_banned_url @id
+	END
+END
+GO
+
+/*******************************************
+ * Обновить забаненный адрес
+ *******************************************/
+IF OBJECT_ID(N'dbo.update_banned_url', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.update_banned_url;
+GO
+CREATE PROCEDURE dbo.update_banned_url
+	@id INT,
+	@url NVARCHAR(255),
+	@couse NVARCHAR(255)
+AS
+BEGIN
+	UPDATE D_BANNED_URL
+	SET    [Url] = @url,
+	       Couse = @couse,
+	       DateUpdate = GETDATE()
+	WHERE  Id = @id
+	
+	EXEC dbo.get_banned_url @id
+END
+GO
+
+/*******************************************
+ * Получить ключевое слово
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_seo_keyword', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_seo_keyword;
+GO
+CREATE PROCEDURE dbo.get_seo_keyword
+	@id INT
+AS
+BEGIN
+	SELECT*FROM D_SEO_KEYWORD AS dsk WHERE dsk.Id=@id
+END
+GO
+
+/*******************************************
+ * Добавить ключевое слово
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_seo_keyword', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_seo_keyword;
+GO
+CREATE PROCEDURE dbo.add_seo_keyword
+	@sti INT,
+	@value NVARCHAR(50)
+AS
+BEGIN
+	IF NOT EXISTS (
+	       SELECT dsk.Id
+	         FROM D_SEO_KEYWORD AS dsk WHERE dsk.SeoTagsId=@sti AND dsk.[Value]=@value
+	   )
+	BEGIN
+	    DECLARE @date DATETIME = GETDATE()
+	    
+	    INSERT INTO D_SEO_KEYWORD
+	    (
+	    	[Value],
+	    	SeoTagsId,
+	    	DateUpdate,
+	    	DateCreate
+	    )
+	    VALUES
+	    (
+	    	@value,
+	    	@sti,
+	    	@date,
+	    	@date
+	    )
+	    
+	    DECLARE @id INT
+	    SELECT @id = @@identity
+	    
+	    EXEC dbo.get_seo_keyword @id
+	END
 END
 GO
 

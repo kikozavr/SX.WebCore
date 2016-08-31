@@ -8,9 +8,10 @@ using System.Threading.Tasks;
 
 namespace SX.WebCore.Abstract
 {
-    public abstract class SxDbRepository<TKey, TModel, TDbContext>
+    public abstract class SxDbRepository<TKey, TModel, TDbContext, TViewModel>
         where TModel : SxDbModel<TKey>
         where TDbContext : SxDbContext
+        where TViewModel : class
     {
         private static string _connectionString;
         static SxDbRepository()
@@ -111,20 +112,20 @@ namespace SX.WebCore.Abstract
             });
         }
 
-        public virtual IQueryable<TModel> All
+        public virtual TViewModel[] All
         {
             get
             {
-                var dbContext = Activator.CreateInstance<TDbContext>();
-                return dbContext.Set<TModel>().AsNoTracking();
+                throw new NotImplementedException();
             }
         }
 
-        public virtual TModel[] Read(SxFilter filter)
+        public virtual TViewModel[] Read(SxFilter filter)
         {
-            return new TModel[0];
+            throw new NotImplementedException();
         }
-        public virtual async Task<TModel[]> ReadAsync(SxFilter filter)
+
+        public virtual async Task<TViewModel[]> ReadAsync(SxFilter filter)
         {
             return await Task.Run(()=> {
                 return Read(filter);
@@ -137,7 +138,7 @@ namespace SX.WebCore.Abstract
             var dbSet = dbContext.Set<TModel>();
             return dbSet.Find(id);
         }
-        public virtual async Task<TModel> GetByKeyAsync(params object[] id)
+        public async Task<TModel> GetByKeyAsync(params object[] id)
         {
             return await Task.Run(() =>
             {

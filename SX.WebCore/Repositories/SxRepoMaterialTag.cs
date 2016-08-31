@@ -9,9 +9,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoMaterialTag<TDbContext> : SxDbRepository<string, SxMaterialTag, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoMaterialTag<TDbContext> : SxDbRepository<string, SxMaterialTag, TDbContext, SxVMMaterialTag> where TDbContext : SxDbContext
     {
-        public override SxMaterialTag[] Read(SxFilter filter)
+        public override SxVMMaterialTag[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
@@ -38,7 +38,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxMaterialTag>(sb.ToString(), param: param);
+                var data = conn.Query<SxVMMaterialTag>(sb.ToString(), param: param);
                 filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }

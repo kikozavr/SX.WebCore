@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSiteTestQuestion<TDbContext> : SxDbRepository<int, SxSiteTestQuestion, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoSiteTestQuestion<TDbContext> : SxDbRepository<int, SxSiteTestQuestion, TDbContext, SxVMSiteTestQuestion> where TDbContext : SxDbContext
     {
-        public override SxSiteTestQuestion[] Read(SxFilter filter)
+        public override SxVMSiteTestQuestion[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -34,14 +35,14 @@ namespace SX.WebCore.Repositories
             sbCount.Append(joinString);
             sbCount.Append(gws);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSiteTestQuestion, SxSiteTest, SxSiteTestQuestion>(sb.ToString(), (q, t) =>
+                var data = connection.Query<SxVMSiteTestQuestion, SxVMSiteTest, SxVMSiteTestQuestion>(sb.ToString(), (q, t) =>
                 {
                     q.Test = t;
                     return q;
                 }, param: param, splitOn: "Id");
-                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                filter.PagerInfo.TotalItems = connection.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }

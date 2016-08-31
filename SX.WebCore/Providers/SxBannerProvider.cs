@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SX.WebCore.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,13 +7,13 @@ namespace SX.WebCore.Providers
 {
     public class SxBannerProvider
     {
-        private static Func<SxBannerCollection> _collection;
-        public SxBannerProvider(Func<SxBannerCollection> collection)
+        private static Func<SxVMBannerCollection> _collection;
+        public SxBannerProvider(Func<SxVMBannerCollection> collection)
         {
             _collection = collection;
         }
 
-        public SxBannerCollection BannerCollection
+        public SxVMBannerCollection BannerCollection
         {
             get
             {
@@ -20,9 +21,9 @@ namespace SX.WebCore.Providers
             }
         }
 
-        public SxBanner[] GetPageBanners(string rawUrl)
+        public SxVMBanner[] GetPageBanners(string rawUrl)
         {
-            var list = new List<SxBanner>();
+            var list = new List<SxVMBanner>();
 
             foreach (var p in Enum.GetValues(typeof(SxBanner.BannerPlace)))
             {
@@ -37,23 +38,23 @@ namespace SX.WebCore.Providers
             return list.ToArray();
         }
 
-        private static SxBanner getBanner(SxBanner.BannerPlace place, List<SxBanner> existBanners, string rawUrl = null)
+        private static SxVMBanner getBanner(SxBanner.BannerPlace place, List<SxVMBanner> existBanners, string rawUrl = null)
         {
             var banner = getPlaceBanner(place, existBanners, rawUrl);
             return banner;
         }
 
-        private static SxBanner getPlaceBanner(SxBanner.BannerPlace place, List<SxBanner> existBanners, string rawUrl = null)
+        private static SxVMBanner getPlaceBanner(SxBanner.BannerPlace place, List<SxVMBanner> existBanners, string rawUrl = null)
         {
-            SxBanner banner = null;
+            SxVMBanner banner = null;
             var data = _collection().Banners.Where(x => (x.Place == place || (x.Place == place && x.RawUrl == rawUrl)) && existBanners.SingleOrDefault(b=>b.PictureId==x.PictureId)==null).ToArray();
             banner = getRandomBanner(data, rawUrl);
             return banner;
         }
 
-        private static SxBanner getRandomBanner(SxBanner[] data, string rawUrl = null)
+        private static SxVMBanner getRandomBanner(SxVMBanner[] data, string rawUrl = null)
         {
-            SxBanner banner = null;
+            SxVMBanner banner = null;
             if (data.Any())
             {
                 var dataForRawUrl = data.Where(x => x.RawUrl == rawUrl).ToArray();

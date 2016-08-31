@@ -40,7 +40,7 @@ namespace SX.WebCore.MvcControllers
                 return new HttpNotFoundResult();
 
             var filter = new SxFilter { ModelCoreType = (ModelCoreType)mct };
-            var data = _repo.Read(filter).Select(x=>Mapper.Map<SxMaterialCategory, TViewModel>(x)).ToArray();
+            var data = _repo.Read(filter).Select(x=>Mapper.Map<SxVMMaterialCategory, TViewModel>(x)).ToArray();
             var parents = data.Where(x => x.ParentCategoryId == null).ToArray();
             for (int i = 0; i < parents.Length; i++)
             {
@@ -97,9 +97,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel, ModelCoreType= mct };
 
-            var viewModel = _repo.Read(filter)
-                .Select(x => Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(x))
-                .ToArray();
+            var viewModel = _repo.Read(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -162,7 +160,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter { ModelCoreType = mct };
 
-            var data = (await _repo.ReadAsync(filter)).Select(x=>Mapper.Map<SxMaterialCategory, TViewModel>(x)).ToArray();
+            var data = (await _repo.ReadAsync(filter)).Select(x=>Mapper.Map<SxVMMaterialCategory, TViewModel>(x)).ToArray();
 
             var parents = data.Where(x => x.ParentCategoryId == null).ToArray();
             for (int i = 0; i < parents.Length; i++)
@@ -186,7 +184,7 @@ namespace SX.WebCore.MvcControllers
             ViewBag.CurrentCategory = cur;
 
             var filter = new SxFilter { ModelCoreType = mct };
-            var data = _repo.Read(filter).Select(x=>Mapper.Map<SxMaterialCategory, TViewModel>(x)).ToArray();
+            var data = _repo.Read(filter).Select(x => Mapper.Map<SxVMMaterialCategory, TViewModel>(x)).ToArray(); ;
             var parents = data.Where(x => x.ParentCategoryId == null).ToArray();
             for (int i = 0; i < parents.Length; i++)
             {

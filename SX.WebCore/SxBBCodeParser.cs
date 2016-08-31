@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Linq;
 using System.Web.Mvc;
+using SX.WebCore.ViewModels;
 
 namespace SX.WebCore
 {
@@ -20,10 +21,10 @@ namespace SX.WebCore
 
         public static void ReplaceBanners(
             ref string inputHtml,
-            SxBannerCollection banners,
-            Func<SxBanner, string> bannerPictureUrl,
-            Func<SxBanner, Func<SxBanner, string>, string> bannerTemplate = null,
-            Func<SxBannerGroup, Func<SxBanner, string>, string> bannerGroupTemplate = null
+            SxVMBannerCollection banners,
+            Func<SxVMBanner, string> bannerPictureUrl,
+            Func<SxVMBanner, Func<SxVMBanner, string>, string> bannerTemplate = null,
+            Func<SxVMBannerGroup, Func<SxVMBanner, string>, string> bannerGroupTemplate = null
             )
         {
             var reBanner = new Regex(@"\[BANNER\](.*?)\[\/BANNER\]");
@@ -79,7 +80,7 @@ namespace SX.WebCore
             }
         }
 
-        private static string getBannerTemplate(SxBanner banner, Func<SxBanner, string> bannerPictureUrl)
+        private static string getBannerTemplate(SxVMBanner banner, Func<SxVMBanner, string> bannerPictureUrl)
         {
             var figure = new TagBuilder("figure");
             figure.AddCssClass("banner");
@@ -101,7 +102,7 @@ namespace SX.WebCore
             return figure.ToString();
         }
 
-        private static string getBannerGroupTemplate(SxBannerGroup banner, Func<SxBanner, string> bannerPictureUrl)
+        private static string getBannerGroupTemplate(SxVMBannerGroup banner, Func<SxVMBanner, string> bannerPictureUrl)
         {
             var id = Guid.NewGuid().ToString().ToLowerInvariant();
             var bannerLinks = banner.BannerLinks.ToArray();

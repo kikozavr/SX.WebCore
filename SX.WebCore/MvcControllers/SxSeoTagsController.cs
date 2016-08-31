@@ -25,9 +25,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
-            var viewModel = _repo.Read(filter)
-                .Select(x=>Mapper.Map<SxSeoTags, SxVMSeoTags>(x))
-                .ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
 
@@ -40,9 +38,7 @@ namespace SX.WebCore.MvcControllers
             filterModel.Keywords = null;
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = (await _repo.ReadAsync(filter))
-                .Select(x => Mapper.Map<SxSeoTags, SxVMSeoTags>(x))
-                .ToArray();
+            var viewModel = await _repo.ReadAsync(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -89,12 +85,15 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual PartialViewResult EditForMaterial(int mid, ModelCoreType mct, int? id)
+        public virtual PartialViewResult EditForMaterial(int mid, ModelCoreType mct)
         {
-            var model = id.HasValue ? _repo.GetByKey(id) : new SxSeoTags { MaterialId = mid, ModelCoreType = mct };
+            var model = _repo.GetMaterialSeoInfo(mid, mct);
             var seoTags = Mapper.Map<SxSeoTags, SxVMEditSeoTags>(model);
-            if (id.HasValue)
+            if (model != null)
                 seoTags.Keywords = model.Keywords.Select(x => Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x)).ToArray();
+            else
+                seoTags = new SxVMEditSeoTags() { MaterialId=mid, ModelCoreType=mct };
+
             return PartialView("_EditForMaterial", seoTags);
         }
 
@@ -112,12 +111,12 @@ namespace SX.WebCore.MvcControllers
                 {
                     newModel = _repo.Create(redactModel);
                     _repo.UpdateMaterialSeoTags((int)model.MaterialId, (ModelCoreType)model.ModelCoreType, newModel.Id);
-                    TempData["ModelSeoInfoRedactInfo"] = "Успешно добавлено";
+                    ViewBag.SeoInfoRedactInfo = "Успешно добавлено";
                 }
                 else
                 {
                     newModel = _repo.Update(redactModel, true, "SeoTitle", "SeoDescription", "H1", "H1CssClass");
-                    TempData["ModelSeoInfoRedactInfo"] = "Успешно обновлено";
+                    ViewBag.SeoInfoRedactInfo = "Успешно обновлено";
                 }
 
                 var viewModel = Mapper.Map<SxSeoTags, SxVMEditSeoTags>(newModel);
@@ -133,7 +132,7 @@ namespace SX.WebCore.MvcControllers
         {
             await _repo.DeleteMaterialSeoInfoAsync((int)model.MaterialId, (ModelCoreType)model.ModelCoreType);
 
-            TempData["ModelSeoInfoRedactInfo"] = "Успешно удалено";
+            ViewBag.SeoInfoRedactInfo = "Успешно удалено";
             return PartialView("_EditForMaterial", new SxVMEditSeoTags { MaterialId = model.MaterialId, ModelCoreType = model.ModelCoreType, Id = 0 });
         }
 

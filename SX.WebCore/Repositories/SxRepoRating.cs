@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using System.Linq;
 using System;
 using static SX.WebCore.Enums;
+using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoRating<TDbContext> : SxDbRepository<int, SxRating, TDbContext> where TDbContext: SxDbContext
+    public sealed class SxRepoRating<TDbContext> : SxDbRepository<int, SxRating, TDbContext, SxVMRating> where TDbContext: SxDbContext
     {
         public async Task<double> AddRatingAsync(SxRating model)
         {

@@ -48,18 +48,22 @@ namespace SX.WebCore.MvcControllers
                         _repo.Create(settings[i]);
                     }
 
-                    ViewBag.EditEmptyGameMessage = "Настройки успешно сохранены";
-                    return RedirectToAction("editrobotsfile");
+                    ViewBag.EditSiteSettingsMessage = "Настройки успешно сохранены";
+                    return RedirectToAction("EditRobotsFile", "Seo");
                 }
                 else if (isExists && isModified)
                 {
-                    _repo.Update(new SxSiteSetting { Id = Settings.robotsFileSetting, Value = model.FileContent }, true, "Value");
-                    ViewBag.EditEmptyGameMessage = "Настройки успешно обновлены";
-                    return RedirectToAction("editrobotsfile");
+                    var data= _repo.Update(new SxSiteSetting { Id = Settings.robotsFileSetting, Value = model.FileContent }, true, "Value");
+                    ViewBag.EditSiteSettingsMessage = "Настройки успешно обновлены";
+                    model = new SxVMRobotsFile {
+                        FileContent = data.Value,
+                        OldFileContent = data.Value
+                    };
+                    return View(model);
                 }
                 else
                 {
-                    ViewBag.EditEmptyGameMessage = "В настройках нет изменений";
+                    ViewBag.EditSiteSettingsMessage = "В настройках нет изменений";
                     return View(model);
                 }
             }

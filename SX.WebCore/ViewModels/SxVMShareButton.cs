@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
 
-        public SxNet Net { get; set; }
+        public SxVMNet Net { get; set; }
         public int NetId { get; set; }
 
         public string NetName { get; set; }

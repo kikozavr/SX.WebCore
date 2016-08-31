@@ -25,7 +25,7 @@ namespace SX.WebCore.MvcControllers
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { MaterialId = mid, ModelCoreType = mct, Order = defaultOrder };
 
-            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxMaterialTag, SxVMMaterialTag>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
@@ -40,7 +40,7 @@ namespace SX.WebCore.MvcControllers
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order==null || order.Direction==SortDirection.Unknown?defaultOrder:order, WhereExpressionObject = filterModel, MaterialId = mid, ModelCoreType = mct };
 
-            var viewModel = (await _repo.ReadAsync(filter)).Select(x => Mapper.Map<SxMaterialTag, SxVMMaterialTag>(x)).ToArray();
+            var viewModel = await _repo.ReadAsync(filter);
 
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;

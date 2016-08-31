@@ -6,12 +6,13 @@ using System.Linq;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 using System;
 using System.Text;
+using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoNet<TDbContext> : SxDbRepository<int, SxNet, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoNet<TDbContext> : SxDbRepository<int, SxNet, TDbContext, SxVMNet> where TDbContext : SxDbContext
     {
-        public override SxNet[] Read(SxFilter filter)
+        public override SxVMNet[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -33,7 +34,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxNet>(sb.ToString(), param: param);
+                var data = conn.Query<SxVMNet>(sb.ToString(), param: param);
                 filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }

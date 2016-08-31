@@ -1,5 +1,6 @@
 ﻿using SX.WebCore.Abstract;
 using SX.WebCore.Attrubutes;
+using SX.WebCore.Managers;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.Providers;
 using SX.WebCore.Repositories;
@@ -34,16 +35,6 @@ namespace SX.WebCore.MvcControllers
                 _repo = value;
             }
         }
-        private static CacheItemPolicy _defaultPolicy
-        {
-            get
-            {
-                return new CacheItemPolicy
-                {
-                    AbsoluteExpiration = DateTimeOffset.Now.AddMinutes(15)
-                };
-            }
-        }
         private static object _lck = new object();
         public SxPicturesController()
         {
@@ -59,7 +50,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxPicture, SxVMPicture>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
 
@@ -72,8 +63,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var data = await _repo.ReadAsync(filter);
-            var viewModel = data.Select(x=>Mapper.Map<SxPicture, SxVMPicture>(x)).ToArray();
+            var viewModel = await _repo.ReadAsync(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -220,13 +210,13 @@ namespace SX.WebCore.MvcControllers
             else if (width.HasValue && height.HasValue)
                 sb.AppendFormat("_w{0}_h{1}", width, height);
 
-            return sb.ToString();
+            return "pic_"+sb.ToString();
         }
 
         private byte[] getPicture(Guid id, out string imgFormat, out bool isExists, out bool inCache, int? width = null, int? height = null)
         {
             var cache = SxApplication<TDbContext>.AppCache;
-            var name = "pic_"+getPictureName(id, width, height);
+            var name = getPictureName(id, width, height);
             var picture = (SxPicture)cache.Get(name);
             if (picture == null)
             {
@@ -245,7 +235,7 @@ namespace SX.WebCore.MvcControllers
                 lock(_lck)
                 {
                     if(cache.Get(name) == null)
-                        cache.Add(name, picture, _defaultPolicy);
+                        cache.Add(name, picture, SxCacheExpirationManager.GetExpiration(minutes:60));
                 }
             }
             else
@@ -264,9 +254,9 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxPicture, SxVMPicture>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= pageSize ? 1 : page;
 
             ViewBag.Filter = filter;
 

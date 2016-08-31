@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,18 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSeoKeyword<TDbContext> : SxDbRepository<int, SxSeoKeyword, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoSeoKeyword<TDbContext> : SxDbRepository<int, SxSeoKeyword, TDbContext, SxVMSeoKeyword> where TDbContext : SxDbContext
     {
-        public override SxSeoKeyword[] Read(SxFilter filter)
+        public override SxSeoKeyword Create(SxSeoKeyword model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var data = connection.Query<SxSeoKeyword>("dbo.add_seo_keyword @sti, @value", new { sti = model.SeoTagsId, value = model.Value });
+                return data.SingleOrDefault();
+            }
+        }
+
+        public override SxVMSeoKeyword[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
@@ -32,10 +42,10 @@ namespace SX.WebCore.Repositories
             sbCount.Append(@"SELECT COUNT(1) FROM D_SEO_KEYWORD AS dsk ");
             sbCount.Append(gws);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSeoKeyword>(sb.ToString(), param: param);
-                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                var data = connection.Query<SxVMSeoKeyword>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = connection.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }

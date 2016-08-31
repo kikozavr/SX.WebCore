@@ -24,7 +24,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxRequest, SxVMRequest>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
 
@@ -36,8 +36,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var data = await _repo.ReadAsync(filter);
-            var viewModel = data.Select(x => Mapper.Map<SxRequest, SxVMRequest>(x)).ToArray();
+            var viewModel = await _repo.ReadAsync(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 

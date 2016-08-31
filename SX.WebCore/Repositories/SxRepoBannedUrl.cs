@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,18 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoBannedUrl<TDbContext> : SxDbRepository<int, SxBannedUrl, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoBannedUrl<TDbContext> : SxDbRepository<int, SxBannedUrl, TDbContext, SxVMBannedUrl> where TDbContext : SxDbContext
     {
-        public override SxBannedUrl[] Read(SxFilter filter)
+        public override SxBannedUrl Create(SxBannedUrl model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var data = connection.Query<SxBannedUrl>("dbo.add_banned_url @url, @couse", new { url = model.Url, couse = model.Couse });
+                return data.SingleOrDefault();
+            }
+        }
+
+        public override SxVMBannedUrl[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
@@ -35,11 +45,37 @@ namespace SX.WebCore.Repositories
             sbCount.Append("SELECT COUNT(1) FROM D_BANNED_URL AS dbu ");
             sbCount.Append(gws);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxBannedUrl>(sb.ToString(), param: param);
-                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                var data = connection.Query<SxVMBannedUrl>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = connection.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
+            }
+        }
+
+        public override SxBannedUrl Update(SxBannedUrl model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var data = connection.Query<SxBannedUrl>("dbo.update_banned_url @id, @url, @couse", new { id=model.Id, url = model.Url, couse = model.Couse });
+                return data.SingleOrDefault();
+            }
+        }
+
+        public override void Delete(SxBannedUrl model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Execute("dbo.del_banned_url @bannedUrlId", new { bannedUrlId=model.Id });
+            }
+        }
+
+        public override SxBannedUrl GetByKey(params object[] id)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var data = connection.Query<SxBannedUrl>("dbo.get_banned_url @bannedUrlId", new { bannedUrlId = id[0] });
+                return data.SingleOrDefault();
             }
         }
 
@@ -68,14 +104,6 @@ namespace SX.WebCore.Repositories
             {
                 var data = conn.Query<string>("dbo.get_banned_urls").ToArray();
                 return data;
-            }
-        }
-
-        public override void Delete(SxBannedUrl model)
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Execute("dbo.del_banned_url @bannedUrlId", new { bannedUrlId=model.Id });
             }
         }
     }

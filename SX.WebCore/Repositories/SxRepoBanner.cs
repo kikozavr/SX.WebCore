@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -11,9 +12,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoBanner<TDbContext> : SxDbRepository<Guid, SxBanner, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoBanner<TDbContext> : SxDbRepository<Guid, SxBanner, TDbContext, SxVMBanner> where TDbContext : SxDbContext
     {
-        public override SxBanner[] Read(SxFilter filter)
+        public override SxVMBanner[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -33,11 +34,11 @@ namespace SX.WebCore.Repositories
             sbCount.Append("SELECT COUNT(1) FROM D_BANNER AS db ");
             sbCount.Append(gws);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
                 
-                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
-                return conn.Query<SxBanner>(sb.ToString(), param: param).ToArray();
+                filter.PagerInfo.TotalItems = connection.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                return connection.Query<SxVMBanner>(sb.ToString(), param: param).ToArray();
             }
         }
         private static string getBannersWhereString(SxFilter filter, out object param)
@@ -96,13 +97,13 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override IQueryable<SxBanner> All
+        public override SxVMBanner[] All
         {
             get
             {
                 using (var conn = new SqlConnection(ConnectionString))
                 {
-                    var data = conn.Query<SxBanner, SxPicture, SxBanner>("dbo.get_banners @id, @place", (b, p) =>
+                    var data = conn.Query<SxVMBanner, SxVMPicture, SxVMBanner>("dbo.get_banners @id, @place", (b, p) =>
                     {
                         b.PictureId = p.Id;
                         b.Picture = p;
@@ -113,7 +114,7 @@ namespace SX.WebCore.Repositories
                         place = (SxBanner.BannerPlace?)null
                     }, splitOn: "Id");
 
-                    return data.AsQueryable();
+                    return data.ToArray();
                 }
             }
         }

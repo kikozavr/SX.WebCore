@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System;
 using System.Data.SqlClient;
 using System.Linq;
@@ -9,9 +10,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepo301Redirect<TDbContext> : SxDbRepository<Guid, Sx301Redirect, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepo301Redirect<TDbContext> : SxDbRepository<Guid, Sx301Redirect, TDbContext, SxVM301Redirect> where TDbContext : SxDbContext
     {
-        public override Sx301Redirect[] Read(SxFilter filter)
+        public override SxVM301Redirect[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
@@ -38,7 +39,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<Sx301Redirect>(sb.ToString(), param: param);
+                var data = conn.Query<SxVM301Redirect>(sb.ToString(), param: param);
                 filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }

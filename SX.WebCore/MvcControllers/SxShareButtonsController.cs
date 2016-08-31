@@ -24,7 +24,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "NetName", Direction = SortDirection.Asc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
-            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxShareButton, SxVMShareButton>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
 
@@ -36,7 +36,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxShareButton, SxVMShareButton>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 

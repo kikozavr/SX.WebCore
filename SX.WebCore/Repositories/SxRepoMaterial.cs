@@ -12,7 +12,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoMaterial<TModel, TViewModel, TDbContext> : SxDbRepository<int, TModel, TDbContext>
+    public class SxRepoMaterial<TModel, TViewModel, TDbContext> : SxDbRepository<int, TModel, TDbContext, TViewModel>
         where TModel : SxMaterial
         where TViewModel : SxVMMaterial
         where TDbContext : SxDbContext
@@ -43,7 +43,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override TModel[] Read(SxFilter filter)
+        public override TViewModel[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
@@ -71,15 +71,15 @@ namespace SX.WebCore.Repositories
             sbCount.Append("SELECT COUNT(1) FROM DV_MATERIAL AS dm ");
             sbCount.Append(gws);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<TModel, SxMaterialCategory, SxAppUser, SxPicture, TModel>(sb.ToString(), (m, c, u, p)=> {
+                var data = connection.Query<TViewModel, SxVMMaterialCategory, SxVMAppUser, SxVMPicture, TViewModel>(sb.ToString(), (m, c, u, p)=> {
                     m.Category = c;
                     m.User = u;
                     m.FrontPicture = p;
                     return m;
                 }, param: param, splitOn:"Id");
-                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                filter.PagerInfo.TotalItems = connection.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }

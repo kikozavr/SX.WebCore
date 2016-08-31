@@ -37,7 +37,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "Title", Direction = SortDirection.Asc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
 
@@ -49,7 +49,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -63,7 +63,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = _repo.Read(filter).Select(x=>Mapper.Map<SxSiteTest, SxVMSiteTest>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= pageSize ? 1 : page;
 

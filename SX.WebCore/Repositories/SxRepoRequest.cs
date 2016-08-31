@@ -11,7 +11,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoRequest<TDbContext> : SxDbRepository<Guid, SxRequest, TDbContext> where TDbContext : SxDbContext
+    public class SxRepoRequest<TDbContext> : SxDbRepository<Guid, SxRequest, TDbContext, SxVMRequest> where TDbContext : SxDbContext
     {
         public override SxRequest Create(SxRequest model)
         {
@@ -34,7 +34,7 @@ namespace SX.WebCore.Repositories
             return base.GetByKey(id);
         }
 
-        public override SxRequest[] Read(SxFilter filter)
+        public override SxVMRequest[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
@@ -66,7 +66,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxRequest>(sb.ToString(), param: param);
+                var data = conn.Query<SxVMRequest>(sb.ToString(), param: param);
                 filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }

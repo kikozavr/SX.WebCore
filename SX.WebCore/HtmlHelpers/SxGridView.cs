@@ -159,7 +159,7 @@ namespace SX.WebCore.HtmlHelpers
                         a.InnerHtml += link;
                         th.InnerHtml += a;
                     }
-                    else if (settings.ShowSelectedCheckbox)
+                    else if (settings.ShowSelectedCheckbox && settings.Filter.PagerInfo.TotalItems>0)
                     {
                         th.InnerHtml += "<input type=\"checkbox\" data-toggle=\"tooltip\" title=\"Выделить все\" class=\"sx-gv__select-all-chbx\" />";
                     }

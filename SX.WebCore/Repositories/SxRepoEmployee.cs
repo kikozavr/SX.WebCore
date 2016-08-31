@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoEmployee<TDbContext> : SxDbRepository<string, SxEmployee, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoEmployee<TDbContext> : SxDbRepository<string, SxEmployee, TDbContext, SxVMEmployee> where TDbContext : SxDbContext
     {
-        public override SxEmployee[] Read(SxFilter filter)
+        public override SxVMEmployee[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -35,7 +36,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxEmployee, SxAppUser, SxEmployee>(sb.ToString(), (e, u) => {
+                var data = conn.Query<SxVMEmployee, SxVMAppUser, SxVMEmployee>(sb.ToString(), (e, u) => {
                     e.User = u;
                     return e;
                 }, param: param, splitOn: "Id");

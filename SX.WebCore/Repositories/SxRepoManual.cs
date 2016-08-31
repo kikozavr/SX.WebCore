@@ -12,7 +12,7 @@ namespace SX.WebCore.Repositories
     {
         public SxRepoManual() : base(Enums.ModelCoreType.Manual) { }
 
-        public override SxManual[] Read(SxFilter filter)
+        public override SxVMMaterial[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
@@ -41,7 +41,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxManual>(sb.ToString(), param: param);
+                var data = conn.Query<SxVMMaterial>(sb.ToString(), param: param);
                 filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }

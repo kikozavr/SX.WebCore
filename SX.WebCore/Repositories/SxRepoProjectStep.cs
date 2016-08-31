@@ -1,13 +1,14 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
+using SX.WebCore.ViewModels;
 using System.Data.SqlClient;
 using System.Linq;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoProjectStep<TDbContext> : SxDbRepository<int, SxProjectStep, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoProjectStep<TDbContext> : SxDbRepository<int, SxProjectStep, TDbContext, SxVMProjectStep> where TDbContext : SxDbContext
     {
-        public override SxProjectStep[] Read(SxFilter filter)
+        public override SxVMProjectStep[] Read(SxFilter filter)
         {
             var query = @"WITH j(Id, [Level]) AS (
          SELECT dps.Id,
@@ -35,7 +36,7 @@ FROM   D_PROJECT_STEP AS dps";
 
             using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = connection.Query<SxProjectStep>(query);
+                var data = connection.Query<SxVMProjectStep>(query);
                 filter.PagerInfo.TotalItems = connection.Query<int>(queryCount).SingleOrDefault();
                 return data.ToArray();
             }

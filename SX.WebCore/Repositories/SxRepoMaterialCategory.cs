@@ -6,10 +6,11 @@ using SX.WebCore.Providers;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 using static SX.WebCore.Enums;
 using System.Text;
+using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoMaterialCategory<TDbContext> : SxDbRepository<string, SxMaterialCategory, TDbContext>
+    public class SxRepoMaterialCategory<TDbContext> : SxDbRepository<string, SxMaterialCategory, TDbContext, SxVMMaterialCategory>
         where TDbContext : SxDbContext
     {
         public override SxMaterialCategory Create(SxMaterialCategory model)
@@ -33,7 +34,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override SxMaterialCategory[] Read(SxFilter filter)
+        public override SxVMMaterialCategory[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -55,7 +56,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxMaterialCategory>(sb.ToString(), param: param);
+                var data = conn.Query<SxVMMaterialCategory>(sb.ToString(), param: param);
                 filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }

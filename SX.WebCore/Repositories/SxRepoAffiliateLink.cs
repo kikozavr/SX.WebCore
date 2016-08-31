@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -11,7 +11,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoAffiliateLink<TDbContext> : SxDbRepository<Guid, SxAffiliateLink, TDbContext> where TDbContext : SxDbContext
+    public class SxRepoAffiliateLink<TDbContext> : SxDbRepository<Guid, SxAffiliateLink, TDbContext, SxVMAffiliateLink> where TDbContext : SxDbContext
     {
         public override SxAffiliateLink Create(SxAffiliateLink model)
         {
@@ -28,7 +28,7 @@ namespace SX.WebCore.Repositories
             }
         }
 
-        public override SxAffiliateLink[] Read(SxFilter filter)
+        public override SxVMAffiliateLink[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -50,7 +50,7 @@ namespace SX.WebCore.Repositories
 
             using (var conn = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxAffiliateLink>(sb.ToString(), param: param);
+                var data = conn.Query<SxVMAffiliateLink>(sb.ToString(), param: param);
                 filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }

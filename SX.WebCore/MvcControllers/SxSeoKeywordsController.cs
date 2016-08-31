@@ -23,9 +23,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order=order, AddintionalInfo=new object[] { stid } };
 
-            var viewModel = _repo.Read(filter)
-                .Select(x=>Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x))
-                .ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
             ViewBag.SeoTagsId = stid;
@@ -38,9 +36,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { stid } };
             
-            var viewModel = _repo.Read(filter)
-                .Select(x => Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x))
-                .ToArray();
+            var viewModel = _repo.Read(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -59,11 +55,7 @@ namespace SX.WebCore.MvcControllers
                 var redactModel = Mapper.Map<SxVMEditSeoKeyword, SxSeoKeyword>(model);
                 SxSeoKeyword newModel = null;
                 if (model.Id == 0)
-                {
-                    var exist = _repo.All.FirstOrDefault(x => x.SeoTagsId == model.SeoTagsId && x.Value == model.Value) != null;
-                    if (!exist)
-                        newModel = _repo.Create(redactModel);
-                }
+                    newModel = _repo.Create(redactModel);
                 else
                     newModel = _repo.Update(redactModel, true, "SeoTagsId", "Value");
             }

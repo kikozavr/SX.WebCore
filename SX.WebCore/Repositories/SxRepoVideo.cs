@@ -11,9 +11,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoVideo<TDbContext> : SxDbRepository<Guid, SxVideo, TDbContext> where TDbContext : SxDbContext
+    public class SxRepoVideo<TDbContext> : SxDbRepository<Guid, SxVideo, TDbContext, SxVMVideo> where TDbContext : SxDbContext
     {
-        public override SxVideo[] Read(SxFilter filter)
+        public override SxVMVideo[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -33,10 +33,10 @@ namespace SX.WebCore.Repositories
             sbCount.Append("SELECT COUNT(1) FROM D_VIDEO AS dv ");
             sbCount.Append(gws);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxVideo>(sb.ToString(), param: param);
-                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                var data = connection.Query<SxVMVideo>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = connection.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }

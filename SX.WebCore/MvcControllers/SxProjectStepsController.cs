@@ -22,8 +22,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter();
             var data = _repo.Read(filter).ToArray();
-            var parents = data.Where(x => !x.ParentStepId.HasValue)
-                .Select(x => Mapper.Map<SxProjectStep, SxVMProjectStep>(x)).ToArray();
+            var parents = data.Where(x => !x.ParentStepId.HasValue).ToArray();
             if (parents.Any())
             {
                 for (int i = 0; i < parents.Length; i++)
@@ -35,10 +34,9 @@ namespace SX.WebCore.MvcControllers
             return View(parents);
         }
 
-        private static void fillSteps(SxVMProjectStep step, SxProjectStep[] steps, IMapper mapper)
+        private static void fillSteps(SxVMProjectStep step, SxVMProjectStep[] steps, IMapper mapper)
         {
-            step.Steps = steps.Where(x => x.ParentStepId == step.Id)
-                .Select(x => mapper.Map<SxProjectStep, SxVMProjectStep>(x)).ToArray();
+            step.Steps = steps.Where(x => x.ParentStepId == step.Id).ToArray();
             if (step.Steps.Any())
             {
                 for (int i = 0; i < step.Steps.Length; i++)

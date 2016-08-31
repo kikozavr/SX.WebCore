@@ -43,7 +43,8 @@ namespace SX.WebCore.Abstract
         public virtual SxMaterialCategory Category { get; set; }
         public string CategoryId { get; set; }
 
-        public ICollection<SxVideoLink> VideoLinks { get; set; }
+        public virtual ICollection<SxVideoLink> VideoLinks { get; set; }
+        public virtual ICollection<SxPictureLink> PictureLinks { get; set; }
 
         public bool IsTop { get; set; }
 

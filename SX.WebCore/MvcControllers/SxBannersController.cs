@@ -29,9 +29,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "db.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
             
-            var viewModel = _repo.Read(filter)
-                .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
-                .ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
 
@@ -49,9 +47,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
-            var viewModel =(await _repo.ReadAsync(filter))
-                .Select(x=>Mapper.Map<SxBanner, SxVMBanner>(x))
-                .ToArray();
+            var viewModel =await _repo.ReadAsync(filter);
 
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
@@ -112,9 +108,7 @@ namespace SX.WebCore.MvcControllers
             ViewBag.Filter = filterModel;
             var filter = new SxFilter(page, pageSize) { WhereExpressionObject = filterModel, AddintionalInfo=new object[] { false } };
 
-            var viewModel =(await _repo.ReadAsync(filter))
-                .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
-                .ToArray();
+            var viewModel =await _repo.ReadAsync(filter);
 
             ViewBag.PagerInfo = filter.PagerInfo;
             ViewBag.BannerGroupId = bgid;
@@ -127,9 +121,7 @@ namespace SX.WebCore.MvcControllers
         {
             var filter = new SxFilter(page, pageSize) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid }, AddintionalInfo=new object[] { true } };
             
-            var viewModel = _repo.Read(filter)
-                .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
-                .ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.BannerGroupId = bgid;
             ViewBag.Filter = filter;
@@ -143,9 +135,7 @@ namespace SX.WebCore.MvcControllers
             filterModel.BannerGroupId = bgid;
             var filter = new SxFilter(page, pageSize) { Order = order, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { forGroup } };
             
-            var viewModel =(await _repo.ReadAsync(filter))
-                .Select(x => Mapper.Map<SxBanner, SxVMBanner>(x))
-                .ToArray();
+            var viewModel =await _repo.ReadAsync(filter);
 
             ViewBag.BannerGroupId = bgid;
             ViewBag.ForGroup = forGroup;

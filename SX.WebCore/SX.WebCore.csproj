@@ -213,6 +213,7 @@
     <Compile Include="MvcControllers\SxStatisticsController.cs" />
     <Compile Include="MvcControllers\SxUserRolesController.cs" />
     <Compile Include="MvcControllers\SxUsersController.cs" />
+    <Compile Include="MvcControllers\SxPictureLinksController.cs" />
     <Compile Include="MvcControllers\SxVideoLinksController.cs" />
     <Compile Include="MvcControllers\SxMaterialCategoriesController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
@@ -226,6 +227,11 @@
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
     <Compile Include="Repositories\SxRepoSiteTestSubject.cs" />
     <Compile Include="Repositories\SxRepositoryChat.cs" />
+    <Compile Include="Resources\Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="SxAffiliateBannerView.cs" />
     <Compile Include="SxAffiliateLink.cs" />
     <Compile Include="SxBannersStatistic.cs" />
@@ -295,7 +301,8 @@
     <Compile Include="SxArticle.cs" />
     <Compile Include="SxBannedUrl.cs" />
     <Compile Include="SxBanner.cs" />
-    <Compile Include="SxBannerCollection.cs" />
+    <Compile Include="SxPictureLink.cs" />
+    <Compile Include="ViewModels\SxVMBannerCollection.cs" />
     <Compile Include="SxBannerGroup.cs" />
     <Compile Include="SxBannerGroupBanner.cs" />
     <Compile Include="SxBBCodeParser.cs" />
@@ -337,6 +344,7 @@
     <Compile Include="ViewModels\SxVMBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMBanner.cs" />
     <Compile Include="ViewModels\SxVMBannerGroup.cs" />
+    <Compile Include="ViewModels\SxVMBannerGroupBanner.cs" />
     <Compile Include="ViewModels\SxVMBreadcrumb.cs" />
     <Compile Include="ViewModels\SxVMComment.cs" />
     <Compile Include="ViewModels\SxVMEdit301Redirect.cs" />
@@ -363,12 +371,14 @@
     <Compile Include="ViewModels\SxVMManual.cs" />
     <Compile Include="ViewModels\SxVMMaterial.cs" />
     <Compile Include="ViewModels\SxVMMaterialCategory.cs" />
+    <Compile Include="ViewModels\SxVMRating.cs" />
     <Compile Include="ViewModels\SxVMShareButton.cs" />
     <Compile Include="ViewModels\SxVMNet.cs" />
     <Compile Include="ViewModels\SxVMPicture.cs" />
     <Compile Include="ViewModels\SxVMProjectStep.cs" />
     <Compile Include="ViewModels\SxVMSeoKeyword.cs" />
     <Compile Include="ViewModels\SxVMSeoTags.cs" />
+    <Compile Include="ViewModels\SxVMSiteSetting.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />
     <Compile Include="ViewModels\SxVMSiteTest.cs" />
     <Compile Include="ViewModels\SxVMSiteTestAnswer.cs" />
@@ -405,6 +415,10 @@
     <EmbeddedResource Include="Resources\Files.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Files.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Settings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

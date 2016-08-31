@@ -8,5 +8,6 @@ namespace SX.WebCore.ViewModels
         public DateTime DateCreate { get; set; }
         public string Html { get; set; }
         public SxVMAppUser User { get; set; }
+        public string UserName { get; set; }
     }
 }

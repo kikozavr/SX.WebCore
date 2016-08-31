@@ -36,6 +36,8 @@ namespace SX.WebCore
 
         public DbSet<SxNews> News { get; set; }
 
+        public DbSet<SxPictureLink> PictureLinks { get; set; }
+
         public DbSet<SxPicture> Pictures { get; set; }
 
         public DbSet<SxProjectStep> ProjectSteps { get; set; }
@@ -85,6 +87,10 @@ namespace SX.WebCore
             modelBuilder.Entity<SxVideoLink>().HasKey(x => new { x.MaterialId, x.ModelCoreType, x.VideoId });
             modelBuilder.Entity<SxVideoLink>().HasRequired(x => x.Material).WithMany(x => x.VideoLinks).HasForeignKey(x => new { x.MaterialId, x.ModelCoreType }).WillCascadeOnDelete(true);
             modelBuilder.Entity<SxVideoLink>().HasRequired(x => x.Video).WithMany().HasForeignKey(x => new { x.VideoId }).WillCascadeOnDelete(true);
+
+            modelBuilder.Entity<SxPictureLink>().HasKey(x => new { x.MaterialId, x.ModelCoreType, x.PictureId });
+            modelBuilder.Entity<SxPictureLink>().HasRequired(x => x.Material).WithMany(x => x.PictureLinks).HasForeignKey(x => new { x.MaterialId, x.ModelCoreType }).WillCascadeOnDelete(true);
+            modelBuilder.Entity<SxPictureLink>().HasRequired(x => x.Picture).WithMany().HasForeignKey(x => new { x.PictureId }).WillCascadeOnDelete(true);
 
             modelBuilder.Entity<SxEmployee>().HasKey(x => x.Id).HasRequired(x => x.User).WithOptional().WillCascadeOnDelete(true);
 

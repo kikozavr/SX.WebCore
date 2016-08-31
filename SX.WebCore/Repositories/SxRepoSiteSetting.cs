@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
+using SX.WebCore.ViewModels;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSiteSetting<TDbContext> : SxDbRepository<string, SxSiteSetting, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoSiteSetting<TDbContext> : SxDbRepository<string, SxSiteSetting, TDbContext, SxVMSiteSetting> where TDbContext : SxDbContext
     {
         public override SxSiteSetting GetByKey(params object[] id)
         {

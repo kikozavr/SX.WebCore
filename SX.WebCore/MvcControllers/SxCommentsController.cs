@@ -84,7 +84,7 @@ namespace SX.WebCore.MvcControllers
         private SxVMComment[] getResult(int mid, ModelCoreType mct)
         {
             var filter = new SxFilter { MaterialId = mid, ModelCoreType = mct };
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxComment, SxVMComment>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
             return viewModel;
         }
     }

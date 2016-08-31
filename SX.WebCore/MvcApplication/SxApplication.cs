@@ -7,11 +7,10 @@ using AutoMapper;
 using SX.WebCore.Providers;
 using System.IO;
 using SX.WebCore.Repositories;
-using System.Linq;
 using System.Collections.Generic;
-using SX.WebCore.Resources;
 using System.Web;
 using SX.WebCore.Managers;
+using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.MvcApplication
 {
@@ -25,18 +24,18 @@ namespace SX.WebCore.MvcApplication
         public static MapperConfiguration MapperConfiguration { get; set; }
 
         public static SxBannerProvider BannerProvider { get; set; }
-        private static SxBannerCollection getBannerCollection(CacheItemPolicy cip = null)
+        private static SxVMBannerCollection getBannerCollection(CacheItemPolicy cip = null)
         {
-            var cacheBanners = (SxBannerCollection)AppCache["CACHE_SITE_BANNERS"];
+            var cacheBanners = (SxVMBannerCollection)AppCache["CACHE_SITE_BANNERS"];
 
             if (cacheBanners == null)
             {
                 cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes:60);
-                cacheBanners = new SxBannerCollection();
-                cacheBanners.Banners = new SxRepoBanner<TDbContext>().All.ToArray();
-                cacheBanners.BannerGroups = new SxRepoBannerGroup<TDbContext>().All.ToArray();
+                cacheBanners = new SxVMBannerCollection();
+                cacheBanners.Banners = new SxRepoBanner<TDbContext>().All;
+                cacheBanners.BannerGroups = new SxRepoBannerGroup<TDbContext>().All;
 
-                AppCache.Add("CACHE_SITE_BANNERS", cacheBanners, SxCacheExpirationManager.GetExpiration(minutes: 15));
+                AppCache.Add("CACHE_SITE_BANNERS", cacheBanners, cip);
             }
 
             return cacheBanners;

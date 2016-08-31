@@ -7,12 +7,13 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoShareButton<TDbContext> : SxDbRepository<int, SxShareButton, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoShareButton<TDbContext> : SxDbRepository<int, SxShareButton, TDbContext, SxVMShareButton> where TDbContext : SxDbContext
     {
-        public override SxShareButton[] Read(SxFilter filter)
+        public override SxVMShareButton[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -37,13 +38,14 @@ namespace SX.WebCore.Repositories
             sbCount.Append(joinString);
             sbCount.Append(gws);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxShareButton, SxNet, SxShareButton>(sb.ToString(), (b, n) => {
+                var data = connection.Query<SxVMShareButton, SxVMNet, SxVMShareButton>(sb.ToString(), (b, n) => {
+                    b.NetName = n.Name;
                     b.Net = n;
                     return b;
                 }, param: param, splitOn: "Id");
-                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                filter.PagerInfo.TotalItems = connection.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }

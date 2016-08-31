@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -10,9 +11,16 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSeoTags<TDbContext> : SxDbRepository<int, SxSeoTags, TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepoSeoTags<TDbContext> : SxDbRepository<int, SxSeoTags, TDbContext, SxVMSeoTags> where TDbContext : SxDbContext
     {
-        public override SxSeoTags[] Read(SxFilter filter)
+        private static SxRepoSeoKeyword<TDbContext> _repoSeoKeywords;
+        public SxRepoSeoTags()
+        {
+            if (_repoSeoKeywords == null)
+                _repoSeoKeywords = new SxRepoSeoKeyword<TDbContext>();
+        }
+
+        public override SxVMSeoTags[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString());
@@ -32,10 +40,10 @@ namespace SX.WebCore.Repositories
             sbCount.Append("SELECT COUNT(1) FROM D_SEO_TAGS AS dsi ");
             sbCount.Append(gws);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (var connection = new SqlConnection(ConnectionString))
             {
-                var data = conn.Query<SxSeoTags>(sb.ToString(), param: param);
-                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
+                var data = connection.Query<SxVMSeoTags>(sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = connection.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }
@@ -97,6 +105,8 @@ namespace SX.WebCore.Repositories
             using (var connection = new SqlConnection(ConnectionString))
             {
                 var data = connection.Query<SxSeoTags>(query, new { mid = mid, mct = mct }).SingleOrDefault();
+                if (data != null)
+                    data.Keywords = connection.Query<SxSeoKeyword>("dbo.get_page_seo_info_keywords @seoTagsId", new { seoTagsId = data.Id }).ToArray();
                 return data;
             }
         }

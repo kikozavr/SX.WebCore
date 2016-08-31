@@ -64,7 +64,7 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "dm.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
-            var viewModel = _repo.Read(filter).Select(x => Mapper.Map<SxMaterial, TViewModel>(x)).ToArray();
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
 
@@ -137,7 +137,7 @@ namespace SX.WebCore.MvcControllers
                 ViewBag.Tag = tag;
             }
 
-            viewModel.Collection = Repo.Read(filter).Select(x => Mapper.Map<TModel, TViewModel>(x)).ToArray();
+            viewModel.Collection = Repo.Read(filter);
             viewModel.PagerInfo = new SxPagerInfo(filter.PagerInfo.Page, filter.PagerInfo.PageSize)
             {
                 PagerSize = 3,

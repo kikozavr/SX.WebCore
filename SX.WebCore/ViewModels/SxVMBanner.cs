@@ -11,7 +11,10 @@ namespace SX.WebCore.ViewModels
 
         public string Url { get; set; }
 
+        public string RawUrl { get; set; }
+
         public Guid PictureId { get; set; }
+        public SxVMPicture Picture { get; set; }
 
         public Guid? BannerGroupId { get; set; }
 

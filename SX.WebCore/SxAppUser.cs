@@ -13,7 +13,7 @@ namespace SX.WebCore
 
         public DateTime DateUpdate { get; set; }
 
-        [MaxLength(100)]
+        [MaxLength(100), Required]
         public string NikName { get; set; }
 
         public virtual SxPicture Avatar { get; set; }

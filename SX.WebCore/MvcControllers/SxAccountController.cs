@@ -149,7 +149,8 @@ namespace SX.WebCore.MvcControllers
         [AllowAnonymous]
         public virtual ActionResult Register()
         {
-            return View();
+            var viewModel = new SxVMRegister();
+            return View(viewModel);
         }
 
         //

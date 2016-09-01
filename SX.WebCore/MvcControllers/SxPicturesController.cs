@@ -1,5 +1,4 @@
-﻿using SX.WebCore.Abstract;
-using SX.WebCore.Attrubutes;
+﻿using SX.WebCore.Attrubutes;
 using SX.WebCore.Managers;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.Providers;
@@ -8,14 +7,15 @@ using SX.WebCore.ViewModels;
 using System;
 using System.Configuration;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.SessionState;
+using System.Web.UI;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
@@ -35,11 +35,10 @@ namespace SX.WebCore.MvcControllers
                 _repo = value;
             }
         }
-        private static object _lck = new object();
         public SxPicturesController()
         {
-            if(_repo==null)
-                _repo = new SxRepoPicture<TDbContext>();
+            if (_repo == null)
+                _repo = Repo;
         }
 
         private static int _pageSize = 20;
@@ -91,9 +90,10 @@ namespace SX.WebCore.MvcControllers
                 var data = files.Where(x => x.ContentLength <= maxSize && allowFormats.Contains(x.ContentType));
                 foreach (var file in data)
                 {
-                    var redactModel = new SxPicture {
-                        Caption =file.FileName,
-                        ImgFormat=file.ContentType
+                    var redactModel = new SxPicture
+                    {
+                        Caption = file.FileName,
+                        ImgFormat = file.ContentType
                     };
                     redactModel = getImage(redactModel, file);
                     _repo.Create(redactModel);
@@ -103,7 +103,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         private static int maxSize = int.Parse(ConfigurationManager.AppSettings["MaxPictureLength"]);
-        private static string[] allowFormats= new string[] {
+        private static string[] allowFormats = new string[] {
                 "image/jpeg",
                 "image/png",
                 "image/gif"
@@ -171,82 +171,83 @@ namespace SX.WebCore.MvcControllers
             return RedirectToAction("Index");
         }
 
+        private const int pictureCachingSeconds = 3600;
+
         [HttpGet]
         [NotLogRequest]
-        [OutputCache(Duration = 900, VaryByParam = "id;width;height")]
+        [OutputCache(Duration = pictureCachingSeconds, VaryByParam = "id;width;height", Location = OutputCacheLocation.ServerAndClient)]
         public async virtual Task<ActionResult> Picture(Guid id, int? width = null, int? height = null)
         {
-            return await Task.Run(() =>
-            {
-                var imgFormat = string.Empty;
-                var isExist = false;
-                var inCache = false;
-                var picture = getPicture(id, out imgFormat, out isExist, out inCache, width, height);
+            //var imgFormat = string.Empty;
+            //var isExist = false;
+            //var inCache = false;
+            //var pictureBytes = await Task.Run(() => { return getPicture(id, out imgFormat, out isExist, out inCache, width, height); });
 
-                if (!isExist)
-                {
-                    Response.StatusCode = 404;
-                    return null;
-                }
+            //if (!isExist || pictureBytes == null)
+            //{
+            //    Response.StatusCode = 404;
+            //    return null;
+            //}
 
-                if(inCache)
-                    Response.StatusCode = 304;
+            //return new FileStreamResult(new MemoryStream(pictureBytes), imgFormat);
 
-                using (var ms = new MemoryStream(picture))
-                {
-                    return new FileStreamResult(new MemoryStream(picture), imgFormat);
-                }
-            });
+            var data = await _repo.GetByKeyAsync(id);
+            if (data == null)
+                return new HttpNotFoundResult();
+
+            if (width.HasValue && data.Width > width)
+                data.OriginalContent = SxPictureProvider.ScaleImage(data.OriginalContent, SxPictureProvider.ImageScaleMode.Width, destWidth: width);
+            else if (height.HasValue && data.Height > height)
+                data.OriginalContent = SxPictureProvider.ScaleImage(data.OriginalContent, SxPictureProvider.ImageScaleMode.Height, destHeight: height);
+
+            return new FileStreamResult(new MemoryStream(data.OriginalContent), data.ImgFormat);
+
         }
 
-        private static string getPictureName(Guid id, int? width = null, int? height = null)
-        {
-            var sb = new StringBuilder();
-            sb.Append(id.ToString().ToLower());
-            if (width.HasValue && !height.HasValue)
-                sb.AppendFormat("_w{0}", width);
-            else if (!width.HasValue && height.HasValue)
-                sb.AppendFormat("_h{0}", height);
-            else if (width.HasValue && height.HasValue)
-                sb.AppendFormat("_w{0}_h{1}", width, height);
+        //private static string getPictureName(Guid id, int? width = null, int? height = null)
+        //{
+        //    var sb = new StringBuilder();
+        //    sb.Append(id.ToString().ToLower());
+        //    if (width.HasValue && !height.HasValue)
+        //        sb.AppendFormat("_w{0}", width);
+        //    else if (!width.HasValue && height.HasValue)
+        //        sb.AppendFormat("_h{0}", height);
+        //    else if (width.HasValue && height.HasValue)
+        //        sb.AppendFormat("_w{0}_h{1}", width, height);
 
-            return "pic_"+sb.ToString();
-        }
+        //    return "pic_" + sb.ToString();
+        //}
 
-        private byte[] getPicture(Guid id, out string imgFormat, out bool isExists, out bool inCache, int? width = null, int? height = null)
-        {
-            var cache = SxApplication<TDbContext>.AppCache;
-            var name = getPictureName(id, width, height);
-            var picture = (SxPicture)cache.Get(name);
-            if (picture == null)
-            {
-                inCache = false;
-                picture = _repo.GetByKey(id);
-                isExists = picture!=null;
-                imgFormat = isExists ? picture.ImgFormat : null;
+        //private static byte[] getPicture(Guid id, out string imgFormat, out bool isExists, out bool inCache, int? width = null, int? height = null)
+        //{
+        //    var cache = SxApplication<TDbContext>.AppCache;
+        //    var name = getPictureName(id, width, height);
+        //    var picture = (SxPicture)cache.Get(name);
+        //    if (picture == null)
+        //    {
+        //        inCache = false;
+        //        picture = _repo.GetByKey(id);
+        //        isExists = picture != null;
+        //        imgFormat = isExists ? picture.ImgFormat : null;
 
-                if (!isExists) return null;
+        //        if (!isExists) return null;
 
-                if (width.HasValue && picture.Width > width)
-                    picture.OriginalContent = SxPictureProvider.ScaleImage(picture.OriginalContent, SxPictureProvider.ImageScaleMode.Width, destWidth: width);
-                else if (height.HasValue && picture.Height > height)
-                    picture.OriginalContent = SxPictureProvider.ScaleImage(picture.OriginalContent, SxPictureProvider.ImageScaleMode.Height, destHeight: height);
+        //        if (width.HasValue && picture.Width > width)
+        //            picture.OriginalContent = SxPictureProvider.ScaleImage(picture.OriginalContent, SxPictureProvider.ImageScaleMode.Width, destWidth: width);
+        //        else if (height.HasValue && picture.Height > height)
+        //            picture.OriginalContent = SxPictureProvider.ScaleImage(picture.OriginalContent, SxPictureProvider.ImageScaleMode.Height, destHeight: height);
 
-                lock(_lck)
-                {
-                    if(cache.Get(name) == null)
-                        cache.Add(name, picture, SxCacheExpirationManager.GetExpiration(minutes:60));
-                }
-            }
-            else
-            {
-                inCache = true;
-                imgFormat = picture.ImgFormat;
-                isExists = true;
-            }
+        //        cache.Add(name, picture, SxCacheExpirationManager.GetExpiration(minutes: pictureCachingSeconds/60));
+        //    }
+        //    else
+        //    {
+        //        inCache = true;
+        //        imgFormat = picture.ImgFormat;
+        //        isExists = true;
+        //    }
 
-            return picture.OriginalContent;
-        }
+        //    return picture.OriginalContent;
+        //}
 
         [HttpPost]
         [Authorize(Roles = "photo-redactor")]

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using SX.WebCore.Attrubutes;
+using SX.WebCore.Managers;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.Repositories;
 using System;
@@ -234,6 +235,24 @@ namespace SX.WebCore.MvcControllers
                 var identityCookie = Request.Cookies[_identityCookieName];
                 return identityCookie?.Value;
             }
+        }
+
+        [NonAction]
+        protected static async Task SendNoReplyMailAsync(string body, string[] mailsTo, string subject)
+        {
+            var smtpUserName = ConfigurationManager.AppSettings["NoReplyEmail"];
+            var smtpUserPassword = ConfigurationManager.AppSettings["NoReplyEmailPassword"];
+            var smtpHost = ConfigurationManager.AppSettings["NoReplySmtpHost"];
+            var smtpPort = int.Parse(ConfigurationManager.AppSettings["NoReplySmtpPort"]);
+
+            var mailManager = new SxAppMailManager(smtpUserName, smtpUserPassword, smtpHost, smtpPort);
+            await mailManager.SendMail(
+                mailFrom: smtpUserName,
+                mailsTo: mailsTo,
+                subject: subject,
+                body: body,
+                isBodyHtml: true
+                );
         }
     }
 }

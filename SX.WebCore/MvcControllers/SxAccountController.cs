@@ -11,11 +11,13 @@ using System;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.Hubs;
 using Newtonsoft.Json;
+using System.Configuration;
+using System.Net;
 
 namespace SX.WebCore.MvcControllers
 {
     [Authorize]
-    public abstract class SxAccountController<TDbContext> : SxBaseController<TDbContext> where TDbContext: SxDbContext
+    public abstract class SxAccountController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         public SxAppSignInManager SignInManager
         {
@@ -163,25 +165,24 @@ namespace SX.WebCore.MvcControllers
             if (ModelState.IsValid)
             {
                 var date = DateTime.Now;
-                var user = new SxAppUser { UserName = model.Email, Email = model.Email, DateCreate= date, DateUpdate=date, NikName=model.NikName };
+                var user = new SxAppUser { UserName = model.Email, Email = model.Email, DateCreate = date, DateUpdate = date, NikName = model.NikName, EmailConfirmed = false };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    UserManager.AddToRole(user.Id, "user");
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                    var code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                    var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
 
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    //string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    //await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    await SendNoReplyMailAsync(
+                        subject: "Подтверждение регистрации",
+                        body: "Для завершения регистрации пройдите по <a href=\"" + callbackUrl + "\">этой ссылке</a>",
+                        mailsTo: new string[] { user.Email }
+                        );
 
-                    return RedirectToAction("Index", "Home");
+                    return View("DisplayEmail", user);
                 }
                 AddErrors(result);
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -195,6 +196,8 @@ namespace SX.WebCore.MvcControllers
                 return View("Error");
             }
             var result = await UserManager.ConfirmEmailAsync(userId, code);
+            if (result == IdentityResult.Success)
+                UserManager.AddToRole(userId, "user");
             return View(result.Succeeded ? "ConfirmEmail" : "Error");
         }
 

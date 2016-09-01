@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SX.WebCore.MvcApplication;
+using System;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;

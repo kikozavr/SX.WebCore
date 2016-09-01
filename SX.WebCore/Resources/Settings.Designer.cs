@@ -70,7 +70,7 @@ namespace SX.WebCore.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to v. 1.0.0.13.
+        ///   Looks up a localized string similar to v. 1.0.0.14.
         /// </summary>
         public static string adminPanelVersion {
             get {

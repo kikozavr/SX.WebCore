@@ -68,7 +68,8 @@ namespace SX.WebCore.HtmlHelpers
             if (settings.FuncModelId != null)
             {
                 tr.MergeAttribute("data-id", settings.FuncModelId(node).ToString());
-                tr.MergeAttribute("onclick", settings.FuncRowClick());
+                if(settings.FuncRowClick!=null)
+                    tr.MergeAttribute("onclick", settings.FuncRowClick());
             }
             if (settings.FunActiveRow != null && settings.FunActiveRow(node))
                 tr.AddCssClass("active");

@@ -52,16 +52,16 @@ namespace SX.WebCore.MvcControllers
                 return new HttpNotFoundResult();
 
             var model = id.HasValue ? _repo.GetByKey(id) : new SxShareButton();
-            var viewModel = Mapper.Map<SxShareButton, SxVMEditShareButton>(model);
+            var viewModel = Mapper.Map<SxShareButton, SxVMShareButton>(model);
             return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditShareButton model)
+        public virtual ActionResult Edit(SxVMShareButton model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditShareButton, SxShareButton>(model);
+                var redactModel = Mapper.Map<SxVMShareButton, SxShareButton>(model);
                 SxShareButton newModel = null;
                 if (model.Id == 0)
                     return new HttpNotFoundResult();

@@ -571,21 +571,49 @@ BEGIN
 	           FROM   D_MATERIAL_CATEGORY AS dmc
 	           WHERE  dmc.Id = @categoryId
 	       )
-	    
-	    BEGIN TRANSACTION
-	    UPDATE D_MATERIAL_CATEGORY
-	    SET    ParentCategoryId = @categoryId
-	    WHERE  ParentCategoryId = @oldCategoryId
-	    
-	    UPDATE D_MATERIAL_CATEGORY
-	    SET    Id = @categoryId,
-	           Title = @title,
-	           ModelCoreType = @mct,
-	           ParentCategoryId = @pcid,
-	           FrontPictureId = @pictureId
-	    WHERE  Id = @oldCategoryId
-	    
-	    COMMIT TRANSACTION
+	    BEGIN
+	        BEGIN TRANSACTION
+	        
+	        ALTER TABLE [dbo].[DV_MATERIAL] DROP CONSTRAINT 
+	        [FK_dbo.DV_MATERIAL_dbo.D_MATERIAL_CATEGORY_CategoryId];
+	        
+	        UPDATE DV_MATERIAL
+	        SET    CategoryId = @categoryId
+	        WHERE  CategoryId = @oldCategoryId
+	        
+	        PRINT '1'
+	        
+	        UPDATE D_MATERIAL_CATEGORY
+	        SET    ParentCategoryId = @categoryId
+	        WHERE  ParentCategoryId = @oldCategoryId
+	        
+	        PRINT '2'
+	        
+	        UPDATE D_MATERIAL_CATEGORY
+	        SET    Id = @categoryId,
+	               Title = @title,
+	               ModelCoreType = @mct,
+	               ParentCategoryId = @pcid,
+	               FrontPictureId = @pictureId
+	        WHERE  Id = @oldCategoryId
+	        
+	        PRINT '3'
+	        
+	        ALTER TABLE [dbo].[DV_MATERIAL]  
+	        WITH CHECK ADD CONSTRAINT 
+	             [FK_dbo.DV_MATERIAL_dbo.D_MATERIAL_CATEGORY_CategoryId] FOREIGN 
+	             KEY([CategoryId])
+	             REFERENCES [dbo].[D_MATERIAL_CATEGORY] ([Id]);
+	        
+	        PRINT '4'
+	        
+	        ALTER TABLE [dbo].[DV_MATERIAL] CHECK CONSTRAINT 
+	        [FK_dbo.DV_MATERIAL_dbo.D_MATERIAL_CATEGORY_CategoryId];
+	        
+	        PRINT '5'
+	        
+	        COMMIT TRANSACTION
+	    END
 	END
 	
 	EXEC dbo.get_material_category @categoryId

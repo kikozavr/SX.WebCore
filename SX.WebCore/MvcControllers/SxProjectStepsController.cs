@@ -50,14 +50,14 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(int? id = null, int? pid = null)
         {
             var data = id.HasValue ? _repo.GetByKey(id) : new SxProjectStep { ParentStepId = pid };
-            var viewModel = Mapper.Map<SxProjectStep, SxVMEditProjectStep>(data);
+            var viewModel = Mapper.Map<SxProjectStep, SxVMProjectStep>(data);
             return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditProjectStep model)
+        public virtual ActionResult Edit(SxVMProjectStep model)
         {
-            var redactModel = Mapper.Map<SxVMEditProjectStep, SxProjectStep>(model);
+            var redactModel = Mapper.Map<SxVMProjectStep, SxProjectStep>(model);
             if (ModelState.IsValid)
             {
                 if (model.Id == 0)

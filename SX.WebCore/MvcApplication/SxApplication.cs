@@ -106,8 +106,8 @@ namespace SX.WebCore.MvcApplication
 
             var args = (SxApplicationEventArgs)e;
             LoggingRequest = args.LoggingRequest;
-            MapperConfiguration = args.MapperConfiguration;
-            BannerProvider= new SxBannerProvider(()=>getBannerCollection());
+            MapperConfiguration = AutoMapperConfig.MapperConfigurationInstance(args.MapperConfigurationExpression);
+            BannerProvider = new SxBannerProvider(()=>getBannerCollection());
             SiteSettingsProvider = new SxSiteSettingsProvider(() => getSiteSettings());
 
             AreaRegistration.RegisterAllAreas();
@@ -124,16 +124,6 @@ namespace SX.WebCore.MvcApplication
                 Directory.CreateDirectory(logDirectoryPath);
         }
 
-        protected virtual void Session_Start()
-        {
-
-        }
-
-        protected virtual void Session_End()
-        {
-
-        }
-
         protected void Application_Error()
         {
             var ex = Server.GetLastError();
@@ -145,7 +135,7 @@ namespace SX.WebCore.MvcApplication
     {
         public Action<HttpConfiguration> WebApiConfigRegister { get; set; }
         public Action<RouteCollection> RegisterRoutes { get; set; }
-        public MapperConfiguration MapperConfiguration { get; set; }
+        public Action<IMapperConfigurationExpression> MapperConfigurationExpression { get; set; }
         public bool LoggingRequest { get; set; }
     }
 

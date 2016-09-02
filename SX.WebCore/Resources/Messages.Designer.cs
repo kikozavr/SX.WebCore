@@ -61,11 +61,56 @@ namespace SX.WebCore.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to Поле должно содержать только буквы латинского алфавита и тире.
         /// </summary>
-        internal static string NotI {
+        internal static string IdentityStringField {
             get {
-                return ResourceManager.GetString("NotI", resourceCulture);
+                return ResourceManager.GetString("IdentityStringField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Длина поля не может превышать {0} символов.
+        /// </summary>
+        internal static string MaxLengthField {
+            get {
+                return ResourceManager.GetString("MaxLengthField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ошибка еквивалентности полей.
+        /// </summary>
+        internal static string NotEqualField {
+            get {
+                return ResourceManager.GetString("NotEqualField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Поле обязательно для заполнения.
+        /// </summary>
+        internal static string RequiredField {
+            get {
+                return ResourceManager.GetString("RequiredField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Введите валидный адрес электронной почты.
+        /// </summary>
+        internal static string ValidEmailField {
+            get {
+                return ResourceManager.GetString("ValidEmailField", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Введите валидный url.
+        /// </summary>
+        internal static string ValidUrlField {
+            get {
+                return ResourceManager.GetString("ValidUrlField", resourceCulture);
             }
         }
     }

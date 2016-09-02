@@ -57,11 +57,14 @@ namespace SX.WebCore.MvcControllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var routeDataValues = filterContext.RequestContext.RouteData.Values;
-            SxAreaName = routeDataValues["area"]?.ToString().ToLower();
+            var area = filterContext.RequestContext.RouteData.DataTokens["area"] ?? routeDataValues["area"];
+            SxAreaName = area?.ToString().ToLower();
             SxControllerName = routeDataValues["controller"].ToString().ToLower();
             SxActionName = routeDataValues["action"].ToString().ToLower();
             SxRawUrl = Request.RawUrl.ToLower();
             SxUrlReferrer = Request.UrlReferrer;
+
+            if (SxAreaName == "admin") return;
 
             //если экшн является дочерним или задан аттрибут нелогирования запроса
             var notLogRequest = filterContext.ActionDescriptor.GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(NotLogRequestAttribute)) != null;
@@ -102,7 +105,7 @@ namespace SX.WebCore.MvcControllers
             writeAffiliateCookies();
 
             //пишем информацию о запросе
-            if (Equals(SxApplication<TDbContext>.LoggingRequest, true) && SxAreaName != "admin")
+            if (Equals(SxApplication<TDbContext>.LoggingRequest, true))
             {
                 writeRequestInfo(identityCookie);
             }

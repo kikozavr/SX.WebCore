@@ -2,7 +2,6 @@
 using SX.WebCore.Attrubutes;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
-using System.Linq;
 using System.Web.Mvc;
 using static SX.WebCore.Enums;
 
@@ -31,7 +30,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public PartialViewResult Edit(int mid, ModelCoreType mct)
         {
-            var viewModel = new SxVMEditComment
+            var viewModel = new SxVMComment
             {
                 MaterialId = mid,
                 ModelCoreType = mct
@@ -57,7 +56,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public PartialViewResult Edit(SxVMEditComment model)
+        public PartialViewResult Edit(SxVMComment model)
         {
             var isAuth = User.Identity.IsAuthenticated;
             if (isAuth)
@@ -72,7 +71,7 @@ namespace SX.WebCore.MvcControllers
                     model.UserId = User.Identity.GetUserId();
 
                 var isNew = model.Id == 0;
-                var redactModel = Mapper.Map<SxVMEditComment, SxComment>(model);
+                var redactModel = Mapper.Map<SxVMComment, SxComment>(model);
                 if (isNew)
                     _repo.Create(redactModel);
             }

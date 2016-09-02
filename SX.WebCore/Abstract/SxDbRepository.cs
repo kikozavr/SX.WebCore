@@ -98,6 +98,10 @@ namespace SX.WebCore.Abstract
             dbContext.SaveChanges();
             return model;
         }
+        public virtual async Task<TModel> UpdateAsync(TModel model)
+        {
+            return await Task.Run(()=> { return Update(model); });
+        }
 
         public virtual void Delete(TModel model)
         {
@@ -124,7 +128,6 @@ namespace SX.WebCore.Abstract
         {
             throw new NotImplementedException();
         }
-
         public virtual async Task<TViewModel[]> ReadAsync(SxFilter filter)
         {
             return await Task.Run(()=> {

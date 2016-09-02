@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 
 namespace SX.WebCore.ViewModels
 {
@@ -10,10 +12,12 @@ namespace SX.WebCore.ViewModels
 
         public DateTime DateUpdate { get; set; }
 
+        [AllowHtml, Display(Name = "Описание"), DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
         public int ViewsCount { get; set; }
 
+        [Display(Name = "Стоимость клика")]
         public decimal ClickCost { get; set; }
     }
 }

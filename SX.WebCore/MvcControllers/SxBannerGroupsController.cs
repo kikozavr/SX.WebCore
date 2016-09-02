@@ -50,19 +50,19 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(Guid? id = null)
         {
             var model = id.HasValue ? _repo.GetByKey((Guid)id) : new SxBannerGroup();
-            var viewModel = Mapper.Map<SxBannerGroup, SxVMEditBannerGroup>(model);
+            var viewModel = Mapper.Map<SxBannerGroup, SxVMBannerGroup>(model);
             if (id.HasValue)
                 ViewBag.BannerGroupId = model.Id;
             return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditBannerGroup model)
+        public virtual ActionResult Edit(SxVMBannerGroup model)
         {
             
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditBannerGroup, SxBannerGroup>(model);
+                var redactModel = Mapper.Map<SxVMBannerGroup, SxBannerGroup>(model);
                 SxBannerGroup newModel = null;
                 if (model.Id == Guid.Empty)
                 {
@@ -70,10 +70,10 @@ namespace SX.WebCore.MvcControllers
                 }
                 else
                 {
-                    newModel = _repo.Update(redactModel, true, "Title");
+                    newModel = _repo.Update(redactModel, true, "Title", "Description");
                 }
 
-                return RedirectToAction("index");
+                return RedirectToAction("Index");
             }
             else
             {

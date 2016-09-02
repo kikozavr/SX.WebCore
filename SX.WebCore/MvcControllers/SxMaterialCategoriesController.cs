@@ -111,7 +111,7 @@ namespace SX.WebCore.MvcControllers
         public virtual ActionResult Edit(ModelCoreType mct, string pcid = null, string id = null)
         {
             var data = string.IsNullOrEmpty(id) ? new SxMaterialCategory { ModelCoreType = mct, ParentCategoryId = pcid } : _repo.GetByKey(id);
-            var viewModel = Mapper.Map<SxMaterialCategory, SxVMEditMaterialCategory>(data);
+            var viewModel = Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(data);
 
             if (data.FrontPictureId.HasValue)
                 ViewData["FrontPictureIdCaption"]=data.FrontPicture.Caption;
@@ -120,7 +120,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditMaterialCategory model)
+        public virtual ActionResult Edit(SxVMMaterialCategory model)
         {
             var oldId = Request.Form["OldId"];
 
@@ -130,7 +130,7 @@ namespace SX.WebCore.MvcControllers
 
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditMaterialCategory, SxMaterialCategory>(model);
+                var redactModel = Mapper.Map<SxVMMaterialCategory, SxMaterialCategory>(model);
                 if (isNew)
                     _repo.Create(redactModel);
                 else

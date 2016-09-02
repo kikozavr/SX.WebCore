@@ -50,7 +50,7 @@ namespace SX.WebCore.Repositories
 
             bool? forGroup = filter.AddintionalInfo != null && filter.AddintionalInfo[0] != null ? (bool?)filter.AddintionalInfo[0] : null;
             bool? forMaterial = filter.AddintionalInfo != null && filter.AddintionalInfo.Length>1 && filter.AddintionalInfo[1] != null ? (bool?)filter.AddintionalInfo[1] : null;
-            if (forGroup.HasValue && filter.WhereExpressionObject != null && filter.WhereExpressionObject.BannerGroupId != null)
+            if (forGroup.HasValue && filter.AddintionalInfo != null && filter.AddintionalInfo[2] != null)
             {
                 //for group banners
                 if (forGroup == true)
@@ -58,7 +58,7 @@ namespace SX.WebCore.Repositories
                 else if (forGroup == false)
                     query.Append(" AND (db.Id NOT IN (SELECT dbgl.BannerId FROM D_BANNER_GROUP_LINK dbgl WHERE dbgl.BannerGroupId=@bgid)) ");
             }
-            if (forMaterial.HasValue && filter.WhereExpressionObject != null && (filter.WhereExpressionObject.MaterialId != null && filter.WhereExpressionObject.ModelCoreType != null))
+            if (forMaterial.HasValue && filter.AddintionalInfo != null && filter.AddintionalInfo[1] != null)
             {
                 //for material banners
                 if (forMaterial == true)
@@ -74,7 +74,7 @@ namespace SX.WebCore.Repositories
             {
                 title = title,
                 url = url,
-                bgid = filter.WhereExpressionObject != null && filter.WhereExpressionObject.BannerGroupId != null ? (Guid)filter.WhereExpressionObject.BannerGroupId : (Guid?)null,
+                bgid = filter.AddintionalInfo != null && filter.AddintionalInfo[2] != null ? filter.AddintionalInfo[2] : null,
                 mid = filter.WhereExpressionObject != null && filter.WhereExpressionObject.MaterialId != null ? (int)filter.WhereExpressionObject.MaterialId : (int?)null,
                 mct = filter.WhereExpressionObject != null && filter.WhereExpressionObject.ModelCoreType != null ? (int)filter.WhereExpressionObject.ModelCoreType : (int?)null,
             };
@@ -84,11 +84,8 @@ namespace SX.WebCore.Repositories
 
         public void GetStatistic(out int showsCount, out int clicksCount)
         {
-            showsCount = 0;
-            clicksCount = 0;
-
-            var queryShows = "SELECT SUM(db.ShowsCount) FROM D_BANNER AS db";
-            var queryClicks = "SELECT SUM(db.ClicksCount) FROM D_BANNER AS db"; ;
+            var queryShows = "SELECT ISNULL(SUM(db.ShowsCount),0) FROM D_BANNER AS db";
+            var queryClicks = "SELECT ISNULL(SUM(db.ClicksCount),0) FROM D_BANNER AS db";
 
             using (var conn = new SqlConnection(ConnectionString))
             {

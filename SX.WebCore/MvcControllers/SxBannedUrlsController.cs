@@ -1,6 +1,5 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -49,17 +48,17 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(int? id = null)
         {
             var model = id.HasValue ? _repo.GetByKey(id) : new SxBannedUrl();
-            var seoInfo = Mapper.Map<SxBannedUrl, SxVMEditBannedUrl>(model);
+            var seoInfo = Mapper.Map<SxBannedUrl, SxVMBannedUrl>(model);
             return View(seoInfo);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditBannedUrl model)
+        public virtual ActionResult Edit(SxVMBannedUrl model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditBannedUrl, SxBannedUrl>(model);
+                var redactModel = Mapper.Map<SxVMBannedUrl, SxBannedUrl>(model);
 
                 SxBannedUrl newModel = null;
                 if (model.Id == 0)

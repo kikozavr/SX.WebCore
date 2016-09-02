@@ -50,7 +50,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual RedirectToRouteResult Edit(SxVMEditMaterialTag model)
+        public virtual RedirectToRouteResult Edit(SxVMMaterialTag model)
         {
             if (ModelState.IsValid)
             {
@@ -62,7 +62,7 @@ namespace SX.WebCore.MvcControllers
                     return RedirectToAction("Index", "MaterialTags", new { mid = model.MaterialId, mct = model.ModelCoreType });
                 }
 
-                var redactModel = Mapper.Map<SxVMEditMaterialTag, SxMaterialTag>(model);
+                var redactModel = Mapper.Map<SxVMMaterialTag, SxMaterialTag>(model);
                 _repo.Create(redactModel);
             }
 

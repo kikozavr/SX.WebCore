@@ -76,11 +76,11 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(int? id)
         {
             var model = id.HasValue ? _repo.GetByKey(id) : new SxSiteTest();
-            return View(Mapper.Map<SxSiteTest, SxVMEditSiteTest>(model));
+            return View(Mapper.Map<SxSiteTest, SxVMSiteTest>(model));
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditSiteTest model)
+        public virtual ActionResult Edit(SxVMSiteTest model)
         {
             var isArchitect = User.IsInRole("architect");
             var isNew = model.Id == 0;
@@ -107,7 +107,7 @@ namespace SX.WebCore.MvcControllers
                 }
             }
 
-            var redactModel = Mapper.Map<SxVMEditSiteTest, SxSiteTest>(model);
+            var redactModel = Mapper.Map<SxVMSiteTest, SxSiteTest>(model);
             if (ModelState.IsValid)
             {
                 SxSiteTest newModel = null;

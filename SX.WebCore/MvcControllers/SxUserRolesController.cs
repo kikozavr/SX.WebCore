@@ -98,20 +98,24 @@ namespace SX.WebCore.MvcControllers
                 ? await RoleManager.FindByIdAsync(id)
                 : new SxAppRole { Id = null };
 
-            var viewModel = Mapper.Map<SxAppRole, SxVMEditAppRole>(model);
+            var viewModel = Mapper.Map<SxAppRole, SxVMAppRole>(model);
             return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual async Task<ActionResult> Edit(SxVMEditAppRole model)
+        public virtual async Task<ActionResult> Edit(SxVMAppRole model)
         {
-            if (await RoleManager.FindByNameAsync(model.Name) != null)
-                ModelState.AddModelError("Name", "Роль с таким именем уже добавлена в БД");
+            var isNew = string.IsNullOrEmpty(model.Id);
+            if (isNew)
+            {
+                if (await RoleManager.FindByNameAsync(model.Name) != null)
+                    ModelState.AddModelError("Name", "Роль с таким именем уже добавлена в БД");
+            }
 
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditAppRole, SxAppRole>(model);
-                if (string.IsNullOrEmpty(model.Id))
+                var redactModel = Mapper.Map<SxVMAppRole, SxAppRole>(model);
+                if (isNew)
                 {
                     redactModel.Id = Guid.NewGuid().ToString();
                     await RoleManager.CreateAsync(redactModel);
@@ -123,14 +127,14 @@ namespace SX.WebCore.MvcControllers
                     oldRole.Description = model.Description;
                     await RoleManager.UpdateAsync(oldRole);
                 }
-                return RedirectToAction("index");
+                return RedirectToAction("Index");
             }
             else
                 return View(model);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual async Task<ActionResult> Delete(SxVMEditAppRole model)
+        public virtual async Task<ActionResult> Delete(SxAppRole model)
         {
             var role = await RoleManager.FindByIdAsync(model.Id);
             if (role != null)

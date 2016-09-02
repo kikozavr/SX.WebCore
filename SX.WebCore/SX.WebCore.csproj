@@ -185,6 +185,7 @@
     <Compile Include="HtmlHelpers\SxShareButtons.cs" />
     <Compile Include="Hubs\SxChatHub.cs" />
     <Compile Include="Managers\SxCacheExpirationManager.cs" />
+    <Compile Include="MvcApplication\AutoMapperConfig.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
     <Compile Include="MvcControllers\SxCommentsController.cs" />
@@ -347,25 +348,6 @@
     <Compile Include="ViewModels\SxVMBannerGroupBanner.cs" />
     <Compile Include="ViewModels\SxVMBreadcrumb.cs" />
     <Compile Include="ViewModels\SxVMComment.cs" />
-    <Compile Include="ViewModels\SxVMEdit301Redirect.cs" />
-    <Compile Include="ViewModels\SxVMEditAffiliateLink.cs" />
-    <Compile Include="ViewModels\SxVMEditBannedUrl.cs" />
-    <Compile Include="ViewModels\SxVMEditBanner.cs" />
-    <Compile Include="ViewModels\SxVMEditBannerGroup.cs" />
-    <Compile Include="ViewModels\SxVMEditComment.cs" />
-    <Compile Include="ViewModels\SxVMEditManual.cs" />
-    <Compile Include="ViewModels\SxVMEditMaterialCategory.cs" />
-    <Compile Include="ViewModels\SxVMEditShareButton.cs" />
-    <Compile Include="ViewModels\SxVMEditMaterialTag.cs" />
-    <Compile Include="ViewModels\SxVMEditPicture.cs" />
-    <Compile Include="ViewModels\SxVMEditProjectStep.cs" />
-    <Compile Include="ViewModels\SxVMEditSeoKeyword.cs" />
-    <Compile Include="ViewModels\SxVMEditSeoTags.cs" />
-    <Compile Include="ViewModels\SxVMEditSiteTest.cs" />
-    <Compile Include="ViewModels\SxVMEditSiteTestQuestion.cs" />
-    <Compile Include="ViewModels\SxVMEditAppUser.cs" />
-    <Compile Include="ViewModels\SxVMEditSiteTestSubject.cs" />
-    <Compile Include="ViewModels\SxVMEditVideo.cs" />
     <Compile Include="ViewModels\SxVMEmployee.cs" />
     <Compile Include="ViewModels\SxVMFAQ.cs" />
     <Compile Include="ViewModels\SxVMManual.cs" />
@@ -402,9 +384,7 @@
     <Compile Include="ViewModels\SxVMRequest.cs" />
     <Compile Include="ViewModels\SxVMRobotsFile.cs" />
     <Compile Include="ViewModels\SxVMAppRole.cs" />
-    <Compile Include="ViewModels\SxVMEditAppRole.cs" />
     <Compile Include="ViewModels\SxVMAppUser.cs" />
-    <Compile Include="ViewModels\SxVMEditEmployee.cs" />
     <Compile Include="ViewModels\SxVMVideo.cs" />
     <Compile Include="ViewModels\SxVMSiteTestStepGuess.cs" />
   </ItemGroup>

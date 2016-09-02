@@ -53,22 +53,22 @@ namespace SX.WebCore.MvcControllers
             if (data == null)
                 return new HttpNotFoundResult();
 
-            var viewModel = Mapper.Map<SxAffiliateLink, SxVMEditAffiliateLink>(data);
+            var viewModel = Mapper.Map<SxAffiliateLink, SxVMAffiliateLink>(data);
             return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public ActionResult Edit(SxVMEditAffiliateLink model)
+        public ActionResult Edit(SxVMAffiliateLink model)
         {
             var isNew = model.Id == Guid.Empty;
 
             if(ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditAffiliateLink, SxAffiliateLink>(model);
+                var redactModel = Mapper.Map<SxVMAffiliateLink, SxAffiliateLink>(model);
                 if (isNew)
                     _repo.Create(redactModel);
                 else
-                    _repo.Update(redactModel);
+                    _repo.Update(redactModel, true, "Description", "ClickCost");
 
                 return RedirectToAction("Index");
             }

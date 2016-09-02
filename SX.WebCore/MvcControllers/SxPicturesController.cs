@@ -78,7 +78,7 @@ namespace SX.WebCore.MvcControllers
             var viewModel = id.HasValue ? _repo.GetByKey(id) : new SxPicture();
             if (id.HasValue && viewModel == null)
                 return new HttpNotFoundResult();
-            return View(Mapper.Map<SxPicture, SxVMEditPicture>(viewModel));
+            return View(Mapper.Map<SxPicture, SxVMPicture>(viewModel));
         }
 
         [Authorize(Roles = "photo-redactor")]
@@ -110,7 +110,7 @@ namespace SX.WebCore.MvcControllers
             };
         [Authorize(Roles = "photo-redactor")]
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditPicture picture, HttpPostedFileBase file)
+        public virtual ActionResult Edit(SxVMPicture picture, HttpPostedFileBase file)
         {
             if (file != null && file.ContentLength > maxSize)
                 ModelState.AddModelError("Caption", string.Format("Размер файла не должен превышать {0} kB", maxSize / 1024));
@@ -120,7 +120,7 @@ namespace SX.WebCore.MvcControllers
             if (ModelState.IsValid)
             {
                 var isNew = picture.Id == Guid.Empty;
-                var redactModel = Mapper.Map<SxVMEditPicture, SxPicture>(picture);
+                var redactModel = Mapper.Map<SxVMPicture, SxPicture>(picture);
                 if (isNew)
                 {
                     redactModel = getImage(redactModel, file);

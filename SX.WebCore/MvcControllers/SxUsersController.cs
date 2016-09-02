@@ -150,12 +150,12 @@ namespace SX.WebCore.MvcControllers
             return View(viewModel);
         }
 
-        private SxVMEditAppUser getEditUser(SxAppUser data, SxAppRole[] allRoles)
+        private SxVMAppUser getEditUser(SxAppUser data, SxAppRole[] allRoles)
         {
-            var editUser = new SxVMEditAppUser
+            var editUser = new SxVMAppUser
             {
                 Id = data.Id,
-                Avatar = data.Avatar,
+                Avatar = Mapper.Map<SxPicture, SxVMPicture>(data.Avatar),
                 AvatarId = data.AvatarId,
                 Email = data.Email,
                 NikName = data.NikName,
@@ -173,13 +173,13 @@ namespace SX.WebCore.MvcControllers
             return editUser;
         }
 
-        private void addEmployee(SxVMEditAppUser model)
+        private void addEmployee(SxVMAppUser model)
         {
-            var redactModel = Mapper.Map<SxVMEditAppUser, SxEmployee>(model);
+            var redactModel = Mapper.Map<SxVMAppUser, SxEmployee>(model);
             var data = _repoEmployee.Create(redactModel);
         }
 
-        public void delEmployee(SxVMEditAppUser model)
+        public void delEmployee(SxVMAppUser model)
         {
             _repoEmployee.Delete(new SxEmployee { Id=model.Id });
         }
@@ -231,7 +231,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual PartialViewResult EditUserInfo(SxVMEditAppUser user)
+        public virtual PartialViewResult EditUserInfo(SxVMAppUser user)
         {
             if (ModelState.IsValid)
             {
@@ -269,9 +269,9 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Delete(SxVMEditAppRole model)
+        public virtual ActionResult Delete(SxAppRole model)
         {
-            return RedirectToAction("index");
+            return RedirectToAction("Index");
             throw new NotImplementedException();
         }
     }

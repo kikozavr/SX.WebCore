@@ -49,15 +49,15 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(string id = null)
         {
             var model = id != null ? _repo.GetByKey(id) : new SxEmployee();
-            return View(Mapper.Map<SxEmployee, SxVMEditEmployee>(model));
+            return View(Mapper.Map<SxEmployee, SxVMEmployee>(model));
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditEmployee model)
+        public virtual ActionResult Edit(SxVMEmployee model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditEmployee, SxEmployee>(model);
+                var redactModel = Mapper.Map<SxVMEmployee, SxEmployee>(model);
                 SxEmployee newModel = null;
                 if (model.Id == null)
                     newModel = _repo.Create(redactModel);

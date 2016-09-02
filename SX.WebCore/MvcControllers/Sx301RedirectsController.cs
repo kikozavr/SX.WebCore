@@ -51,16 +51,16 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(Guid? id)
         {
             var model = id.HasValue ? _repo.GetByKey(id) : new Sx301Redirect();
-            var viewModel = Mapper.Map<Sx301Redirect, SxVMEdit301Redirect>(model);
+            var viewModel = Mapper.Map<Sx301Redirect, SxVM301Redirect>(model);
             return View(viewModel);
         }
 
         [HttpPost,ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEdit301Redirect model)
+        public virtual ActionResult Edit(SxVM301Redirect model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEdit301Redirect, Sx301Redirect>(model);
+                var redactModel = Mapper.Map<SxVM301Redirect, Sx301Redirect>(model);
                 Sx301Redirect newModel = null;
                 if (model.Id == Guid.Empty)
                     newModel = _repo.Create(redactModel);

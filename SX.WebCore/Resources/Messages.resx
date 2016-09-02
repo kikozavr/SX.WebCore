@@ -117,7 +117,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="NotI" xml:space="preserve">
-    <value />
+  <data name="IdentityStringField" xml:space="preserve">
+    <value>Поле должно содержать только буквы латинского алфавита и тире</value>
+  </data>
+  <data name="MaxLengthField" xml:space="preserve">
+    <value>Длина поля не может превышать {0} символов</value>
+  </data>
+  <data name="NotEqualField" xml:space="preserve">
+    <value>Ошибка еквивалентности полей</value>
+  </data>
+  <data name="RequiredField" xml:space="preserve">
+    <value>Поле обязательно для заполнения</value>
+  </data>
+  <data name="ValidEmailField" xml:space="preserve">
+    <value>Введите валидный адрес электронной почты</value>
+  </data>
+  <data name="ValidUrlField" xml:space="preserve">
+    <value>Введите валидный url</value>
   </data>
 </root>

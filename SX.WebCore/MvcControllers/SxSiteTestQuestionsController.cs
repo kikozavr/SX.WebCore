@@ -1,6 +1,5 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -41,7 +40,7 @@ namespace SX.WebCore.MvcControllers
                 if (model == null)
                     return new HttpNotFoundResult();
             }
-            var viewModel = new SxVMEditSiteTestQuestion {
+            var viewModel = new SxVMSiteTestQuestion {
                 Id=model.Id,
                 Text=model.Text,
                 TestId=model.TestId,
@@ -61,11 +60,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditSiteTestQuestion model)
+        public virtual ActionResult Edit(SxVMSiteTestQuestion model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditSiteTestQuestion, SxSiteTestQuestion>(model);
+                var redactModel = Mapper.Map<SxVMSiteTestQuestion, SxSiteTestQuestion>(model);
                 SxSiteTestQuestion newModel = null;
                 if (model.Id == 0)
                     newModel = _repo.Create(redactModel);

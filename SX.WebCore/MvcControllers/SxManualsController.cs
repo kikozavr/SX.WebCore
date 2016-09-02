@@ -30,12 +30,12 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditManual model)
+        public virtual ActionResult Edit(SxVMManual model)
         {
             if (ModelState.IsValid)
             {
                 var isNew = model.Id == 0;
-                var redactModel = Mapper.Map<SxVMEditManual, SxManual>(model);
+                var redactModel = Mapper.Map<SxVMManual, SxManual>(model);
 
                 SxManual newModel = null;
 

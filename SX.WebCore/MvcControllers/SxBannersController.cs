@@ -60,7 +60,7 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(Guid? id = null)
         {
             var model = id.HasValue ? _repo.GetByKey((Guid)id) : new SxBanner();
-            var viewModel = Mapper.Map<SxBanner, SxVMEditBanner>(model);
+            var viewModel = Mapper.Map<SxBanner, SxVMBanner>(model);
             viewModel.Place = viewModel.Place == SxBanner.BannerPlace.Unknown ? null : viewModel.Place;
             if (!id.HasValue)
                 viewModel.PictureId = null;
@@ -71,9 +71,9 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditBanner model)
+        public virtual ActionResult Edit(SxVMBanner model)
         {
-            var redactModel = Mapper.Map<SxVMEditBanner, SxBanner>(model);
+            var redactModel = Mapper.Map<SxVMBanner, SxBanner>(model);
 
             if (ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace SX.WebCore.MvcControllers
                 else
                     newModel = _repo.Update(redactModel, true, "Title", "PictureId", "Url", "Place", "RawUrl", "Description");
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Banners");
             }
             else
             {
@@ -119,7 +119,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual PartialViewResult GroupBanners(Guid bgid, int page = 1, int pageSize = 10)
         {
-            var filter = new SxFilter(page, pageSize) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid }, AddintionalInfo=new object[] { true } };
+            var filter = new SxFilter(page, pageSize) { AddintionalInfo=new object[] { true, false, bgid } };
             
             var viewModel = _repo.Read(filter);
 
@@ -133,7 +133,7 @@ namespace SX.WebCore.MvcControllers
         public virtual async Task<PartialViewResult> GroupBanners(Guid bgid, SxVMBanner filterModel, SxOrder order, int page = 1, int pageSize = 10, bool forGroup=true)
         {
             filterModel.BannerGroupId = bgid;
-            var filter = new SxFilter(page, pageSize) { Order = order, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { forGroup } };
+            var filter = new SxFilter(page, pageSize) { Order = order, AddintionalInfo=new object[] { forGroup, false, bgid } };
             
             var viewModel =await _repo.ReadAsync(filter);
 

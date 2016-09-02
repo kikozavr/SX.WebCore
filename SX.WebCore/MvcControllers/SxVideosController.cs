@@ -51,16 +51,16 @@ namespace SX.WebCore.MvcControllers
         {
             var isNew = !id.HasValue;
             var model = isNew ? new SxVideo() : _repo.GetByKey(id);
-            var viewModel = Mapper.Map<SxVideo, SxVMEditVideo>(model);
+            var viewModel = Mapper.Map<SxVideo, SxVMVideo>(model);
             return View(viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditVideo model)
+        public virtual ActionResult Edit(SxVMVideo model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditVideo, SxVideo>(model);
+                var redactModel = Mapper.Map<SxVMVideo, SxVideo>(model);
                 SxVideo newModel = null;
                 if (model.Id == Guid.Empty)
                     newModel = _repo.Create(redactModel);

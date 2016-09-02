@@ -51,16 +51,16 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(int? id)
         {
             var model = id.HasValue ? _repo.GetByKey(id) : new SxSeoTags();
-            var seoInfo = Mapper.Map<SxSeoTags, SxVMEditSeoTags>(model);
+            var seoInfo = Mapper.Map<SxSeoTags, SxVMSeoTags>(model);
             if (id.HasValue)
                 seoInfo.Keywords = model.Keywords.Select(x => Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x)).ToArray();
             return View(seoInfo);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVMEditSeoTags model)
+        public virtual ActionResult Edit(SxVMSeoTags model)
         {
-            var redactModel = Mapper.Map<SxVMEditSeoTags, SxSeoTags>(model);
+            var redactModel = Mapper.Map<SxVMSeoTags, SxSeoTags>(model);
             redactModel.Check(ModelState);
             if (ModelState.IsValid)
             {
@@ -88,20 +88,20 @@ namespace SX.WebCore.MvcControllers
         public virtual PartialViewResult EditForMaterial(int mid, ModelCoreType mct)
         {
             var model = _repo.GetMaterialSeoInfo(mid, mct);
-            var seoTags = Mapper.Map<SxSeoTags, SxVMEditSeoTags>(model);
+            var seoTags = Mapper.Map<SxSeoTags, SxVMSeoTags>(model);
             if (model != null)
                 seoTags.Keywords = model.Keywords.Select(x => Mapper.Map<SxSeoKeyword, SxVMSeoKeyword>(x)).ToArray();
             else
-                seoTags = new SxVMEditSeoTags() { MaterialId=mid, ModelCoreType=mct };
+                seoTags = new SxVMSeoTags() { MaterialId=mid, ModelCoreType=mct };
 
             return PartialView("_EditForMaterial", seoTags);
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual PartialViewResult EditForMaterial(SxVMEditSeoTags model)
+        public virtual PartialViewResult EditForMaterial(SxVMSeoTags model)
         {
             SxSeoTags newModel = null;
-            var redactModel = Mapper.Map<SxVMEditSeoTags, SxSeoTags>(model);
+            var redactModel = Mapper.Map<SxVMSeoTags, SxSeoTags>(model);
             redactModel.Check(ModelState);
             if (ModelState.IsValid)
             {
@@ -119,7 +119,7 @@ namespace SX.WebCore.MvcControllers
                     ViewBag.SeoInfoRedactInfo = "Успешно обновлено";
                 }
 
-                var viewModel = Mapper.Map<SxSeoTags, SxVMEditSeoTags>(newModel);
+                var viewModel = Mapper.Map<SxSeoTags, SxVMSeoTags>(newModel);
                 return PartialView("_EditForMaterial", viewModel);
             }
             else
@@ -133,7 +133,7 @@ namespace SX.WebCore.MvcControllers
             await _repo.DeleteMaterialSeoInfoAsync((int)model.MaterialId, (ModelCoreType)model.ModelCoreType);
 
             ViewBag.SeoInfoRedactInfo = "Успешно удалено";
-            return PartialView("_EditForMaterial", new SxVMEditSeoTags { MaterialId = model.MaterialId, ModelCoreType = model.ModelCoreType, Id = 0 });
+            return PartialView("_EditForMaterial", new SxVMSeoTags { MaterialId = model.MaterialId, ModelCoreType = model.ModelCoreType, Id = 0 });
         }
 
         [HttpPost, ValidateAntiForgeryToken]

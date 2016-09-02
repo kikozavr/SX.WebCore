@@ -48,11 +48,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual RedirectToRouteResult Edit(SxVMEditSeoKeyword model)
+        public virtual RedirectToRouteResult Edit(SxVMSeoKeyword model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditSeoKeyword, SxSeoKeyword>(model);
+                var redactModel = Mapper.Map<SxVMSeoKeyword, SxSeoKeyword>(model);
                 SxSeoKeyword newModel = null;
                 if (model.Id == 0)
                     newModel = _repo.Create(redactModel);

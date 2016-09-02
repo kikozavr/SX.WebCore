@@ -44,7 +44,7 @@ namespace SX.WebCore.MvcControllers
                 if (model.Picture != null)
                     ViewData["PictureIdCaption"] = model.Picture.Caption;
             }
-            var viewModel = new SxVMEditSiteTestSubject
+            var viewModel = new SxVMSiteTestSubject
             {
                 Description = model.Description,
                 Id = model.Id,
@@ -68,11 +68,11 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Edit([Bind(Prefix = "subject")] SxVMEditSiteTestSubject model)
+        public virtual ActionResult Edit([Bind(Prefix = "subject")] SxVMSiteTestSubject model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVMEditSiteTestSubject, SxSiteTestSubject>(model);
+                var redactModel = Mapper.Map<SxVMSiteTestSubject, SxSiteTestSubject>(model);
                 SxSiteTestSubject newModel = null;
                 if (model.Id == 0)
                     newModel = _repo.Create(redactModel);

@@ -3,6 +3,7 @@ using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using SX.WebCore.ViewModels;
 using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -232,6 +233,16 @@ namespace SX.WebCore.Repositories
         public virtual TViewModel[] Last(ModelCoreType? mct=null, int amount=5, int? mid=null)
         {
             return new TViewModel[0];
+        }
+
+        public virtual TViewModel[] List(int page, int pageSize)
+        {
+            var filter = new SxFilter();
+            filter.PagerInfo.Page = page;
+            filter.PagerInfo.PageSize = pageSize;
+
+            var data = Read(filter);
+            return data;
         }
     }
 }

@@ -260,13 +260,12 @@ GO
 IF OBJECT_ID(N'dbo.get_material_by_url', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_material_by_url;
 GO
-CREATE PROCEDURE dbo.get_material_by_url(
+CREATE PROCEDURE dbo.get_material_by_url
     @year          INT,
     @month         INT,
     @day           INT,
     @title_url     NVARCHAR(255),
     @mct           INT
-)
 AS
 BEGIN
 	--SELECT dm.*,
@@ -446,35 +445,6 @@ BEGIN
 	RETURN @res
 END
 GO
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /*******************************************
  * добавить комментарии материала

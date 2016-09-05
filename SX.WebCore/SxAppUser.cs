@@ -19,6 +19,9 @@ namespace SX.WebCore
         public virtual SxPicture Avatar { get; set; }
         public Guid? AvatarId { get; set; }
 
+        [MaxLength(400)]
+        public string Description { get; set; }
+
         public SxAppUser() { }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<SxAppUser> manager)

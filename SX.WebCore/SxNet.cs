@@ -23,5 +23,8 @@ namespace SX.WebCore
         public string Color { get; set; }
 
         public bool HasCounter { get; set; }
+
+        [MaxLength(255)]
+        public string SiteUrl { get; set; }
     }
 }

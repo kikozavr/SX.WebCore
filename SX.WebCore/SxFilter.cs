@@ -18,6 +18,7 @@ namespace SX.WebCore
         }
         public SxPagerInfo PagerInfo { get; set; }
         public string Tag { get; set; }
+        public string CategoryId { get; set; }
         public int? MaterialId { get; set; }
         public ModelCoreType ModelCoreType { get; set; }
         public dynamic WhereExpressionObject { get; set; }

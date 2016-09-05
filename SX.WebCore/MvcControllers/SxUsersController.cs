@@ -160,7 +160,8 @@ namespace SX.WebCore.MvcControllers
                 Email = data.Email,
                 NikName = data.NikName,
                 IsOnline = SxApplication<TDbContext>.UsersOnSite.ContainsValue(data.UserName),
-                IsEmployee = _repoEmployee.GetByKey(data.Id) != null
+                IsEmployee = _repoEmployee.GetByKey(data.Id) != null,
+                Description=data.Description
             };
 
             editUser.Roles = data.Roles.Join(allRoles, u => u.RoleId, r => r.Id, (u, r) => new SxVMAppRole
@@ -238,6 +239,7 @@ namespace SX.WebCore.MvcControllers
                 var oldUser = UserManager.FindById(user.Id);
                 oldUser.NikName = user.NikName;
                 oldUser.AvatarId = user.AvatarId;
+                oldUser.Description = user.Description;
                 UserManager.Update(oldUser);
 
                 if (user.IsEmployee)

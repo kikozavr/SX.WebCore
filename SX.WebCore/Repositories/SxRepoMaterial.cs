@@ -49,13 +49,14 @@ namespace SX.WebCore.Repositories
             var sb = new StringBuilder();
             sb.Append(SxQueryProvider.GetSelectString(new string[] {
                 "dm.*",
+                "(SELECT COUNT(1) FROM D_COMMENT AS dc WHERE dc.MaterialId=dm.Id AND dc.ModelCoreType=dm.ModelCoreType) AS CommentsCount",
                 "dmc.*",
                 "anu.*",
                 "dp.Id", "dp.Width", "dp.Height"
             }));
             sb.Append(" FROM DV_MATERIAL AS dm ");
             sb.Append(" LEFT JOIN D_MATERIAL_CATEGORY AS dmc ON dmc.Id = dm.CategoryId ");
-            sb.Append(" LEFT JOIN AspNetUsers AS anu ON anu.Id = dm.UserId ");
+            sb.Append(" JOIN AspNetUsers AS anu ON anu.Id = dm.UserId ");
             sb.Append(" LEFT JOIN D_PICTURE AS dp ON dp.Id = dm.FrontPictureId ");
 
             object param = null;

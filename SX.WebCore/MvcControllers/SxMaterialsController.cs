@@ -31,11 +31,14 @@ namespace SX.WebCore.MvcControllers
 
         private static SxRepoMaterial<TModel, TViewModel, TDbContext> _repo;
         private static SxRepoSeoTags<TDbContext> _repoSeoTags;
+        private static SxRepoMaterialCategory<TDbContext> _repoMaterialCategories;
         protected SxMaterialsController(ModelCoreType mct)
         {
             _mct = mct;
             if (_repoSeoTags == null)
                 _repoSeoTags = new SxRepoSeoTags<TDbContext>();
+            if (_repoMaterialCategories==null)
+                _repoMaterialCategories = new SxRepoMaterialCategory<TDbContext>();
         }
 
         protected static SxRepoMaterial<TModel, TViewModel, TDbContext> Repo
@@ -124,17 +127,27 @@ namespace SX.WebCore.MvcControllers
             var routeDataValues = Request.RequestContext.RouteData.Values;
             var page = routeDataValues["page"] != null ? Convert.ToInt32(routeDataValues["page"]) : 1;
             filter.PagerInfo.Page = page;
-            filter.PagerInfo.PageSize = 10;
+            filter.PagerInfo.PageSize = 5;
 
             if (BeforeSelectListAction != null && !BeforeSelectListAction(filter))
                 return new HttpNotFoundResult();
 
             var viewModel = new SxPagedCollection<TViewModel>();
+
+            //material category
+            var cat = Request.QueryString.Get("cat");
+            if(!string.IsNullOrEmpty(cat))
+            {
+                filter.CategoryId = cat;
+                ViewBag.Category = Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(_repoMaterialCategories.GetByKey(cat));
+            }
+
+            //material tag
             var tag = Request.QueryString.Get("tag");
             if (!string.IsNullOrEmpty(tag))
             {
                 filter.Tag = tag;
-                ViewBag.Tag = tag;
+                ViewBag.Tag = _repoSeoTags.GetByKey(tag);
             }
 
             viewModel.Collection = Repo.Read(filter);

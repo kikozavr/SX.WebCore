@@ -47,5 +47,8 @@ namespace SX.WebCore.ViewModels
 
         [Display(Name = "Сотрудник сайта")]
         public bool IsEmployee { get; set; }
+
+        [Display(Name ="Описание"), MaxLength(400), DataType(DataType.MultilineText)]
+        public string Description { get; set; }
     }
 }

@@ -340,7 +340,6 @@
     <Compile Include="SxSeoPhrase.cs" />
     <Compile Include="SxSiteMapUrl.cs" />
     <Compile Include="SxSiteSetting.cs" />
-    <Compile Include="SxStatistic.cs" />
     <Compile Include="SxSiteTest.cs" />
     <Compile Include="SxVideo.cs" />
     <Compile Include="SxVideoLink.cs" />

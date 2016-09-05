@@ -186,6 +186,7 @@
     <Compile Include="Hubs\SxChatHub.cs" />
     <Compile Include="Managers\SxCacheExpirationManager.cs" />
     <Compile Include="MvcApplication\AutoMapperConfig.cs" />
+    <Compile Include="MvcControllers\SxSiteNetsController.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
     <Compile Include="MvcControllers\SxCommentsController.cs" />
@@ -218,6 +219,7 @@
     <Compile Include="MvcControllers\SxVideoLinksController.cs" />
     <Compile Include="MvcControllers\SxMaterialCategoriesController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
+    <Compile Include="Providers\SxSiteNetProvider.cs" />
     <Compile Include="Repositories\SxRepoAffiliateLink.cs" />
     <Compile Include="Repositories\SxRepoMaterial.cs" />
     <Compile Include="Repositories\SxRepoRating.cs" />
@@ -226,6 +228,7 @@
     <Compile Include="Repositories\SxRepoAppUser.cs" />
     <Compile Include="Repositories\SxRepoMaterialTag.cs" />
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
+    <Compile Include="Repositories\SxRepoSiteNet.cs" />
     <Compile Include="Repositories\SxRepoSiteTestSubject.cs" />
     <Compile Include="Repositories\SxRepositoryChat.cs" />
     <Compile Include="Resources\Messages.Designer.cs">
@@ -303,6 +306,7 @@
     <Compile Include="SxBannedUrl.cs" />
     <Compile Include="SxBanner.cs" />
     <Compile Include="SxPictureLink.cs" />
+    <Compile Include="SxSiteNet.cs" />
     <Compile Include="ViewModels\SxVMBannerCollection.cs" />
     <Compile Include="SxBannerGroup.cs" />
     <Compile Include="SxBannerGroupBanner.cs" />
@@ -360,6 +364,7 @@
     <Compile Include="ViewModels\SxVMProjectStep.cs" />
     <Compile Include="ViewModels\SxVMSeoKeyword.cs" />
     <Compile Include="ViewModels\SxVMSeoTags.cs" />
+    <Compile Include="ViewModels\SxVMSiteNet.cs" />
     <Compile Include="ViewModels\SxVMSiteSetting.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />
     <Compile Include="ViewModels\SxVMSiteTest.cs" />

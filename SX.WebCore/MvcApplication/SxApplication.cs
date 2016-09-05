@@ -98,6 +98,19 @@ namespace SX.WebCore.MvcApplication
             }
         }
 
+        public static SxSiteNetProvider SiteNetsProvider { get; set; }
+        private static SxVMSiteNet[] getSiteNets()
+        {
+            var data = (SxVMSiteNet[])AppCache["CACHE_SITE_NETS"];
+            if (data == null)
+            {
+                data = new SxRepoSiteNet<TDbContext>().SiteNets;
+                AppCache.Add("CACHE_SITE_NETS", data, SxCacheExpirationManager.GetExpiration(minutes: 60));
+            }
+
+            return data;
+        }
+
         protected virtual void Application_Start(object sender, EventArgs e)
         {
             createLogDirectory();
@@ -109,6 +122,7 @@ namespace SX.WebCore.MvcApplication
             MapperConfiguration = AutoMapperConfig.MapperConfigurationInstance(args.MapperConfigurationExpression);
             BannerProvider = new SxBannerProvider(()=>getBannerCollection());
             SiteSettingsProvider = new SxSiteSettingsProvider(() => getSiteSettings());
+            SiteNetsProvider = new SxSiteNetProvider(getSiteNets);
 
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(args.WebApiConfigRegister);

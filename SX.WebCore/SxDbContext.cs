@@ -48,6 +48,8 @@ namespace SX.WebCore
 
         public DbSet<SxSeoTags> SeoInfo { get; set; }
 
+        //public DbSet<SxSiteNet> SiteNets { get; set; }
+
         public DbSet<SxSeoKeyword> SeoKeyWords { get; set; }
 
         public DbSet<SxShareButton> ShareButtons { get; set; }
@@ -103,6 +105,8 @@ namespace SX.WebCore
             modelBuilder.Entity<SxSiteTestAnswer>().HasRequired(x => x.Subject).WithMany().WillCascadeOnDelete(false);
 
             modelBuilder.Entity<SxAffiliateBannerView>().HasKey(x => new { x.BannerId, x.AffiliatelinkId }).Ignore(x => x.Id);
+
+            modelBuilder.Entity<SxSiteNet>().HasRequired(t => t.Net).WithOptional(x => x.SiteNet).WillCascadeOnDelete(true);
         }
     }
 }

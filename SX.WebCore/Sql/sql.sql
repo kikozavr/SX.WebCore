@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 18.08.2016 11:39:19
+ * Time: 05.09.2016 15:30:54
  ************************************************************/
 
 /*******************************************
@@ -200,6 +200,8 @@ GO
 
 
 
+
+
 /*******************************************
  * Превью материалов
  *******************************************/
@@ -261,17 +263,17 @@ IF OBJECT_ID(N'dbo.get_material_by_url', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_material_by_url;
 GO
 CREATE PROCEDURE dbo.get_material_by_url
-    @year          INT,
-    @month         INT,
-    @day           INT,
-    @title_url     NVARCHAR(255),
-    @mct           INT
+	@year INT,
+	@month INT,
+	@day INT,
+	@title_url NVARCHAR(255),
+	@mct INT
 AS
 BEGIN
 	--SELECT dm.*,
 	--       dh.UserName,
 	--       dg.TitleUrl            AS GameTitleUrl,
-	--       CASE 
+	--       CASE
 	--            WHEN dm.Foreword IS NOT NULL THEN dm.Foreword
 	--            ELSE SUBSTRING(dbo.FUNC_STRIP_HTML(dm.Html), 0, 200) +
 	--                 '...'
@@ -337,9 +339,8 @@ BEGIN
 	       AND dm.TitleUrl = @title_url
 	       AND dm.ModelCoreType = @mct
 	       AND dm.DateOfPublication <= GETDATE()
-	
-	END
-	GO
+END
+GO
 	
 /*******************************************
  * получить материал по id
@@ -445,6 +446,8 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
 
 /*******************************************
  * добавить комментарии материала
@@ -1075,7 +1078,9 @@ CREATE PROCEDURE dbo.get_banned_url
 	@bannedUrlId INT
 AS
 BEGIN
-	SELECT*FROM D_BANNED_URL AS dbu WHERE dbu.Id=@bannedUrlId
+	SELECT *
+	FROM   D_BANNED_URL AS dbu
+	WHERE  dbu.Id = @bannedUrlId
 END
 GO
 
@@ -1152,7 +1157,9 @@ CREATE PROCEDURE dbo.get_seo_keyword
 	@id INT
 AS
 BEGIN
-	SELECT*FROM D_SEO_KEYWORD AS dsk WHERE dsk.Id=@id
+	SELECT *
+	FROM   D_SEO_KEYWORD AS dsk
+	WHERE  dsk.Id = @id
 END
 GO
 
@@ -1169,25 +1176,27 @@ AS
 BEGIN
 	IF NOT EXISTS (
 	       SELECT dsk.Id
-	         FROM D_SEO_KEYWORD AS dsk WHERE dsk.SeoTagsId=@sti AND dsk.[Value]=@value
+	       FROM   D_SEO_KEYWORD AS dsk
+	       WHERE  dsk.SeoTagsId = @sti
+	              AND dsk.[Value] = @value
 	   )
 	BEGIN
 	    DECLARE @date DATETIME = GETDATE()
 	    
 	    INSERT INTO D_SEO_KEYWORD
-	    (
-	    	[Value],
-	    	SeoTagsId,
-	    	DateUpdate,
-	    	DateCreate
-	    )
+	      (
+	        [Value],
+	        SeoTagsId,
+	        DateUpdate,
+	        DateCreate
+	      )
 	    VALUES
-	    (
-	    	@value,
-	    	@sti,
-	    	@date,
-	    	@date
-	    )
+	      (
+	        @value,
+	        @sti,
+	        @date,
+	        @date
+	      )
 	    
 	    DECLARE @id INT
 	    SELECT @id = @@identity
@@ -3002,17 +3011,21 @@ BEGIN
 	       SUM(x.[Count])  AS [Count],
 	       (CASE WHEN SUM(x.IsCurrent) >= 1 THEN 1 ELSE 0 END) AS IsCurrent
 	FROM   (
-	           SELECT dmt.Id          AS Title,
-	                  COUNT(1)        AS [Count],
+	           SELECT dmt.Id            AS Title,
+	                  COUNT(1)          AS [Count],
 	                  (
 	                      CASE 
 	                           WHEN (dmt.MaterialId = @mid OR @mid IS NULL)
 	                      AND (dmt.ModelCoreType = @mct OR @mct IS NULL) THEN 1 
 	                          ELSE 
 	                          0 END
-	                  )               AS IsCurrent
-	           FROM   D_MATERIAL_TAG  AS dmt
-	           JOIN DV_MATERIAL AS dm ON dm.Id = dmt.MaterialId AND dm.ModelCoreType = dmt.ModelCoreType AND dm.Show=1 AND dm.DateOfPublication<=GETDATE()
+	                  )                 AS IsCurrent
+	           FROM   D_MATERIAL_TAG    AS dmt
+	                  JOIN DV_MATERIAL  AS dm
+	                       ON  dm.Id = dmt.MaterialId
+	                       AND dm.ModelCoreType = dmt.ModelCoreType
+	                       AND dm.Show = 1
+	                       AND dm.DateOfPublication <= GETDATE()
 	           WHERE  dmt.ModelCoreType = @mct
 	           GROUP BY
 	                  dmt.Id,
@@ -3173,4 +3186,80 @@ AS
 	                         AND dmt2.ModelCoreType = @mct)
 	ORDER BY
 	       dm.DateCreate DESC
+GO
+
+/*******************************************
+ * Получить сеть сайта
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_net', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_net;
+GO
+CREATE PROCEDURE dbo.get_site_net
+	@netId INT
+AS
+BEGIN
+	SELECT *
+	FROM   D_SITE_NET              AS dsn
+	       RIGHT OUTER JOIN D_NET  AS dn
+	            ON  dn.Id = dsn.NetId
+	WHERE  dn.Id = @netId
+END
+GO
+
+/*******************************************
+ * Получить доступные сети сайта
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_site_nets', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_site_nets;
+GO
+CREATE PROCEDURE dbo.get_site_nets
+AS
+BEGIN
+	SELECT *
+	FROM   D_SITE_NET              AS dsn
+	       RIGHT OUTER JOIN D_NET  AS dn
+	            ON  dn.Id = dsn.NetId
+	WHERE  dsn.Show=1
+END
+GO
+
+/*******************************************
+ * Добавить или обновить сеть сайта
+ *******************************************/
+IF OBJECT_ID(N'dbo.update_site_net', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.update_site_net;
+GO
+CREATE PROCEDURE dbo.update_site_net
+	@netId INT,
+	@url NVARCHAR(255),
+	@show BIT
+AS
+	IF NOT EXISTS (
+	       SELECT TOP 1 dsn.NetId
+	       FROM   D_SITE_NET AS dsn
+	       WHERE  dsn.NetId = @netId
+	   )
+	BEGIN
+	    INSERT INTO D_SITE_NET
+	      (
+	        NetId,
+	        [Url],
+	        Show
+	      )
+	    VALUES
+	      (
+	        @netId,
+	        @url,
+	        @show
+	      )
+	END
+	ELSE
+	BEGIN
+	    UPDATE D_SITE_NET
+	    SET    [Url]     = @url,
+	           Show      = @show
+	    WHERE  NetId     = @netId
+	END
+	
+	EXEC dbo.get_site_net @netId
 GO

@@ -37,6 +37,7 @@ namespace SX.WebCore.MvcApplication
 
                     //net
                     cfg.CreateMap<SxNet, SxVMNet>();
+                    cfg.CreateMap<SxVMNet, SxNet>();
 
                     //picture
                     cfg.CreateMap<SxPicture, SxVMPicture>();
@@ -65,6 +66,10 @@ namespace SX.WebCore.MvcApplication
                     //seo tags
                     cfg.CreateMap<SxSeoTags, SxVMSeoTags>();
                     cfg.CreateMap<SxVMSeoTags, SxSeoTags>();
+
+                    //site net
+                    cfg.CreateMap<SxSiteNet, SxVMSiteNet>();
+                    cfg.CreateMap<SxVMSiteNet, SxSiteNet>();
 
                     //StatisticUserLogin 
                     cfg.CreateMap<SxStatisticUserLogin, SxVMStatisticUserLogin>()

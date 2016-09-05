@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace SX.WebCore.Abstract
 {
     public abstract class SxDbRepository<TKey, TModel, TDbContext, TViewModel>
-        where TModel : SxDbModel<TKey>
+        where TModel : class
         where TDbContext : SxDbContext
         where TViewModel : class
     {
@@ -128,7 +128,7 @@ namespace SX.WebCore.Abstract
         {
             throw new NotImplementedException();
         }
-        public virtual async Task<TViewModel[]> ReadAsync(SxFilter filter)
+        public async Task<TViewModel[]> ReadAsync(SxFilter filter)
         {
             return await Task.Run(()=> {
                 return Read(filter);

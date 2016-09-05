@@ -26,5 +26,7 @@ namespace SX.WebCore
 
         [MaxLength(255)]
         public string SiteUrl { get; set; }
+
+        public virtual SxSiteNet SiteNet { get; set; }
     }
 }

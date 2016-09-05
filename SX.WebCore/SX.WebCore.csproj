@@ -307,6 +307,7 @@
     <Compile Include="SxBanner.cs" />
     <Compile Include="SxPictureLink.cs" />
     <Compile Include="SxSiteNet.cs" />
+    <Compile Include="SxStatistic.cs" />
     <Compile Include="ViewModels\SxVMBannerCollection.cs" />
     <Compile Include="SxBannerGroup.cs" />
     <Compile Include="SxBannerGroupBanner.cs" />

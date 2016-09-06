@@ -115,7 +115,7 @@ namespace SX.WebCore.MvcControllers
 
         private Sx301Redirect get301Redirect(CacheItemPolicy cip = null)
         {
-            cip = cip ?? Managers.SxCacheExpirationManager.GetExpiration(minutes: 60);
+            cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
             var redirect = (Sx301Redirect)SxApplication<TDbContext>.AppCache["CACHE_REDIRECT_" + SxRawUrl];
             if (redirect == null)
             {

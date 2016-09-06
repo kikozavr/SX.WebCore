@@ -60,6 +60,7 @@ namespace SX.WebCore.HtmlHelpers
 
             public Func<TModel, string> Template { get; set; }
             public Func<TModel, string> ColumnCssClass { get; set; }
+            public bool EnableSorting { get; set; } = true;
         }
 
         public static MvcHtmlString SxGridView<TModel>(this HtmlHelper htmlHelper, TModel[] collection, SxGridViewSettings<TModel> settings = null, object htmlAttributes = null)
@@ -176,6 +177,8 @@ namespace SX.WebCore.HtmlHelpers
                     th.MergeAttribute("data-field-name", column.FieldName);
                     if (settings.Filter.Order != null && settings.Filter.Order.FieldName == column.FieldName)
                         th.InnerHtml += getSortArrow(settings.Filter.Order.Direction);
+
+                    th.MergeAttribute("data-enable-sorting", column.EnableSorting.ToString().ToLower());
                 }
                 tr.InnerHtml += th;
             }
@@ -299,6 +302,14 @@ namespace SX.WebCore.HtmlHelpers
                 foreach (var prop in settings.Filter.WhereExpressionObject.GetType().GetProperties())
                 {
                     propValue = prop.GetValue(settings.Filter.WhereExpressionObject);
+                    
+
+                    if (propValue == null) continue;
+
+                    //фильтр не может содержать коллекций
+                    var isCollection = propValue is ICollection;
+                    if (isCollection) continue;
+
                     propStringValue = propValue != null ? propValue.ToString() : null;
 
                     if (

@@ -10,6 +10,7 @@ using SX.WebCore.Repositories;
 using Microsoft.AspNet.Identity;
 using System.Collections.Generic;
 using System;
+using System.Threading.Tasks;
 
 namespace SX.WebCore.MvcControllers
 {
@@ -59,72 +60,43 @@ namespace SX.WebCore.MvcControllers
             var order = new SxOrder { FieldName = "NikName", Direction = SortDirection.Asc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
-            var users = UserManager.Users;
-            var roles = RoleManager.Roles.Select(x => new { RoleId = x.Id, RoleName = x.Name }).ToArray();
-            var usersOnline = SxApplication<TDbContext>.UsersOnSite;
+            var viewModel = _repo.Read(filter);
 
-            var viewModel = users.OrderByDescending(x => x.DateCreate).Skip((page - 1) * _pageSize).Take(_pageSize).ToArray()
-                .Select(x => new SxVMAppUser
-                {
-                    Id = x.Id,
-                    Email = x.Email,
-                    NikName = x.NikName,
-                    Roles = x.Roles.Select(r => new SxVMAppRole { Id = r.RoleId }).ToArray(),
-                    IsOnline = usersOnline.ContainsValue(x.Email)
-                }).ToArray();
+            if (viewModel.Any())
+                fillUserStatuses(viewModel);
 
-            for (int i = 0; i < viewModel.Length; i++)
-            {
-                for (int y = 0; y < viewModel[i].Roles.Length; y++)
-                {
-                    viewModel[i].Roles[y].Name = roles.FirstOrDefault(r => r.RoleId == viewModel[i].Roles[y].Id).RoleName;
-                }
-            }
-
-            filter.PagerInfo.TotalItems = users.Count();
-            filter.PagerInfo.Page = viewModel.Length <= _pageSize ? 1 : page;
             ViewBag.Filter = filter;
 
             return View(viewModel);
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMAppUser filterModel, SxOrder order, int page = 1)
+        public virtual async Task<PartialViewResult> Index(SxVMAppUser filterModel, SxOrder order, int page = 1)
         {
-            var filter = new SxFilter(page, _pageSize) { Order = order };
+            var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var users = UserManager.Users;
-            if (!string.IsNullOrEmpty(filterModel.NikName))
-                users = users.Where(x => x.NikName.Contains(filterModel.NikName));
-            if (!string.IsNullOrEmpty(filterModel.Email))
-                users = users.Where(x => x.Email.Contains(filterModel.Email));
+            var viewModel = await _repo.ReadAsync(filter);
 
-            var roles = RoleManager.Roles.Select(x => new { RoleId = x.Id, RoleName = x.Name }).ToArray();
-            var usersOnline = SxApplication<TDbContext>.UsersOnSite;
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
 
-            var viewModel = users.OrderByDescending(x => x.DateCreate).Skip((page - 1) * _pageSize).Take(_pageSize).ToArray()
-                .Select(x => new SxVMAppUser
-                {
-                    Id = x.Id,
-                    Email = x.Email,
-                    NikName = x.NikName,
-                    Roles = x.Roles.Select(r => new SxVMAppRole { Id = r.RoleId }).ToArray(),
-                    IsOnline = usersOnline.ContainsValue(x.Email)
-                }).ToArray();
+            if (viewModel.Any())
+                fillUserStatuses(viewModel);
 
-            for (int i = 0; i < viewModel.Length; i++)
-            {
-                for (int y = 0; y < viewModel[i].Roles.Length; y++)
-                {
-                    viewModel[i].Roles[y].Name = roles.FirstOrDefault(r => r.RoleId == viewModel[i].Roles[y].Id).RoleName;
-                }
-            }
-
-            filter.PagerInfo.TotalItems = users.Count();
-            filter.PagerInfo.Page = viewModel.Length <= _pageSize ? 1 : page;
             ViewBag.Filter = filter;
 
             return PartialView("_GridView", viewModel);
+        }
+        private void fillUserStatuses(SxVMAppUser[] users)
+        {
+            SxVMAppUser item = null;
+            var usersOnSite = SxApplication<TDbContext>.UsersOnSite;
+            if (!usersOnSite.Any()) return;
+
+            for (int i = 0; i < users.Length; i++)
+            {
+                item = users[i];
+                item.IsOnline = usersOnSite.ContainsValue(item.Email);
+            }
         }
 
         [HttpGet, AllowAnonymous]
@@ -134,7 +106,7 @@ namespace SX.WebCore.MvcControllers
             var data = _repo.GetUsersByEmails(emails);
             var viewModel = data.Select(x => Mapper.Map<SxAppUser, SxVMAppUser>(x)).ToArray();
 
-            return PartialView("~/views/users/_usersonsite.cshtml", viewModel);
+            return PartialView("_UsersOnSite", viewModel);
         }
 
         [HttpGet]

@@ -221,6 +221,7 @@
     <Compile Include="MvcControllers\SxVideosController.cs" />
     <Compile Include="Providers\SxSiteNetProvider.cs" />
     <Compile Include="Repositories\SxRepoAffiliateLink.cs" />
+    <Compile Include="Repositories\SxRepoAppRole.cs" />
     <Compile Include="Repositories\SxRepoMaterial.cs" />
     <Compile Include="Repositories\SxRepoRating.cs" />
     <Compile Include="Repositories\SxRepoShareButton.cs" />
@@ -402,7 +403,7 @@
       <LastGenOutput>Files.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Messages.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Messages.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\Settings.resx">

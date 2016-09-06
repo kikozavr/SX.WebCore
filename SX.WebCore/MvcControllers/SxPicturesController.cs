@@ -93,7 +93,8 @@ namespace SX.WebCore.MvcControllers
                     var redactModel = new SxPicture
                     {
                         Caption = file.FileName,
-                        ImgFormat = file.ContentType
+                        ImgFormat = file.ContentType,
+                        Description=string.Format("Name: {0} Type: {1} Size: {2} byte", file.FileName, file.ContentType, file.ContentLength)
                     };
                     redactModel = getImage(redactModel, file);
                     _repo.Create(redactModel);

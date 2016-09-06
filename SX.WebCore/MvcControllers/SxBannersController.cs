@@ -119,7 +119,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual PartialViewResult GroupBanners(Guid bgid, int page = 1, int pageSize = 10)
         {
-            var filter = new SxFilter(page, pageSize) { AddintionalInfo=new object[] { true, false, bgid } };
+            var filter = new SxFilter(page, pageSize) { AddintionalInfo=new object[] { bgid, true } };
             
             var viewModel = _repo.Read(filter);
 
@@ -133,7 +133,7 @@ namespace SX.WebCore.MvcControllers
         public virtual async Task<PartialViewResult> GroupBanners(Guid bgid, SxVMBanner filterModel, SxOrder order, int page = 1, int pageSize = 10, bool forGroup=true)
         {
             filterModel.BannerGroupId = bgid;
-            var filter = new SxFilter(page, pageSize) { Order = order, AddintionalInfo=new object[] { forGroup, false, bgid } };
+            var filter = new SxFilter(page, pageSize) { Order = order, AddintionalInfo=new object[] { bgid, forGroup } };
             
             var viewModel =await _repo.ReadAsync(filter);
 

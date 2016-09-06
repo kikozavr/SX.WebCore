@@ -17,7 +17,10 @@ namespace SX.WebCore.Repositories
         public override SxVMBanner[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
-            sb.Append(SxQueryProvider.GetSelectString());
+            sb.Append(SxQueryProvider.GetSelectString(new string[] {
+                "*",
+                "CASE WHEN db.ShowsCount=0 THEN 0 ELSE ROUND(db.ClicksCount*100/db.ShowsCount, 2) END AS CTR"
+            }));
             sb.Append(" FROM D_BANNER AS db ");
 
             object param = null;
@@ -48,24 +51,11 @@ namespace SX.WebCore.Repositories
             query.Append(" WHERE (db.Url LIKE '%'+@url+'%' OR @url IS NULL) ");
             query.Append(" AND (db.Title LIKE '%'+@title+'%' OR @title IS NULL) ");
 
-            bool? forGroup = filter.AddintionalInfo != null && filter.AddintionalInfo[0] != null ? (bool?)filter.AddintionalInfo[0] : null;
-            bool? forMaterial = filter.AddintionalInfo != null && filter.AddintionalInfo.Length>1 && filter.AddintionalInfo[1] != null ? (bool?)filter.AddintionalInfo[1] : null;
-            if (forGroup.HasValue && filter.AddintionalInfo != null && filter.AddintionalInfo[2] != null)
-            {
-                //for group banners
-                if (forGroup == true)
-                    query.Append(" AND (db.Id IN (SELECT dbgl.BannerId FROM D_BANNER_GROUP_LINK dbgl WHERE dbgl.BannerGroupId=@bgid)) ");
-                else if (forGroup == false)
-                    query.Append(" AND (db.Id NOT IN (SELECT dbgl.BannerId FROM D_BANNER_GROUP_LINK dbgl WHERE dbgl.BannerGroupId=@bgid)) ");
-            }
-            if (forMaterial.HasValue && filter.AddintionalInfo != null && filter.AddintionalInfo[1] != null)
-            {
-                //for material banners
-                if (forMaterial == true)
-                    query.Append(" AND (db.Id IN (SELECT dmb.BannerId FROM D_MATERIAL_BANNER AS dmb WHERE dmb.MaterialId=@mid AND dmb.ModelCoreType=@mct)) ");
-                else if (forMaterial == false)
-                    query.Append(" AND (db.Id NOT IN (SELECT dmb.BannerId FROM D_MATERIAL_BANNER AS dmb WHERE dmb.MaterialId=@mid AND dmb.ModelCoreType=@mct)) ");
-            }
+            bool forGroup = filter.AddintionalInfo != null && filter.AddintionalInfo[1] != null ? (bool)filter.AddintionalInfo[1] : false;
+            if (forGroup == true)
+                query.Append(" AND (db.Id IN (SELECT dbgl.BannerId FROM D_BANNER_GROUP_LINK dbgl WHERE dbgl.BannerGroupId=@bgid)) ");
+            else if (forGroup == false)
+                query.Append(" AND (db.Id NOT IN (SELECT dbgl.BannerId FROM D_BANNER_GROUP_LINK dbgl WHERE dbgl.BannerGroupId=@bgid)) ");
 
             var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Title != null ? (string)filter.WhereExpressionObject.Title : null;
             var url = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Url != null ? (string)filter.WhereExpressionObject.Url : null;
@@ -74,7 +64,7 @@ namespace SX.WebCore.Repositories
             {
                 title = title,
                 url = url,
-                bgid = filter.AddintionalInfo != null && filter.AddintionalInfo[2] != null ? filter.AddintionalInfo[2] : null,
+                bgid = filter.AddintionalInfo != null && filter.AddintionalInfo[0] != null ? filter.AddintionalInfo[0] : null,
                 mid = filter.WhereExpressionObject != null && filter.WhereExpressionObject.MaterialId != null ? (int)filter.WhereExpressionObject.MaterialId : (int?)null,
                 mct = filter.WhereExpressionObject != null && filter.WhereExpressionObject.ModelCoreType != null ? (int)filter.WhereExpressionObject.ModelCoreType : (int?)null,
             };

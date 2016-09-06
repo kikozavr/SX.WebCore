@@ -11,6 +11,7 @@ namespace SX.WebCore.ViewModels
         [Display(Name = "Значение"), MaxWordsCount(4)]
         public string Id { get; set; }
 
+        [MaxLength(100, ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "MaxLengthField")]
         public string Title { get; set; }
 
         public int Count { get; set; }

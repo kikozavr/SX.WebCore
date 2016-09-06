@@ -47,14 +47,6 @@ namespace SX.WebCore.ViewModels
 
         public decimal CPM { get; set; }
 
-        public decimal CTR
-        {
-            get
-            {
-                return Math.Round(ShowsCount == 0 ? 0 : (decimal)ClicksCount / ShowsCount * 100, 2);
-            }
-        }
-
-        
+        public decimal CTR { get; set; }
     }
 }

@@ -50,15 +50,16 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual RedirectToRouteResult Edit(SxVMMaterialTag model)
+        public virtual ActionResult Edit(SxVMMaterialTag model)
         {
+            model.Id = UrlHelperExtensions.SeoFriendlyUrl(model.Title.Trim());
+            ModelState["Id"].Errors.Clear();
+
             if (ModelState.IsValid)
             {
-                var id = model.Id.Trim();
-                model.Id = id;
-                if (_repo.GetByKey(model.Id, model.MaterialId, model.ModelCoreType) != null)
+                if (_repo.GetByKey(model.Id, model.ModelCoreType) != null)
                 {
-                    ModelState.AddModelError("Id", "Такой тег уже добавлен для материала");
+                    ModelState.AddModelError("Id", "Такой тег уже добавлен для данного типа материалов");
                     return RedirectToAction("Index", "MaterialTags", new { mid = model.MaterialId, mct = model.ModelCoreType });
                 }
 
@@ -72,9 +73,7 @@ namespace SX.WebCore.MvcControllers
         [HttpPost, ValidateAntiForgeryToken]
         public virtual ActionResult Delete(SxMaterialTag model)
         {
-
-            var id = model.Id.Replace("^", ".");
-            var data = _repo.GetByKey(id, model.MaterialId, model.ModelCoreType);
+            var data = _repo.GetByKey(model.Id, model.ModelCoreType);
             if (data == null)
                 return new HttpNotFoundResult();
 

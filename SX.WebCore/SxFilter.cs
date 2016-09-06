@@ -17,7 +17,7 @@ namespace SX.WebCore
             PagerInfo = new SxPagerInfo(page,pageSize);
         }
         public SxPagerInfo PagerInfo { get; set; }
-        public string Tag { get; set; }
+        public SxMaterialTag Tag { get; set; }
         public string CategoryId { get; set; }
         public int? MaterialId { get; set; }
         public ModelCoreType ModelCoreType { get; set; }

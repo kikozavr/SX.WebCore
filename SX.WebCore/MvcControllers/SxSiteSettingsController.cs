@@ -3,7 +3,6 @@ using SX.WebCore.Repositories;
 using SX.WebCore.Resources;
 using SX.WebCore.ViewModels;
 using System;
-using System.IO;
 using System.Text;
 using System.Web.Mvc;
 
@@ -32,10 +31,9 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet, AllowAnonymous]
-        public virtual FileResult ReleaseNotes()
+        public virtual ActionResult ReleaseNotes()
         {
-            byte[] encodedBytes = Encoding.UTF8.GetBytes(Files.ReleaseNotes);
-            return File(encodedBytes, "text/plain");
+            return View(model: Files.ReleaseNotes);
         }
 
         [HttpGet, Authorize(Roles = "admin")]

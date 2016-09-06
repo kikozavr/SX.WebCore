@@ -32,6 +32,7 @@ namespace SX.WebCore.MvcControllers
         private static SxRepoMaterial<TModel, TViewModel, TDbContext> _repo;
         private static SxRepoSeoTags<TDbContext> _repoSeoTags;
         private static SxRepoMaterialCategory<TDbContext> _repoMaterialCategories;
+        private static SxRepoMaterialTag<TDbContext> _repoMaterialTags;
         protected SxMaterialsController(ModelCoreType mct)
         {
             _mct = mct;
@@ -39,6 +40,8 @@ namespace SX.WebCore.MvcControllers
                 _repoSeoTags = new SxRepoSeoTags<TDbContext>();
             if (_repoMaterialCategories==null)
                 _repoMaterialCategories = new SxRepoMaterialCategory<TDbContext>();
+            if (_repoMaterialTags == null)
+                _repoMaterialTags = new SxRepoMaterialTag<TDbContext>();
         }
 
         protected static SxRepoMaterial<TModel, TViewModel, TDbContext> Repo
@@ -146,8 +149,8 @@ namespace SX.WebCore.MvcControllers
             var tag = Request.QueryString.Get("tag");
             if (!string.IsNullOrEmpty(tag))
             {
-                filter.Tag = tag;
-                ViewBag.Tag = _repoSeoTags.GetByKey(tag);
+                filter.Tag = _repoMaterialTags.GetByKey(tag, _mct);
+                ViewBag.Tag = Mapper.Map<SxMaterialTag, SxVMMaterialTag>(filter.Tag);
             }
 
             viewModel.Collection = Repo.Read(filter);

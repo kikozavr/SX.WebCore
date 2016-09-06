@@ -226,7 +226,7 @@ namespace SX.WebCore.MvcControllers
             if (identityCookie != null) return identityCookie.Value;
 
             var guid = Guid.NewGuid().ToString().ToLower();
-            identityCookie = new HttpCookie(_identityCookieName, guid);
+            identityCookie = new HttpCookie(_identityCookieName, guid) { Expires=DateTime.Now.AddYears(1)};
             response.Cookies.Add(identityCookie);
             return identityCookie.Value;
         }

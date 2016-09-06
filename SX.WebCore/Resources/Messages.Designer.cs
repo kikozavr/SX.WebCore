@@ -22,7 +22,7 @@ namespace SX.WebCore.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Messages {
+    public class Messages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace SX.WebCore.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SX.WebCore.Resources.Messages", typeof(Messages).Assembly);
@@ -51,7 +51,7 @@ namespace SX.WebCore.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace SX.WebCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Поле должно содержать только буквы латинского алфавита и тире.
         /// </summary>
-        internal static string IdentityStringField {
+        public static string IdentityStringField {
             get {
                 return ResourceManager.GetString("IdentityStringField", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace SX.WebCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Длина поля не может превышать {0} символов.
         /// </summary>
-        internal static string MaxLengthField {
+        public static string MaxLengthField {
             get {
                 return ResourceManager.GetString("MaxLengthField", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace SX.WebCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Ошибка еквивалентности полей.
         /// </summary>
-        internal static string NotEqualField {
+        public static string NotEqualField {
             get {
                 return ResourceManager.GetString("NotEqualField", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace SX.WebCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Поле обязательно для заполнения.
         /// </summary>
-        internal static string RequiredField {
+        public static string RequiredField {
             get {
                 return ResourceManager.GetString("RequiredField", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace SX.WebCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Введите валидный адрес электронной почты.
         /// </summary>
-        internal static string ValidEmailField {
+        public static string ValidEmailField {
             get {
                 return ResourceManager.GetString("ValidEmailField", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace SX.WebCore.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Введите валидный url.
         /// </summary>
-        internal static string ValidUrlField {
+        public static string ValidUrlField {
             get {
                 return ResourceManager.GetString("ValidUrlField", resourceCulture);
             }

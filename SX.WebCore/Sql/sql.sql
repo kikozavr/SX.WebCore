@@ -3007,11 +3007,13 @@ CREATE PROCEDURE dbo.get_material_cloud
 	@mct INT
 AS
 BEGIN
-	SELECT TOP(@amount) x.Title,
+	SELECT TOP(@amount) x.Id,
+	       x.Title,
 	       SUM(x.[Count])  AS [Count],
 	       (CASE WHEN SUM(x.IsCurrent) >= 1 THEN 1 ELSE 0 END) AS IsCurrent
 	FROM   (
-	           SELECT dmt.Id            AS Title,
+	           SELECT dmt.Id,
+	                  dmt.Title,
 	                  COUNT(1)          AS [Count],
 	                  (
 	                      CASE 
@@ -3029,10 +3031,12 @@ BEGIN
 	           WHERE  dmt.ModelCoreType = @mct
 	           GROUP BY
 	                  dmt.Id,
+	                  dmt.Title,
 	                  dmt.MaterialId,
 	                  dmt.ModelCoreType
 	       )                  x
 	GROUP BY
+	       x.Id,
 	       x.Title
 	ORDER BY
 	       x.Title
@@ -3040,21 +3044,84 @@ END
 GO
 
 /*******************************************
- * Удалить seo-тег материала
+ * Получить тег облака материала 
+ * Тег может быть уникальным в пределах Id и ModelCoreType
+ *******************************************/
+IF OBJECT_ID(N'dbo.get_material_tag', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_material_tag;
+GO
+CREATE PROCEDURE dbo.get_material_tag
+	@id NVARCHAR(128),
+	@mct INT
+AS
+BEGIN
+	SELECT *
+	FROM   D_MATERIAL_TAG AS dmt
+	WHERE  dmt.Id = @id
+	       AND dmt.ModelCoreType = @mct
+END
+GO
+
+/*******************************************
+ * Добавить тег облака материала 
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_material_tag', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_material_tag;
+GO
+CREATE PROCEDURE dbo.add_material_tag
+	@id NVARCHAR(128),
+	@mid INT,
+	@mct INT,
+	@title NVARCHAR(100)
+AS
+BEGIN
+	IF NOT EXISTS(
+	       SELECT dmt.Id
+	       FROM   D_MATERIAL_TAG AS dmt
+	       WHERE  dmt.Id = @id
+	              AND dmt.ModelCoreType = @mct
+	   )
+	BEGIN
+	    DECLARE @date DATETIME = GETDATE()
+	    INSERT INTO D_MATERIAL_TAG
+	      (
+	        Id,
+	        MaterialId,
+	        ModelCoreType,
+	        DateUpdate,
+	        DateCreate,
+	        Title
+	      )
+	    VALUES
+	      (
+	        @id,
+	        @mid,
+	        @mct,
+	        @date,
+	        @date,
+	        @title
+	      )
+	    
+	    EXEC dbo.get_material_tag @id,
+	         @mct
+	END
+END
+GO
+
+/*******************************************
+ * Удалить тег облака материала
  *******************************************/
 IF OBJECT_ID(N'dbo.del_material_tag', N'P') IS NOT NULL
     DROP PROCEDURE dbo.del_material_tag;
 GO
 CREATE PROCEDURE dbo.del_material_tag
 	@id NVARCHAR(MAX),
-	@mid INT,
 	@mct INT
 AS
 BEGIN
 	DELETE 
 	FROM   D_MATERIAL_TAG
 	WHERE  Id = @id
-	       AND MaterialId = @mid
 	       AND ModelCoreType = @mct
 END
 GO

@@ -4,9 +4,9 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity.Owin;
 using System.Web;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
-using System.Linq;
 using SX.WebCore.ViewModels;
 using System;
+using SX.WebCore.Repositories;
 
 namespace SX.WebCore.MvcControllers
 {
@@ -28,16 +28,20 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
+        private static SxRepoAppRole<SxDbContext> _repo;
+        public SxUserRolesController()
+        {
+            if (_repo == null)
+                _repo = new SxRepoAppRole<SxDbContext>();
+        }
+
         [HttpGet]
         public virtual ViewResult Index(int page = 1)
         {
             var order = new SxOrder { FieldName = "Name", Direction = SortDirection.Asc };
             var filter = new SxFilter(page, _rolePageSize) { Order = order };
-            var data = RoleManager.Roles.OrderBy(x => x.Name).ToArray();
-            filter.PagerInfo.TotalItems = data.Count();
-            var viewModel = data
-                .Select(x => Mapper.Map<SxAppRole, SxVMAppRole>(x))
-                .ToArray();
+
+            var viewModel = _repo.Read(filter);
 
             ViewBag.Filter = filter;
 
@@ -45,46 +49,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(SxVMAppRole filterModel, SxOrder order, int page = 1)
+        public async virtual Task<PartialViewResult> Index(SxVMAppRole filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _rolePageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
-            var data = RoleManager.Roles.OrderBy(x => x.Name).ToArray();
 
-            if (!string.IsNullOrEmpty(filterModel.Name))
-                data = data.Where(x => x.Name.ToUpper().Contains(filterModel.Name.ToUpper())).ToArray();
-            if (!string.IsNullOrEmpty(filterModel.Description))
-                data = data.Where(x => x.Description.ToUpper().Contains(filterModel.Description.ToUpper())).ToArray();
+            var viewModel = await _repo.ReadAsync(filter);
 
-            if (order != null && !Equals(order.Direction, SortDirection.Unknown))
-            {
-                switch (order.FieldName)
-                {
-                    case "Name":
-                        if (Equals(order.Direction, SortDirection.Asc))
-                            data = data.OrderBy(x => x.Name).ToArray();
-                        else
-                            data = data.OrderByDescending(x => x.Name).ToArray();
-                        break;
-
-                    case "Description":
-                        if (Equals(order.Direction, SortDirection.Asc))
-                            data = data.OrderBy(x => x.Description).ToArray();
-                        else
-                            data = data.OrderByDescending(x => x.Description).ToArray();
-                        break;
-                }
-            }
-            else
-            {
-                data = data.OrderBy(x => x.Name).ToArray();
-                filter.Order = new SxOrder { FieldName = "Name", Direction = SortDirection.Asc };
-            }
-
-            filter.PagerInfo.TotalItems = data.Count();
             filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _rolePageSize ? 1 : page;
-            var viewModel = data
-                .Select(x => Mapper.Map<SxAppRole, SxVMAppRole>(x))
-                .ToArray();
 
             ViewBag.Filter = filter;
 

@@ -18,7 +18,7 @@ namespace SX.WebCore.Repositories
             var id = Guid.NewGuid();
             using (var conn = new SqlConnection(ConnectionString))
             {
-                conn.Execute("dbo.add_request @id, @browser, @clientIP, @rawUrl, @requestType, @urlRef, @sessionId, @userAgent", new
+                var data=conn.Query<SxRequest>("dbo.add_request @id, @browser, @clientIP, @rawUrl, @requestType, @urlRef, @sessionId, @userAgent", new
                 {
                     id = id,
                     browser = model.Browser,
@@ -29,9 +29,9 @@ namespace SX.WebCore.Repositories
                     sessionId = model.SessionId,
                     userAgent = model.UserAgent
                 });
-            }
 
-            return base.GetByKey(id);
+                return data.SingleOrDefault();
+            }
         }
 
         public override SxVMRequest[] Read(SxFilter filter)

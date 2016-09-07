@@ -116,6 +116,8 @@ namespace SX.WebCore.MvcApplication
 
         protected virtual void Application_Start(object sender, EventArgs e)
         {
+            MvcHandler.DisableMvcResponseHeader = true;
+
             createLogDirectory();
             AppCache = new MemoryCache("APPLICATION_CACHE");
             ErrorProvider = new SxErrorProvider(Server.MapPath(_logDirectoryPath));

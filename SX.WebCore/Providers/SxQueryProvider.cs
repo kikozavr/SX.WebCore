@@ -31,7 +31,7 @@ namespace SX.WebCore.Providers
         {
             var sb = new StringBuilder();
             if (order==null || order.FieldName==null)
-                sb.AppendFormat(",{0} {1}", defaultOrder.FieldName, defaultOrder.Direction.ToString().ToUpper());
+                sb.AppendFormat(",{0} {1}", replaceList != null && replaceList.ContainsKey(defaultOrder.FieldName) ? replaceList[defaultOrder.FieldName] : defaultOrder.FieldName, defaultOrder.Direction.ToString().ToUpper());
             else
                 sb.AppendFormat(",{0} {1}", replaceList!=null && replaceList.ContainsKey(order.FieldName) ? replaceList[order.FieldName]: order.FieldName, order.Direction.ToString().ToUpper());
 

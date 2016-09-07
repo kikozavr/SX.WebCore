@@ -8,7 +8,7 @@ namespace SX.WebCore
 {
     public class SxDbContext : IdentityDbContext<SxAppUser>
     {
-        public SxDbContext(string connectionString) : base(connectionString) { }
+        public SxDbContext(string connectionString) : base(connectionString, throwIfV1Schema: false) { }
 
         public static TDbContext Create<TDbContext>()
         {

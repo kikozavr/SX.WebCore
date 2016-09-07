@@ -2012,6 +2012,10 @@ BEGIN
 	    GETDATE(),
 	    @rawUrl
 	  )
+	
+	SELECT TOP 1 * 
+	FROM   D_REQUEST AS dr
+	WHERE  dr.Id = @id
 END
 GO
 

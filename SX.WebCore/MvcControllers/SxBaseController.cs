@@ -45,6 +45,8 @@ namespace SX.WebCore.MvcControllers
             SxRawUrl = Request.RawUrl.ToLower();
             SxUrlReferrer = Request.UrlReferrer;
 
+            clearResponseHeaders(filterContext.HttpContext.Response);
+
             if (SxAreaName == "admin") return;
 
             //если экшн является дочерним или задан аттрибут нелогирования запроса
@@ -92,6 +94,10 @@ namespace SX.WebCore.MvcControllers
             }
 
             base.OnActionExecuting(filterContext);
+        }
+        private static void clearResponseHeaders(HttpResponseBase response)
+        {
+            response.Headers.Remove("Server");
         }
 
         private Sx301Redirect get301Redirect(CacheItemPolicy cip = null)

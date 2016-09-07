@@ -1,14 +1,13 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxAffiliateLinksController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxAffiliateLinksController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoAffiliateLink<TDbContext> _repo=new SxRepoAffiliateLink<TDbContext>();
         public static SxRepoAffiliateLink<TDbContext> Repo

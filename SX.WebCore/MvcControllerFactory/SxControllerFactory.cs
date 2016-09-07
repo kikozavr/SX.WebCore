@@ -33,9 +33,10 @@ namespace SX.WebCore.MvcControllerFactory
             }
             catch { }
 
-            if(controller==null && _coreControllerCache.ContainsKey(controllerName.ToLower()))
+            var cName = controllerName.ToLower();
+            if (controller==null && _coreControllerCache.ContainsKey(cName))
             {
-                var cType = _coreControllerCache[controllerName];
+                var cType = _coreControllerCache[cName];
                 Type[] typeArgs = { typeof(TDbContext) };
                 controller=(IController)Activator.CreateInstance(cType.MakeGenericType(typeArgs));
             }

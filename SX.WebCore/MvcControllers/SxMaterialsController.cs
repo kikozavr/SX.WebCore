@@ -54,6 +54,20 @@ namespace SX.WebCore.MvcControllers
             return View(viewModel);
         }
 
+        [HttpPost]
+        public virtual async Task<PartialViewResult> Index(TViewModel filterModel, SxOrder order, int page = 1)
+        {
+            var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
+
+            var viewModel = await _repo.ReadAsync(filter);
+
+            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+
+            ViewBag.Filter = filter;
+
+            return PartialView("_GridView", viewModel);
+        }
+
         [HttpGet]
         public virtual ActionResult Edit(int? id = null)
         {

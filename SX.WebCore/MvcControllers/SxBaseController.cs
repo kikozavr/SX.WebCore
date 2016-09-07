@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using SX.WebCore.Attrubutes;
 using SX.WebCore.Managers;
 using SX.WebCore.MvcApplication;
-using SX.WebCore.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -20,18 +19,6 @@ namespace SX.WebCore.MvcControllers
     [SessionState(SessionStateBehavior.Disabled)]
     public abstract class SxBaseController<TDbContext> : Controller where TDbContext : SxDbContext
     {
-        private static SxRepoAffiliateLink<TDbContext> _repoAffiliateLink;
-        private static SxRepoRequest<TDbContext> _repoRequest;
-
-        private static SxRepoStatistic<TDbContext> _repoStatistic;
-        protected static SxRepoStatistic<TDbContext> RepoStatistic
-        {
-            get
-            {
-                return _repoStatistic;
-            }
-        }
-
         protected static IMapper Mapper { get; set; }
 
         protected static Action<SxBaseController<TDbContext>> WriteBreadcrumbs { get; set; }
@@ -40,12 +27,6 @@ namespace SX.WebCore.MvcControllers
         {
             if (Mapper == null)
                 Mapper = SxApplication<TDbContext>.MapperConfiguration.CreateMapper();
-            if (_repoAffiliateLink == null)
-                _repoAffiliateLink = new SxRepoAffiliateLink<TDbContext>();
-            if (_repoRequest == null)
-                _repoRequest = new SxRepoRequest<TDbContext>();
-            if (_repoStatistic == null)
-                _repoStatistic = new SxRepoStatistic<TDbContext>();
         }
 
         public string SxAreaName { get; set; }
@@ -119,7 +100,7 @@ namespace SX.WebCore.MvcControllers
             var redirect = (Sx301Redirect)SxApplication<TDbContext>.AppCache["CACHE_REDIRECT_" + SxRawUrl];
             if (redirect == null)
             {
-                redirect = new SxRepo301Redirect<TDbContext>().Get301Redirect(SxRawUrl);
+                redirect = SxRedirectsController<TDbContext>.Repo.Get301Redirect(SxRawUrl);
                 SxApplication<TDbContext>.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect, cip);
             }
 
@@ -131,7 +112,7 @@ namespace SX.WebCore.MvcControllers
             var seoTags = (SxSeoTags)SxApplication<TDbContext>.AppCache["CACHE_SEOTAGS_" + SxRawUrl];
             if (seoTags == null)
             {
-                seoTags = new SxRepoSeoTags<TDbContext>().GetSeoTags(SxRawUrl);
+                seoTags = SxSeoTagsController<TDbContext>.Repo.GetSeoTags(SxRawUrl);
                 SxApplication<TDbContext>.AppCache.Add("CACHE_SEOTAGS_" + SxRawUrl, seoTags, cip);
             }
             return seoTags;
@@ -172,7 +153,7 @@ namespace SX.WebCore.MvcControllers
                     SessionId = identityCookie,
                     UserAgent = Request.UserAgent
                 };
-                _repoRequest.Create(requestInstance);
+                SxRequestsController<TDbContext>.Repo.Create(requestInstance);
             });
         }
 
@@ -196,7 +177,7 @@ namespace SX.WebCore.MvcControllers
             if (!Guid.TryParse(ak, out akGuid)) return;
 
             if (!string.IsNullOrEmpty(ak))
-                _repoAffiliateLink.AddViewAsync(akGuid);
+                SxAffiliateLinksController<TDbContext>.Repo.AddViewAsync(akGuid);
 
             if (cookies == null && !string.IsNullOrEmpty(ak))
             {

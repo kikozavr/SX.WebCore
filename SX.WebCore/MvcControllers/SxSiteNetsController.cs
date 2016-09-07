@@ -7,21 +7,13 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "smm")]
-    public abstract class SxSiteNetsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxSiteNetsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoSiteNet<TDbContext> _repo;
-        public SxSiteNetsController()
+        private static SxRepoSiteNet<TDbContext> _repo=new SxRepoSiteNet<TDbContext>();
+        public static SxRepoSiteNet<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoSiteNet<TDbContext>();
-        }
-
-        protected SxRepoSiteNet<TDbContext> Repo
-        {
-            get
-            {
-                return _repo;
-            }
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static int _pageSize = 20;

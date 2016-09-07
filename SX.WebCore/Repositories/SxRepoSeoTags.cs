@@ -13,13 +13,6 @@ namespace SX.WebCore.Repositories
 {
     public sealed class SxRepoSeoTags<TDbContext> : SxDbRepository<int, SxSeoTags, TDbContext, SxVMSeoTags> where TDbContext : SxDbContext
     {
-        private static SxRepoSeoKeyword<TDbContext> _repoSeoKeywords;
-        public SxRepoSeoTags()
-        {
-            if (_repoSeoKeywords == null)
-                _repoSeoKeywords = new SxRepoSeoKeyword<TDbContext>();
-        }
-
         public override SxVMSeoTags[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();

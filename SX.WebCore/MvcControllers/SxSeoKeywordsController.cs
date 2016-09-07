@@ -1,19 +1,18 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxSeoKeywordsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxSeoKeywordsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoSeoKeyword<TDbContext> _repo;
-        public SxSeoKeywordsController()
+        private static SxRepoSeoKeyword<TDbContext> _repo=new SxRepoSeoKeyword<TDbContext>();
+        public static SxRepoSeoKeyword<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoSeoKeyword<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static readonly int _pageSize = 10;

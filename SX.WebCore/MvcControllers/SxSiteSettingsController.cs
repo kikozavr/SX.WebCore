@@ -3,31 +3,20 @@ using SX.WebCore.Repositories;
 using SX.WebCore.Resources;
 using SX.WebCore.ViewModels;
 using System;
-using System.Text;
 using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxSiteSettingsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxSiteSettingsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private const string __notSetSettingValue = "Настройка не определена";
-        private static SxRepoSiteSetting<TDbContext> _repo;
-        private static SxRepoPicture<TDbContext> _repoPicture;
-        public SxSiteSettingsController()
-        {
-            if (_repo == null)
-                _repo = new SxRepoSiteSetting<TDbContext>();
-            if (_repoPicture == null)
-                _repoPicture = new SxRepoPicture<TDbContext>();
-        }
 
-        protected static SxRepoPicture<TDbContext> RepoPicture
+        private static SxRepoSiteSetting<TDbContext> _repo=new SxRepoSiteSetting<TDbContext>();
+        public static SxRepoSiteSetting<TDbContext> Repo
         {
-            get
-            {
-                return _repoPicture;
-            }
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet, AllowAnonymous]
@@ -72,14 +61,14 @@ namespace SX.WebCore.MvcControllers
             {
                 Guid.TryParse(settings[Settings.siteLogoPath].ToString(), out guid);
                 if (guid != Guid.Empty)
-                    ViewData["LogoPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+                    ViewData["LogoPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
             }
 
             if (settings.ContainsKey(Settings.siteBgPath))
             {
                 Guid.TryParse(settings[Settings.siteBgPath].ToString(), out guid);
                 if (guid != Guid.Empty)
-                    ViewData["SiteBgPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+                    ViewData["SiteBgPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
             }
 
 
@@ -87,7 +76,7 @@ namespace SX.WebCore.MvcControllers
             {
                 Guid.TryParse(settings[Settings.siteFaveiconPath].ToString(), out guid);
                 if (guid != Guid.Empty)
-                    ViewData["SiteFaveiconPathCaption"] = _repoPicture.GetByKey(guid).Caption;
+                    ViewData["SiteFaveiconPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
             }
 
             return View(viewModel);

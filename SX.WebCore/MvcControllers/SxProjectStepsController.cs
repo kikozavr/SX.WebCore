@@ -10,11 +10,11 @@ namespace SX.WebCore.MvcControllers
     [Authorize(Roles ="admin")]
     public abstract class SxProjectStepsController<TDbContext>:SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoProjectStep<TDbContext> _repo;
-        public SxProjectStepsController()
+        private static SxRepoProjectStep<TDbContext> _repo=new SxRepoProjectStep<TDbContext>();
+        public static SxRepoProjectStep<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoProjectStep<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet]

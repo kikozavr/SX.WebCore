@@ -6,11 +6,11 @@ namespace SX.WebCore.MvcControllers
     [Authorize]
     public abstract class SxChatController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepositoryChat<TDbContext> _repo;
-        public SxChatController()
+        private static SxRepositoryChat<TDbContext> _repo=new SxRepositoryChat<TDbContext>();
+        public static SxRepositoryChat<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepositoryChat<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet]

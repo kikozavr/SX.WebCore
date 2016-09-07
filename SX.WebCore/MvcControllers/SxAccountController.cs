@@ -11,8 +11,6 @@ using System;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.Hubs;
 using Newtonsoft.Json;
-using System.Configuration;
-using System.Net;
 
 namespace SX.WebCore.MvcControllers
 {
@@ -96,7 +94,7 @@ namespace SX.WebCore.MvcControllers
         private async Task addStatisticUserLoginAsync(DateTime date, string email)
         {
             var user = await UserManager.FindByEmailAsync(email);
-            RepoStatistic.CreateStatisticUserLogin(date, user.Id);
+            SxStatisticsController<TDbContext>.Repo.CreateStatisticUserLogin(date, user.Id);
 
             var context = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<SxChatHub>();
             var json = JsonConvert.SerializeObject(Mapper.Map<SxAppUser, SxVMAppUser>(user));

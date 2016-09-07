@@ -1,7 +1,6 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -9,13 +8,19 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
-    public abstract class Sx301RedirectsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxRedirectsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepo301Redirect<TDbContext> _repo;
-        public Sx301RedirectsController()
+        private static SxRepo301Redirect<TDbContext> _repo=new SxRepo301Redirect<TDbContext>();
+        public static SxRepo301Redirect<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepo301Redirect<TDbContext>();
+            get
+            {
+                return _repo;
+            }
+            set
+            {
+                _repo = value;
+            }
         }
 
         private static int _pageSize = 20;

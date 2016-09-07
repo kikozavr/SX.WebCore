@@ -1,24 +1,21 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
-using System;
-using System.Linq;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxNetsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxNetsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoNet<TDbContext> _repo;
-        public SxNetsController()
+        private static SxRepoNet<TDbContext> _repo=new SxRepoNet<TDbContext>();
+        public static SxRepoNet<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoNet<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static int _pageSize = 20;
-
         [HttpGet]
         public virtual ViewResult Index(int page = 1)
         {

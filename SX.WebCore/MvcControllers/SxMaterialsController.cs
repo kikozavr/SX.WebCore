@@ -6,7 +6,6 @@ using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
 using System.Configuration;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -30,42 +29,20 @@ namespace SX.WebCore.MvcControllers
         }
 
         private static SxRepoMaterial<TModel, TViewModel, TDbContext> _repo;
-        private static SxRepoSeoTags<TDbContext> _repoSeoTags;
-        private static SxRepoMaterialCategory<TDbContext> _repoMaterialCategories;
-        private static SxRepoMaterialTag<TDbContext> _repoMaterialTags;
+        protected static SxRepoMaterial<TModel, TViewModel, TDbContext> Repo
+        {
+            get { return _repo; }
+            set { _repo = value; }
+        }
+
         protected SxMaterialsController(ModelCoreType mct)
         {
             _mct = mct;
-            if (_repoSeoTags == null)
-                _repoSeoTags = new SxRepoSeoTags<TDbContext>();
-            if (_repoMaterialCategories==null)
-                _repoMaterialCategories = new SxRepoMaterialCategory<TDbContext>();
-            if (_repoMaterialTags == null)
-                _repoMaterialTags = new SxRepoMaterialTag<TDbContext>();
-        }
-
-        protected static SxRepoMaterial<TModel, TViewModel, TDbContext> Repo
-        {
-            get
-            {
-                return _repo;
-            }
-            set
-            {
-                _repo = value;
-            }
-        }
-        protected static SxRepoSeoTags<TDbContext> RepoSeoTags
-        {
-            get
-            {
-                return _repoSeoTags;
-            }
         }
 
         private static readonly int _pageSize = 10;
         [HttpGet]
-        public virtual ViewResult Index(int page = 1)
+        public virtual ActionResult Index(int page = 1)
         {
             var order = new SxOrder { FieldName = "dm.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
@@ -142,14 +119,15 @@ namespace SX.WebCore.MvcControllers
             if(!string.IsNullOrEmpty(cat))
             {
                 filter.CategoryId = cat;
-                ViewBag.Category = Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(_repoMaterialCategories.GetByKey(cat));
+                var category = SxMaterialCategoriesController<TDbContext, SxVMMaterialCategory>.Repo.GetByKey(cat);
+                ViewBag.Category = Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(category);
             }
 
             //material tag
             var tag = Request.QueryString.Get("tag");
             if (!string.IsNullOrEmpty(tag))
             {
-                filter.Tag = _repoMaterialTags.GetByKey(tag, _mct);
+                filter.Tag = SxMaterialTagsController<TDbContext>.Repo.GetByKey(tag, _mct);
                 ViewBag.Tag = Mapper.Map<SxMaterialTag, SxVMMaterialTag>(filter.Tag);
             }
 
@@ -261,7 +239,7 @@ namespace SX.WebCore.MvcControllers
         {
             var viewModel = _repo.GetByDateMaterials(mid, mct, dir, amount);
             ViewBag.ModelCoreType = mct;
-            return PartialView("~/Views/Shared/_ByDateMaterial.cshtml", viewModel);
+            return PartialView("ByDateMaterial", viewModel);
         }
 
 #if !DEBUG
@@ -273,7 +251,7 @@ namespace SX.WebCore.MvcControllers
             var viewModel = Repo.GetPopular(_mct, mid, amount);
             ViewData["ModelCoreType"] = _mct;
 
-            return PartialView("~/Views/Shared/_PopularMaterials.cshtml", viewModel);
+            return PartialView("_PopularMaterials", viewModel);
         }
 
 #if !DEBUG

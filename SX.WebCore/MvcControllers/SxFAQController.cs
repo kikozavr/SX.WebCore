@@ -8,11 +8,11 @@ namespace SX.WebCore.MvcControllers
     [AllowAnonymous]
     public abstract class SxFAQController<TDbContext>:SxBaseController<TDbContext> where TDbContext: SxDbContext
     {
-        private static SxRepoManual<TDbContext> _repo;
-        public SxFAQController()
+        private static SxRepoManual<TDbContext> _repo=new SxRepoManual<TDbContext>();
+        public static SxRepoManual<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoManual<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet]

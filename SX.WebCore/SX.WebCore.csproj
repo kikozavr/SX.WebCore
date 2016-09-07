@@ -113,6 +113,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -185,7 +186,8 @@
     <Compile Include="HtmlHelpers\SxShareButtons.cs" />
     <Compile Include="Hubs\SxChatHub.cs" />
     <Compile Include="Managers\SxCacheExpirationManager.cs" />
-    <Compile Include="MvcApplication\AutoMapperConfig.cs" />
+    <Compile Include="MvcApplication\SxAutoMapperConfig.cs" />
+    <Compile Include="MvcControllerFactory\SxControllerFactory.cs" />
     <Compile Include="MvcControllers\SxSiteNetsController.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
@@ -195,7 +197,7 @@
     <Compile Include="MvcControllers\SxRatingController.cs" />
     <Compile Include="MvcControllers\SxShareButtonsController.cs" />
     <Compile Include="MvcControllers\SxNetsController.cs" />
-    <Compile Include="MvcControllers\Sx301RedirectsController.cs" />
+    <Compile Include="MvcControllers\SxRedirectsController.cs" />
     <Compile Include="MvcControllers\SxBannedUrlsController.cs" />
     <Compile Include="MvcControllers\SxBannerGroupsController.cs" />
     <Compile Include="MvcControllers\SxBannersController.cs" />
@@ -220,6 +222,7 @@
     <Compile Include="MvcControllers\SxMaterialCategoriesController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
     <Compile Include="Providers\SxSiteNetProvider.cs" />
+    <Compile Include="RazorViewEngine\SxRazorViewEngine.cs" />
     <Compile Include="Repositories\SxRepoAffiliateLink.cs" />
     <Compile Include="Repositories\SxRepoAppRole.cs" />
     <Compile Include="Repositories\SxRepoMaterial.cs" />

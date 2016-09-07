@@ -13,14 +13,14 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles ="admin")]
-    public abstract class SxBannersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxBannersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static int _pageSize = 20;
-        private static SxRepoBanner<TDbContext> _repo;
-        public SxBannersController()
+        private static SxRepoBanner<TDbContext> _repo=new SxRepoBanner<TDbContext>();
+        public static SxRepoBanner<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoBanner<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet]

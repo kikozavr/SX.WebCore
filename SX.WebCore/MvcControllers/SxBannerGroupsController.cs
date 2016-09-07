@@ -9,14 +9,14 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxBannerGroupsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxBannerGroupsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static int _pageSize = 20;
-        private static SxRepoBannerGroup<TDbContext> _repo;
-        public SxBannerGroupsController()
+        private static SxRepoBannerGroup<TDbContext> _repo=new SxRepoBannerGroup<TDbContext>();
+        public static SxRepoBannerGroup<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoBannerGroup<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet]
@@ -103,10 +103,9 @@ namespace SX.WebCore.MvcControllers
         {
             _repo.DeleteBanner(bgid, bid);
 
-            var repoBanner = new SxRepoBanner<TDbContext>();
             var filter = new SxFilter(1, 20) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid }, AddintionalInfo=new object[] { true } };
 
-            var viewModel = await repoBanner.ReadAsync(filter);
+            var viewModel = await SxBannersController<TDbContext>.Repo.ReadAsync(filter);
             
             ViewBag.PagerInfo = filter.PagerInfo;
             ViewBag.BannerGroupId = bgid;

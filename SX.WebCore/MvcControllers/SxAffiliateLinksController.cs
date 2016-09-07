@@ -10,11 +10,11 @@ namespace SX.WebCore.MvcControllers
 {
     public abstract class SxAffiliateLinksController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoAffiliateLink<TDbContext> _repo;
-        public SxAffiliateLinksController()
+        private static SxRepoAffiliateLink<TDbContext> _repo=new SxRepoAffiliateLink<TDbContext>();
+        public static SxRepoAffiliateLink<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoAffiliateLink<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static readonly int _pageSize = 20;

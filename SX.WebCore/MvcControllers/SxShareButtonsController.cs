@@ -1,19 +1,18 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
-using System.Linq;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxShareButtonsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxShareButtonsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoShareButton<TDbContext> _repo;
-        public SxShareButtonsController()
+        private static SxRepoShareButton<TDbContext> _repo=new SxRepoShareButton<TDbContext>();
+        public static SxRepoShareButton<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoShareButton<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static int _pageSize = 20;

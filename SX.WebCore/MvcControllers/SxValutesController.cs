@@ -1,4 +1,5 @@
 ﻿using SX.WebCore.HtmlHelpers;
+using SX.WebCore.Managers;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.ViewModels;
 using System;
@@ -9,19 +10,9 @@ using System.Xml.Linq;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxValutesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxValutesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static readonly int _pageSize = 15;
-        private static CacheItemPolicy _defaultPolicy
-        {
-            get
-            {
-                return new CacheItemPolicy
-                {
-                    AbsoluteExpiration = DateTimeOffset.Now.AddHours(2)
-                };
-            }
-        }
 
         [HttpGet]
         public virtual ViewResult Index(int page = 1, DateTime? date = null)
@@ -58,7 +49,7 @@ namespace SX.WebCore.MvcControllers
             var url = string.Format("http://www.cbr.ru/scripts/XML_daily.asp?date_req={0}", strD);
 
             if (SxApplication<TDbContext>.AppCache.Get("CACHE_VALUTES") == null)
-                SxApplication<TDbContext>.AppCache.Add(new CacheItem("CACHE_VALUTES", XDocument.Load(url)), _defaultPolicy);
+                SxApplication<TDbContext>.AppCache.Add(new CacheItem("CACHE_VALUTES", XDocument.Load(url)), SxCacheExpirationManager.GetExpiration(minutes:120));
             var doc = (XDocument)SxApplication<TDbContext>.AppCache.Get("CACHE_VALUTES");
 
             var data = doc.Descendants("Valute")

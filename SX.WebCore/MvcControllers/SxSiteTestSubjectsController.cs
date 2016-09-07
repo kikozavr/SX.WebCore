@@ -1,6 +1,5 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -10,11 +9,11 @@ namespace SX.WebCore.MvcControllers
     [Authorize(Roles = "admin")]
     public abstract class SxSiteTestSubjectsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoSiteTestSubject<TDbContext> _repo;
-        public SxSiteTestSubjectsController()
+        private static SxRepoSiteTestSubject<TDbContext> _repo=new SxRepoSiteTestSubject<TDbContext>();
+        public static SxRepoSiteTestSubject<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoSiteTestSubject<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static int _pageSize = 10;

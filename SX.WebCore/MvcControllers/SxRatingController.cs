@@ -7,11 +7,11 @@ namespace SX.WebCore.MvcControllers
 {
     public abstract class SxRatingController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoRating<TDbContext> _repo;
-        public SxRatingController()
+        private static SxRepoRating<TDbContext> _repo=new SxRepoRating<TDbContext>();
+        public static SxRepoRating<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoRating<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpPost,ValidateAntiForgeryToken]

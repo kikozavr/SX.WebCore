@@ -9,11 +9,11 @@ namespace SX.WebCore.MvcControllers
     [Authorize(Roles = "admin")]
     public abstract class SxSiteTestQuestionsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoSiteTestQuestion<TDbContext> _repo;
-        public SxSiteTestQuestionsController()
+        private static SxRepoSiteTestQuestion<TDbContext> _repo=new SxRepoSiteTestQuestion<TDbContext>();
+        public static SxRepoSiteTestQuestion<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoSiteTestQuestion<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static int _pageSize = 10;

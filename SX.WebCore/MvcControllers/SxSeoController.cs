@@ -8,13 +8,13 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
-    public abstract class SxSeoController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxSeoController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        public static SxRepoSiteSetting<TDbContext> _repo;
-        public SxSeoController()
+        public static SxRepoSiteSetting<TDbContext> _repo=new SxRepoSiteSetting<TDbContext>();
+        public static SxRepoSiteSetting<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoSiteSetting<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet]

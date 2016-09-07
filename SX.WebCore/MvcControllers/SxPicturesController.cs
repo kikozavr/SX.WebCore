@@ -1,44 +1,27 @@
 ﻿using SX.WebCore.Attrubutes;
-using SX.WebCore.Managers;
-using SX.WebCore.MvcApplication;
 using SX.WebCore.Providers;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
 using System.Configuration;
 using System.Drawing;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.SessionState;
 using System.Web.UI;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    [SessionState(SessionStateBehavior.Disabled)]
-    public abstract class SxPicturesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxPicturesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoPicture<TDbContext> _repo;
-        protected static SxRepoPicture<TDbContext> Repo
+        private static SxRepoPicture<TDbContext> _repo = new SxRepoPicture<TDbContext>();
+        public static SxRepoPicture<TDbContext> Repo
         {
-            get
-            {
-                return _repo;
-            }
-            set
-            {
-                _repo = value;
-            }
-        }
-        public SxPicturesController()
-        {
-            if (_repo == null)
-                _repo = Repo;
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static int _pageSize = 20;

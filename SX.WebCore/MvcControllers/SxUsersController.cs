@@ -15,16 +15,13 @@ using System.Threading.Tasks;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxUsersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxUsersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoAppUser<TDbContext> _repo;
-        private static SxRepoEmployee<TDbContext> _repoEmployee;
-        public SxUsersController()
+        private static SxRepoAppUser<TDbContext> _repo=new SxRepoAppUser<TDbContext>();
+        public static SxRepoAppUser<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoAppUser<TDbContext>();
-            if (_repoEmployee == null)
-                _repoEmployee = new SxRepoEmployee<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static readonly string _architectRole = "architect";
@@ -132,7 +129,7 @@ namespace SX.WebCore.MvcControllers
                 Email = data.Email,
                 NikName = data.NikName,
                 IsOnline = SxApplication<TDbContext>.UsersOnSite.ContainsValue(data.UserName),
-                IsEmployee = _repoEmployee.GetByKey(data.Id) != null,
+                IsEmployee = SxEmployeesController<TDbContext>.Repo.GetByKey(data.Id)!=null,
                 Description=data.Description
             };
 
@@ -149,12 +146,12 @@ namespace SX.WebCore.MvcControllers
         private void addEmployee(SxVMAppUser model)
         {
             var redactModel = Mapper.Map<SxVMAppUser, SxEmployee>(model);
-            var data = _repoEmployee.Create(redactModel);
+            var data = SxEmployeesController<TDbContext>.Repo.Create(redactModel);
         }
 
         public void delEmployee(SxVMAppUser model)
         {
-            _repoEmployee.Delete(new SxEmployee { Id=model.Id });
+            SxEmployeesController<TDbContext>.Repo.Delete(new SxEmployee { Id=model.Id });
         }
 
         [HttpPost, ValidateAntiForgeryToken]

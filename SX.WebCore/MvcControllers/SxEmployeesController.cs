@@ -11,11 +11,11 @@ namespace SX.WebCore.MvcControllers
     public abstract class SxEmployeesController<TDbContext> : SxBaseController<TDbContext> where TDbContext:SxDbContext
     {
         private static int _pageSize = 20;
-        private static SxRepoEmployee<TDbContext> _repo;
-        public SxEmployeesController()
+        private static SxRepoEmployee<TDbContext> _repo=new SxRepoEmployee<TDbContext>();
+        public static SxRepoEmployee<TDbContext> Repo
         {
-            if(_repo==null)
-                _repo = new SxRepoEmployee<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet]

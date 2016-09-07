@@ -14,19 +14,11 @@ namespace SX.WebCore.MvcControllers
     [Authorize(Roles = "admin")]
     public abstract class SxSiteTestsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoSiteTest<TDbContext> _repo;
-        public SxSiteTestsController()
+        private static SxRepoSiteTest<TDbContext> _repo=new SxRepoSiteTest<TDbContext>();
+        public static SxRepoSiteTest<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoSiteTest<TDbContext>();
-        }
-
-        protected SxRepoSiteTest<TDbContext> Repo
-        {
-            get
-            {
-                return _repo;
-            }
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static int _pageSize = 20;
@@ -266,10 +258,7 @@ namespace SX.WebCore.MvcControllers
         {
             return await Task.Run(() =>
             {
-                var stRepo = new SxRepoSiteTest<TDbContext>();
-                var stsRepo = new SxRepoSiteTestSubject<TDbContext>();
-                var stqRepo = new SxRepoSiteTestQuestion<TDbContext>();
-                var testId = stRepo.Create(new SxSiteTest { Title = test.Title, Description = test.Desc }).Id;
+                var testId = Repo.Create(new SxSiteTest { Title = test.Title, Description = test.Desc }).Id;
                 TestAnswer answer;
                 string sTitle;
                 string q;
@@ -278,14 +267,14 @@ namespace SX.WebCore.MvcControllers
                 for (int i = 0; i < test.Subjects.Length; i++)
                 {
                     sTitle = test.Subjects[i];
-                    subject = stsRepo.Create(new SxSiteTestSubject { Title = sTitle, TestId = testId });
+                    subject = SxSiteTestSubjectsController<TDbContext>.Repo.Create(new SxSiteTestSubject { Title = sTitle, TestId = testId });
                     for (int y = 0; y < test.Questions.Length; y++)
                     {
                         q = test.Questions[y];
                         answer = test.Answers.Where(x => x.SubjectTitle == sTitle && x.Question == q).SingleOrDefault();
-                        question = stqRepo.Create(new SxSiteTestQuestion { Text = q, TestId = testId });
+                        question = SxSiteTestQuestionsController<TDbContext>.Repo.Create(new SxSiteTestQuestion { Text = q, TestId = testId });
                         if (answer.IsCorrect)
-                            stRepo.RevertMatrixValue(sTitle, q, 0);
+                            Repo.RevertMatrixValue(sTitle, q, 0);
                     }
                 }
 

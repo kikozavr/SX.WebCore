@@ -9,13 +9,13 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "photo-redactor")]
-    public abstract class SxPictureLinksController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxPictureLinksController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoPicture<TDbContext> _repo;
-        public SxPictureLinksController()
+        private static SxRepoPicture<TDbContext> _repo=new SxRepoPicture<TDbContext>();
+        public static SxRepoPicture<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoPicture<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         private static readonly int _pageSize = 20;

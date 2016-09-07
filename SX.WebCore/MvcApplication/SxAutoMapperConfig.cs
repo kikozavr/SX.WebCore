@@ -5,7 +5,7 @@ using System;
 
 namespace SX.WebCore.MvcApplication
 {
-    internal class AutoMapperConfig
+    internal class SxAutoMapperConfig
     {
         public static MapperConfiguration MapperConfigurationInstance(Action<IMapperConfigurationExpression> customConfigAction=null)
         {

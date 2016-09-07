@@ -145,16 +145,6 @@ COMMIT TRANSACTION";
             }
         }
 
-        //public override void Delete(params object[] id)
-        //{
-        //    var key = (string)id[0];
-
-        //    using (var connection = new SqlConnection(ConnectionString))
-        //    {
-        //        connection.Execute("dbo.del_material_category @catId", new { catId= key });
-        //    }
-        //}
-
         public override void Delete(SxMaterialCategory model)
         {
             var query = @"BEGIN TRANSACTION

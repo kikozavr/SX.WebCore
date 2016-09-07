@@ -11,7 +11,7 @@ using SX.WebCore.Repositories;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxUserRolesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxUserRolesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static int _rolePageSize = 10;
 
@@ -28,11 +28,11 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
-        private static SxRepoAppRole<SxDbContext> _repo;
-        public SxUserRolesController()
+        private static SxRepoAppRole<SxDbContext> _repo=new SxRepoAppRole<SxDbContext>();
+        public static SxRepoAppRole<SxDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoAppRole<SxDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
 
         [HttpGet]

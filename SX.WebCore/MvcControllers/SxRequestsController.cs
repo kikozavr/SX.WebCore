@@ -1,6 +1,5 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -8,15 +7,16 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
-    public abstract class SxRequestsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public class SxRequestsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepoRequest<TDbContext> _repo;
-        private static readonly int _pageSize = 40;
-        public SxRequestsController()
+        private static SxRepoRequest<TDbContext> _repo=new SxRepoRequest<TDbContext>();
+        public static SxRepoRequest<TDbContext> Repo
         {
-            if (_repo == null)
-                _repo = new SxRepoRequest<TDbContext>();
+            get { return _repo; }
+            set { _repo = value; }
         }
+
+        private static readonly int _pageSize = 40;
 
         [HttpGet]
         public virtual ViewResult Index(int page = 1)

@@ -1,4 +1,5 @@
-﻿using SX.WebCore.Repositories;
+﻿using SX.WebCore.MvcApplication;
+using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -68,10 +69,16 @@ namespace SX.WebCore.MvcControllers
                 var redactModel = Mapper.Map<SxVMSiteNet, SxSiteNet>(model);
                 SxSiteNet newModel = null;
                 newModel = _repo.Update(redactModel);
+
+                SxApplication<TDbContext>.SiteNetsProvider.UpdateInCache(Mapper.Map<SxSiteNet, SxVMSiteNet>(newModel));
+
                 return RedirectToAction("Index");
             }
             else
+            {
+                model.Net = Mapper.Map<SxNet, SxVMNet>(SxNetsController<TDbContext>.Repo.GetByKey(model.NetId));
                 return View(model);
+            }
         }
 
         [HttpPost, ValidateAntiForgeryToken]

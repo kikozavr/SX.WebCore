@@ -2,6 +2,7 @@
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using SX.WebCore.ViewModels;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -36,7 +37,9 @@ namespace SX.WebCore.Repositories
             sb.Append(gws);
 
             var defaultOrder = new SxOrder { FieldName = "dbu.DateCreate", Direction = SortDirection.Desc };
-            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order, new Dictionary<string, string> {
+                { "DateCreate", "dbu.DateCreate"}
+            }));
 
             sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
 

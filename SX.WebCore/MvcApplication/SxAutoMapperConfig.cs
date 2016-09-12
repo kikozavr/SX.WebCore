@@ -11,6 +11,10 @@ namespace SX.WebCore.MvcApplication
         {
                 return new MapperConfiguration(cfg =>
                 {
+                    //affiliate link
+                    cfg.CreateMap<SxAffiliateLink, SxVMAffiliateLink>();
+                    cfg.CreateMap<SxVMAffiliateLink, SxAffiliateLink>();
+
                     //banner
                     cfg.CreateMap<SxBanner, SxVMBanner>();
                     cfg.CreateMap<SxVMBanner, SxBanner>();

@@ -11,7 +11,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public class SxMaterialCategoriesController<TDbContext, TViewModel> : SxBaseController<TDbContext>
+    public abstract class SxMaterialCategoriesController<TViewModel, TDbContext> : SxBaseController<TDbContext>
         where TDbContext: SxDbContext
         where TViewModel : class, IHierarchy<TViewModel>
     {

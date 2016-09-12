@@ -39,6 +39,9 @@ namespace SX.WebCore.ViewModels
         [Display(Name = "Место на странице")]
         public SxBanner.BannerPlace? Place { get; set; }
 
+        [Display(Name = "Тип баннера")]
+        public SxBanner.BannerType? Type { get; set; }
+
         public int ClicksCount { get; set; }
 
         public int ShowsCount { get; set; }

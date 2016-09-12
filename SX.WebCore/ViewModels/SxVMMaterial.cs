@@ -6,6 +6,7 @@ using static SX.WebCore.Enums;
 
 namespace SX.WebCore.ViewModels
 {
+    [MetadataType(typeof(SxVMMaterialMetadata))]
     public class SxVMMaterial
     {
         public SxVMMaterial()
@@ -17,27 +18,22 @@ namespace SX.WebCore.ViewModels
         public int Id { get; set; }
         public ModelCoreType ModelCoreType { get; set; }
 
-        [UIHint("EditDate")]
         public DateTime DateOfPublication { get; set; }
 
         public DateTime DateCreate { get; set; }
 
         public DateTime DateUpdate { get; set; }
 
-        [Required]
         public string Title { get; set; }
 
         public string TitleUrl { get; set; }
-
-        [DataType(DataType.MultilineText), AllowHtml, Required]
+        
         public string Html { get; set; }
-
-        [DataType(DataType.MultilineText)]
+        
         public string Foreword { get; set; }
 
         public bool Show { get; set; }
-
-        [UIHint("PicturesLookupGrid")]
+        
         public Guid? FrontPictureId { get; set; }
         public virtual SxVMPicture FrontPicture { get; set; }
 
@@ -52,7 +48,6 @@ namespace SX.WebCore.ViewModels
         public int? SeoTagsId { get; set; }
 
         public virtual SxVMMaterialCategory Category { get; set; }
-        [UIHint("MaterialCategoryLookupGrid")]
         public string CategoryId { get; set; }
 
         public SxVideo[] Videos { get; set; }
@@ -80,5 +75,40 @@ namespace SX.WebCore.ViewModels
         public bool IsTop { get; set; }
 
         public SxVMMaterialTag[] MaterialTags { get; set; }
+    }
+
+    public class SxVMMaterialMetadata
+    {
+        [UIHint("EditDate"), Display(Name ="Дата публикации")]
+        public DateTime DateOfPublication { get; set; }
+
+        [Required(ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "RequiredField")]
+        [MaxLength(255, ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "MaxLengthField")]
+        [Display(Name ="Заголовок материала")]
+        public string Title { get; set; }
+
+        [Required(ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "RequiredField")]
+        [MaxLength(255, ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "MaxLengthField")]
+        [Display(Name = "Строковый ключ")]
+        public string TitleUrl { get; set; }
+
+        [Required(ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "RequiredField")]
+        [DataType(DataType.MultilineText), AllowHtml, Display(Name ="Содержание материала")]
+        public string Html { get; set; }
+
+        [DataType(DataType.MultilineText), Display(Name ="Краткое описание материала")]
+        public string Foreword { get; set; }
+
+        [Display(Name ="Возможность просмотра")]
+        public bool Show { get; set; }
+
+        [UIHint("PicturesLookupGrid"), Display(Name ="Картинка")]
+        public Guid? FrontPictureId { get; set; }
+
+        [Display(Name = "Показывать на странице материала")]
+        public bool ShowFrontPictureOnDetailPage { get; set; }
+
+        [Display(Name = "Категория материала"), UIHint("MaterialCategoryLookupGrid")]
+        public string CategoryId { get; set; }
     }
 }

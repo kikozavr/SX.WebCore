@@ -42,6 +42,14 @@ namespace SX.WebCore
             Left = 6
         }
 
+        public BannerType Type { get; set; }
+
+        public enum BannerType:byte
+        {
+            Html=0,
+            Js=1
+        }
+
         /// <summary>
         /// Количество кликов
         /// </summary>

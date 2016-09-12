@@ -17,7 +17,8 @@ namespace SX.WebCore.ViewModels
 
         public int ViewsCount { get; set; }
 
-        [Display(Name = "Стоимость клика")]
-        public decimal ClickCost { get; set; }
+        [Required(ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "RequiredField")]
+        [Display(Name = "Стоимость клика"), DataType(DataType.Currency)]
+        public decimal? ClickCost { get; set; }
     }
 }

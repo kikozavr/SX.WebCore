@@ -55,29 +55,7 @@ namespace SX.WebCore.MvcControllers
             viewModel.OldSiteFaveiconPath = viewModel.SiteFaveiconPath;
             viewModel.OldSiteDesc = viewModel.SiteDesc;
 
-            Guid guid;
-
-            if (settings.ContainsKey(Settings.siteLogoPath))
-            {
-                Guid.TryParse(settings[Settings.siteLogoPath].ToString(), out guid);
-                if (guid != Guid.Empty)
-                    ViewData["LogoPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
-            }
-
-            if (settings.ContainsKey(Settings.siteBgPath))
-            {
-                Guid.TryParse(settings[Settings.siteBgPath].ToString(), out guid);
-                if (guid != Guid.Empty)
-                    ViewData["SiteBgPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
-            }
-
-
-            if (settings.ContainsKey(Settings.siteFaveiconPath))
-            {
-                Guid.TryParse(settings[Settings.siteFaveiconPath].ToString(), out guid);
-                if (guid != Guid.Empty)
-                    ViewData["SiteFaveiconPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
-            }
+            checkSettingsPictures(viewModel);
 
             return View(viewModel);
         }
@@ -108,7 +86,6 @@ namespace SX.WebCore.MvcControllers
 
                     ViewBag.EditSiteSettingsMessage = "Настройки успешно сохранены";
                     SxApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
-                    return RedirectToAction("editsite");
                 }
                 else if (isExists && isModified)
                 {
@@ -121,16 +98,47 @@ namespace SX.WebCore.MvcControllers
                     _repo.Update(new SxSiteSetting { Id = Settings.siteDesc, Value = model.SiteDesc }, true, "Value");
                     ViewBag.EditSiteSettingsMessage = "Настройки успешно обновлены";
                     SxApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
-                    return RedirectToAction("editsite");
                 }
                 else
                 {
                     ViewBag.EditSiteSettingsMessage = "В настройках нет изменений";
-                    return View(model);
                 }
+
+                checkSettingsPictures(model);
+                return View(model);
+            }
+            else
+            {
+                checkSettingsPictures(model);
+                return View(model);
+            }
+        }
+
+        private void checkSettingsPictures(SxVMSiteSettings model)
+        {
+            Guid guid;
+
+            if (!string.IsNullOrEmpty(model.LogoPath))
+            {
+                Guid.TryParse(model.LogoPath, out guid);
+                if (guid != Guid.Empty)
+                    ViewData["LogoPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
             }
 
-            return View(model);
+            if (!string.IsNullOrEmpty(model.SiteBgPath))
+            {
+                Guid.TryParse(model.SiteBgPath, out guid);
+                if (guid != Guid.Empty)
+                    ViewData["SiteBgPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
+            }
+
+
+            if (!string.IsNullOrEmpty(model.SiteFaveiconPath))
+            {
+                Guid.TryParse(model.SiteFaveiconPath, out guid);
+                if (guid != Guid.Empty)
+                    ViewData["SiteFaveiconPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
+            }
         }
     }
 }

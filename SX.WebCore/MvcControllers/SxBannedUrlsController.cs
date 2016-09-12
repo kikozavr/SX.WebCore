@@ -1,5 +1,7 @@
-﻿using SX.WebCore.Repositories;
+﻿using SX.WebCore.Abstract;
+using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -18,12 +20,14 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual ViewResult Index(int page = 1)
+        public virtual ActionResult Index(int page = 1)
         {
-            var order = new SxOrder { FieldName = "dbu.DateCreate", Direction = SortDirection.Desc };
+            var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
             var viewModel = _repo.Read(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -31,13 +35,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public async virtual Task<PartialViewResult> Index(SxVMBannedUrl filterModel, SxOrder order, int page = 1)
+        public async virtual Task<ActionResult> Index(SxVMBannedUrl filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
-            var viewModel = await _repo.ReadAsync(filter);
-
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            var viewModel = (await _repo.ReadAsync(filter));
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -45,10 +49,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual ViewResult Edit(int? id = null)
+        public virtual ActionResult Edit(int? id = null)
         {
-            var model = id.HasValue ? _repo.GetByKey(id) : new SxBannedUrl();
-            var seoInfo = Mapper.Map<SxBannedUrl, SxVMBannedUrl>(model);
+            var data = id.HasValue ? _repo.GetByKey(id) : new SxBannedUrl();
+            if (id.HasValue && data == null)
+                return new HttpNotFoundResult();
+
+            var seoInfo = Mapper.Map<SxBannedUrl, SxVMBannedUrl>(data);
             return View(seoInfo);
         }
 

@@ -181,6 +181,7 @@
     <Compile Include="Abstract\SxDbRepository.cs" />
     <Compile Include="Abstract\SxDbUpdatedModel.cs" />
     <Compile Include="Attrubutes\NotEqualAttribute.cs" />
+    <Compile Include="Extantions\ArrayExtantions.cs" />
     <Compile Include="HtmlHelpers\SxGridLookup.cs" />
     <Compile Include="HtmlHelpers\SxRating.cs" />
     <Compile Include="HtmlHelpers\SxShareButtons.cs" />
@@ -312,6 +313,7 @@
     <Compile Include="SxPictureLink.cs" />
     <Compile Include="SxSiteNet.cs" />
     <Compile Include="SxStatistic.cs" />
+    <Compile Include="ViewModels\SxVMBadLink.cs" />
     <Compile Include="ViewModels\SxVMBannerCollection.cs" />
     <Compile Include="SxBannerGroup.cs" />
     <Compile Include="SxBannerGroupBanner.cs" />

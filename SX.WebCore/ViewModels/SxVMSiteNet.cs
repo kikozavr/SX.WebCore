@@ -6,6 +6,7 @@ namespace SX.WebCore.ViewModels
     {
         [MaxLength(255, ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "MaxLengthField")]
         [Url(ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "ValidUrlField")]
+        [Required(ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "RequiredField")]
         [Display(Name ="Адрес")]
         public string Url { get; set; }
 

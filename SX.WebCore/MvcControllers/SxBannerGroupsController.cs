@@ -20,12 +20,14 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual ViewResult Index(int page = 1)
+        public virtual ActionResult Index(int page = 1)
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
             var viewModel = _repo.Read(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -33,13 +35,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public async virtual Task<PartialViewResult> Index(SxVMBannerGroup filterModel, SxOrder order, int page = 1)
+        public async virtual Task<ActionResult> Index(SxVMBannerGroup filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
-            var viewModel = (await _repo.ReadAsync(filter));
-
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            var viewModel = await _repo.ReadAsync(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -47,9 +49,12 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual ViewResult Edit(Guid? id = null)
+        public virtual ActionResult Edit(Guid? id = null)
         {
             var model = id.HasValue ? _repo.GetByKey((Guid)id) : new SxBannerGroup();
+            if (!id.HasValue && model == null)
+                return new HttpNotFoundResult();
+
             var viewModel = Mapper.Map<SxBannerGroup, SxVMBannerGroup>(model);
             if (id.HasValue)
                 ViewBag.BannerGroupId = model.Id;

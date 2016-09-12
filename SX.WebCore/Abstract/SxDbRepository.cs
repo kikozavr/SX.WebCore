@@ -26,6 +26,7 @@ namespace SX.WebCore.Abstract
             }
         }
 
+        //create
         public virtual TModel Create(TModel model)
         {
             if (model is SxDbModel<TKey>)
@@ -55,6 +56,20 @@ namespace SX.WebCore.Abstract
 
         }
 
+        //read
+        public virtual TViewModel[] Read(SxFilter filter)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<TViewModel[]> ReadAsync(SxFilter filter)
+        {
+            return await Task.Run(() =>
+            {
+                return Read(filter);
+            });
+        }
+
+        //updtae
         public virtual TModel Update(TModel model, bool changeDateUpdate = true, params string[] propertiesForChange)
         {
             var dbContext = Activator.CreateInstance<TDbContext>();
@@ -83,12 +98,10 @@ namespace SX.WebCore.Abstract
 
             return oldModel;
         }
-
         public virtual TModel Update(TModel model, object[] additionalData, bool changeDateUpdate = true, params string[] propertiesForChange)
         {
             return Update(model, changeDateUpdate, propertiesForChange);
         }
-
         public virtual TModel Update(TModel model)
         {
             var dbContext = Activator.CreateInstance<TDbContext>();
@@ -100,9 +113,10 @@ namespace SX.WebCore.Abstract
         }
         public virtual async Task<TModel> UpdateAsync(TModel model)
         {
-            return await Task.Run(()=> { return Update(model); });
+            return await Task.Run(() => { return Update(model); });
         }
 
+        //delete
         public virtual void Delete(TModel model)
         {
             var dbContext = Activator.CreateInstance<TDbContext>();
@@ -111,11 +125,13 @@ namespace SX.WebCore.Abstract
         }
         public virtual async Task DeleteAsync(TModel model)
         {
-            await Task.Run(()=> {
+            await Task.Run(() =>
+            {
                 Delete(model);
             });
         }
 
+        //get all
         public virtual TViewModel[] All
         {
             get
@@ -124,17 +140,7 @@ namespace SX.WebCore.Abstract
             }
         }
 
-        public virtual TViewModel[] Read(SxFilter filter)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<TViewModel[]> ReadAsync(SxFilter filter)
-        {
-            return await Task.Run(()=> {
-                return Read(filter);
-            });
-        }
-
+        //get by key
         public virtual TModel GetByKey(params object[] id)
         {
             var dbContext = Activator.CreateInstance<TDbContext>();

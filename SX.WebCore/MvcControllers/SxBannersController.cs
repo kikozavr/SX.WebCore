@@ -24,12 +24,14 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual ViewResult Index(int page = 1)
+        public virtual ActionResult Index(int page = 1)
         {
             var order = new SxOrder { FieldName = "db.DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
             
             var viewModel = _repo.Read(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -43,13 +45,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual async Task<PartialViewResult> Index(SxVMBanner filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> Index(SxVMBanner filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
             var viewModel =await _repo.ReadAsync(filter);
-
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -57,15 +59,18 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpGet]
-        public virtual ViewResult Edit(Guid? id = null)
+        public virtual ActionResult Edit(Guid? id = null)
         {
-            var model = id.HasValue ? _repo.GetByKey((Guid)id) : new SxBanner();
-            var viewModel = Mapper.Map<SxBanner, SxVMBanner>(model);
+            var data = id.HasValue ? _repo.GetByKey((Guid)id) : new SxBanner();
+            if (id.HasValue && data == null)
+                return new HttpNotFoundResult();
+
+            var viewModel = Mapper.Map<SxBanner, SxVMBanner>(data);
             viewModel.Place = viewModel.Place == SxBanner.BannerPlace.Unknown ? null : viewModel.Place;
             if (!id.HasValue)
                 viewModel.PictureId = null;
             else
-                ViewData["PictureIdCaption"] = model.Picture.Caption;
+                ViewData["PictureIdCaption"] = data.Picture.Caption;
 
             return View(viewModel);
         }
@@ -87,6 +92,9 @@ namespace SX.WebCore.MvcControllers
             }
             else
             {
+                if (model.PictureId.HasValue)
+                    model.Picture = Mapper.Map<SxPicture, SxVMPicture>(SxPicturesController<TDbContext>.Repo.GetByKey(model.PictureId));
+
                 return View(model);
             }
         }

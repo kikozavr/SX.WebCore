@@ -133,7 +133,7 @@ namespace SX.WebCore.MvcControllers
             if(!string.IsNullOrEmpty(cat))
             {
                 filter.CategoryId = cat;
-                var category = SxMaterialCategoriesController<TDbContext, SxVMMaterialCategory>.Repo.GetByKey(cat);
+                var category = SxMaterialCategoriesController<SxVMMaterialCategory, TDbContext>.Repo.GetByKey(cat);
                 ViewBag.Category = Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(category);
             }
 

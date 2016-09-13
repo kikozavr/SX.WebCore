@@ -1,19 +1,20 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Web.Mvc;
 
-namespace SX.WebCore
+namespace SX.WebCore.ViewModels
 {
     /// <summary>
     /// http://www.sitemaps.org/ru/protocol.html
     /// </summary>
-    [NotMapped]
-    public sealed class SxSiteMapUrl
+    public class SxVMSiteMapUrl
     {
-        public SxSiteMapUrl(string loc)
+        public SxVMSiteMapUrl(string loc)
         {
             Loc = loc;
         }
+
+        /// <summary>
+        /// Абсолютный адрес страницы
+        /// </summary>
         public string Loc
         {
             get;
@@ -22,7 +23,7 @@ namespace SX.WebCore
         public DateTime LasMod { get; set; }
         public Changefreqs Changefreq { get; set; }
         public decimal Priority { get; set; }
-        
+
 
         public enum Changefreqs : byte
         {

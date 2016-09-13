@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSiteSetting<TDbContext> : SxDbRepository<string, SxSiteSetting, TDbContext, SxVMSiteSetting> where TDbContext : SxDbContext
+    public class SxRepoSiteSetting<TDbContext> : SxDbRepository<string, SxSiteSetting, TDbContext, SxVMSiteSetting> where TDbContext : SxDbContext
     {
         public override SxSiteSetting GetByKey(params object[] id)
         {
@@ -45,6 +46,18 @@ namespace SX.WebCore.Repositories
                 var data = conn.Query<SxSiteSetting>("dbo.get_site_settings_by_keys @keys", new { keys = sb.ToString() });
                 return data.ToDictionary(x => x.Id);
             }
+        }
+
+        public virtual async Task<SxVMMaterial[]> GetSiteMapAsync()
+        {
+            return await Task.Run(() =>
+            {
+                using (var connection = new SqlConnection(ConnectionString))
+                {
+                    var data = connection.Query<SxVMMaterial>("dbo.get_site_map");
+                    return data.ToArray();
+                }
+            });
         }
     }
 }

@@ -2623,35 +2623,9 @@ BEGIN
 	       dm.DateUpdate,
 	       dm.ModelCoreType,
 	       dm.CategoryId
-	FROM   DV_MATERIAL  AS dm
-	       JOIN D_NEWS  AS dn
-	            ON  dn.Id = dm.Id
-	            AND dn.ModelCoreType = dm.ModelCoreType
+	FROM   DV_MATERIAL AS dm
 	WHERE  dm.Show = 1
 	       AND dm.DateOfPublication <= GETDATE()
-	UNION ALL
-	SELECT dm.TitleUrl,
-	       dm.DateCreate,
-	       dm.DateUpdate,
-	       dm.ModelCoreType,
-	       dm.CategoryId
-	FROM   DV_MATERIAL     AS dm
-	       JOIN D_ARTICLE  AS da
-	            ON  da.Id = dm.Id
-	            AND da.ModelCoreType = dm.ModelCoreType
-	WHERE  dm.Show = 1
-	       AND dm.DateOfPublication <= GETDATE()
-	UNION ALL
-	SELECT dm.TitleUrl,
-	       dm.DateCreate,
-	       dm.DateUpdate,
-	       dm.ModelCoreType,
-	       dm.CategoryId
-	FROM   D_APHORISM        AS da
-	       JOIN DV_MATERIAL  AS dm
-	            ON  dm.Id = da.Id
-	            AND dm.ModelCoreType = da.ModelCoreType
-	WHERE  dm.Show = 1
 	ORDER BY
 	       dm.DateUpdate DESC
 END

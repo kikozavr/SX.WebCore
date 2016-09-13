@@ -3,6 +3,7 @@ using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using SX.WebCore.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -148,30 +149,32 @@ namespace SX.WebCore.Repositories
             sb.AppendFormat(@" FROM D_PICTURE AS dp {0} JOIN D_PICTURE_LINK AS dpl ON dpl.PictureId = dp.Id ", forMaterial ? "" : @"LEFT");
 
             object param = null;
-            sb.Append(getLinkedPictureWhereString(filter, forMaterial, out param));
+            var gws = getLinkedPictureWhereString(filter, forMaterial, out param);
+            sb.Append(gws);
 
-            var defaultOrder = new SxOrder { FieldName = "dp.DateCreate", Direction = SortDirection.Desc };
-            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
+            var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order, new Dictionary<string, string> {
+                ["DateCreate"]= "dp.DateCreate"
+            }));
             sb.Append(" OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY");
+
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.AppendFormat("SELECT COUNT(1) FROM D_PICTURE AS dp {0} JOIN D_PICTURE_LINK AS dpl ON dpl.PictureId = dp.Id ", forMaterial ? "" : @"LEFT");
+            sbCount.Append(gws);
 
             using (var conn = new SqlConnection(ConnectionString))
             {
                 var data = conn.Query<SxVMPicture>(sql: sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }
-        public virtual int LinkedPicturesCount(SxFilter filter, bool forMaterial)
+        public async Task<SxVMPicture[]> LinkedPicturesAsync(SxFilter filter, bool forMaterial)
         {
-            var query = @"SELECT COUNT(1) FROM D_PICTURE AS dp " + (forMaterial ? "" : @"LEFT") + @" JOIN D_PICTURE_LINK AS dpl ON dpl.PictureId = dp.Id ";
-
-            object param = null;
-            query += getLinkedPictureWhereString(filter, forMaterial, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                return conn.Query<int>(query, param: param).Single();
-            }
+            return await Task.Run(() => { return LinkedPictures(filter, forMaterial); }); 
         }
+
         private static string getLinkedPictureWhereString(SxFilter filter, bool forMaterial, out object param)
         {
             checkLinkedPhotoFilter(filter);

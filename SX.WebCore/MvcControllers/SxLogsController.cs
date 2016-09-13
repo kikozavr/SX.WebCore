@@ -14,7 +14,7 @@ namespace SX.WebCore.MvcControllers
         {
             return await Task.Run(() =>
             {
-                var dir = Server.MapPath("~/Logs");
+                var dir = Server.MapPath("~/logs");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
 

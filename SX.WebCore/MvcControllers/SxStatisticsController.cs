@@ -28,13 +28,16 @@ namespace SX.WebCore.MvcControllers
                 .Select(x => Mapper.Map<SxStatisticUserLogin, SxVMStatisticUserLogin>(x))
                 .ToArray();
 
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
+
             ViewBag.Filter = filter;
 
             return View("UserLogins", viewModel);
         }
 
         [HttpPost]
-        public virtual async Task<PartialViewResult> UserLogins(SxVMStatisticUserLogin filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> UserLogins(SxVMStatisticUserLogin filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageUserLoginsSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
@@ -43,7 +46,8 @@ namespace SX.WebCore.MvcControllers
                 .Select(x => Mapper.Map<SxStatisticUserLogin, SxVMStatisticUserLogin>(x))
                 .ToArray();
 
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageUserLoginsSize ? 1 : page;
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 

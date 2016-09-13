@@ -27,12 +27,14 @@ namespace SX.WebCore.MvcControllers
         private static int _pageSize = 20;
         [Authorize(Roles = "photo-redactor")]
         [HttpGet]
-        public virtual ViewResult Index(int page = 1)
+        public virtual ActionResult Index(int page = 1)
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
             var viewModel = _repo.Read(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -41,13 +43,13 @@ namespace SX.WebCore.MvcControllers
 
         [Authorize(Roles = "photo-redactor")]
         [HttpPost]
-        public virtual async Task<PartialViewResult> Index(SxVMPicture filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> Index(SxVMPicture filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
             var viewModel = await _repo.ReadAsync(filter);
-
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -86,8 +88,8 @@ namespace SX.WebCore.MvcControllers
             });
         }
 
-        private static int maxSize = int.Parse(ConfigurationManager.AppSettings["MaxPictureLength"]);
-        private static string[] allowFormats = new string[] {
+        private static readonly int maxSize = int.Parse(ConfigurationManager.AppSettings["MaxPictureLength"]);
+        private static readonly string[] allowFormats = new string[] {
                 "image/jpeg",
                 "image/png",
                 "image/gif"
@@ -162,19 +164,6 @@ namespace SX.WebCore.MvcControllers
         [OutputCache(Duration = pictureCachingSeconds, VaryByParam = "id;width;height", Location = OutputCacheLocation.ServerAndClient)]
         public async virtual Task<ActionResult> Picture(Guid id, int? width = null, int? height = null)
         {
-            //var imgFormat = string.Empty;
-            //var isExist = false;
-            //var inCache = false;
-            //var pictureBytes = await Task.Run(() => { return getPicture(id, out imgFormat, out isExist, out inCache, width, height); });
-
-            //if (!isExist || pictureBytes == null)
-            //{
-            //    Response.StatusCode = 404;
-            //    return null;
-            //}
-
-            //return new FileStreamResult(new MemoryStream(pictureBytes), imgFormat);
-
             var data = await _repo.GetByKeyAsync(id);
             if (data == null)
                 return new HttpNotFoundResult();
@@ -187,51 +176,6 @@ namespace SX.WebCore.MvcControllers
             return new FileStreamResult(new MemoryStream(data.OriginalContent), data.ImgFormat);
 
         }
-
-        //private static string getPictureName(Guid id, int? width = null, int? height = null)
-        //{
-        //    var sb = new StringBuilder();
-        //    sb.Append(id.ToString().ToLower());
-        //    if (width.HasValue && !height.HasValue)
-        //        sb.AppendFormat("_w{0}", width);
-        //    else if (!width.HasValue && height.HasValue)
-        //        sb.AppendFormat("_h{0}", height);
-        //    else if (width.HasValue && height.HasValue)
-        //        sb.AppendFormat("_w{0}_h{1}", width, height);
-
-        //    return "pic_" + sb.ToString();
-        //}
-
-        //private static byte[] getPicture(Guid id, out string imgFormat, out bool isExists, out bool inCache, int? width = null, int? height = null)
-        //{
-        //    var cache = SxApplication<TDbContext>.AppCache;
-        //    var name = getPictureName(id, width, height);
-        //    var picture = (SxPicture)cache.Get(name);
-        //    if (picture == null)
-        //    {
-        //        inCache = false;
-        //        picture = _repo.GetByKey(id);
-        //        isExists = picture != null;
-        //        imgFormat = isExists ? picture.ImgFormat : null;
-
-        //        if (!isExists) return null;
-
-        //        if (width.HasValue && picture.Width > width)
-        //            picture.OriginalContent = SxPictureProvider.ScaleImage(picture.OriginalContent, SxPictureProvider.ImageScaleMode.Width, destWidth: width);
-        //        else if (height.HasValue && picture.Height > height)
-        //            picture.OriginalContent = SxPictureProvider.ScaleImage(picture.OriginalContent, SxPictureProvider.ImageScaleMode.Height, destHeight: height);
-
-        //        cache.Add(name, picture, SxCacheExpirationManager.GetExpiration(minutes: pictureCachingSeconds/60));
-        //    }
-        //    else
-        //    {
-        //        inCache = true;
-        //        imgFormat = picture.ImgFormat;
-        //        isExists = true;
-        //    }
-
-        //    return picture.OriginalContent;
-        //}
 
         [HttpPost]
         [Authorize(Roles = "photo-redactor")]

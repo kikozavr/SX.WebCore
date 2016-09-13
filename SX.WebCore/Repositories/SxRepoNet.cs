@@ -22,8 +22,10 @@ namespace SX.WebCore.Repositories
             var gws = getNetsWhereString(filter, out param);
             sb.Append(gws);
 
-            var defaultOrder = new SxOrder { FieldName = "dn.Name", Direction = SortDirection.Asc };
-            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
+            var defaultOrder = new SxOrder { FieldName = "Name", Direction = SortDirection.Asc };
+            sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order, new System.Collections.Generic.Dictionary<string, string> {
+                ["Name"]= "dn.Name"
+            }));
 
             sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
 

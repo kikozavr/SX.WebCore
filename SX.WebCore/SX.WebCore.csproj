@@ -176,7 +176,6 @@
     <Compile Include="Abstract\ISxSeoWordCounter.cs" />
     <Compile Include="Abstract\ISxHasFrontPicture.cs" />
     <Compile Include="Abstract\ISxHasHtml.cs" />
-    <Compile Include="Abstract\ISxSiteMapProvider.cs" />
     <Compile Include="Abstract\SxDbModel.cs" />
     <Compile Include="Abstract\SxDbRepository.cs" />
     <Compile Include="Abstract\SxDbUpdatedModel.cs" />
@@ -188,6 +187,7 @@
     <Compile Include="Hubs\SxChatHub.cs" />
     <Compile Include="Managers\SxCacheExpirationManager.cs" />
     <Compile Include="MvcApplication\SxAutoMapperConfig.cs" />
+    <Compile Include="MvcApplication\SxRouteConfig.cs" />
     <Compile Include="MvcControllerFactory\SxControllerFactory.cs" />
     <Compile Include="MvcControllers\SxSiteNetsController.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
@@ -222,6 +222,7 @@
     <Compile Include="MvcControllers\SxVideoLinksController.cs" />
     <Compile Include="MvcControllers\SxMaterialCategoriesController.cs" />
     <Compile Include="MvcControllers\SxVideosController.cs" />
+    <Compile Include="Providers\SxSiteMapProvider.cs" />
     <Compile Include="Providers\SxSiteNetProvider.cs" />
     <Compile Include="RazorViewEngine\SxRazorViewEngine.cs" />
     <Compile Include="Repositories\SxRepoAffiliateLink.cs" />
@@ -345,7 +346,6 @@
     <Compile Include="SxSeoTags.cs" />
     <Compile Include="SxSeoKeyword.cs" />
     <Compile Include="SxSeoPhrase.cs" />
-    <Compile Include="SxSiteMapUrl.cs" />
     <Compile Include="SxSiteSetting.cs" />
     <Compile Include="SxSiteTest.cs" />
     <Compile Include="SxVideo.cs" />
@@ -370,6 +370,7 @@
     <Compile Include="ViewModels\SxVMProjectStep.cs" />
     <Compile Include="ViewModels\SxVMSeoKeyword.cs" />
     <Compile Include="ViewModels\SxVMSeoTags.cs" />
+    <Compile Include="ViewModels\SxVMSiteMapUrl.cs" />
     <Compile Include="ViewModels\SxVMSiteNet.cs" />
     <Compile Include="ViewModels\SxVMSiteSetting.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />

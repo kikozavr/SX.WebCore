@@ -20,12 +20,14 @@ namespace SX.WebCore.MvcControllers
 
         private int _pageSize = 10;
         [HttpGet]
-        public virtual PartialViewResult Index(int mid, ModelCoreType mct, int page = 1)
+        public virtual ActionResult Index(int mid, ModelCoreType mct, int page = 1)
         {
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { MaterialId = mid, ModelCoreType = mct, Order = defaultOrder };
 
             var viewModel = _repo.Read(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
@@ -35,12 +37,14 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual async Task<PartialViewResult> Index(int mid, ModelCoreType mct, SxVMMaterialTag filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> Index(int mid, ModelCoreType mct, SxVMMaterialTag filterModel, SxOrder order, int page = 1)
         {
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order==null || order.Direction==SortDirection.Unknown?defaultOrder:order, WhereExpressionObject = filterModel, MaterialId = mid, ModelCoreType = mct };
 
             var viewModel = await _repo.ReadAsync(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;

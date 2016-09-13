@@ -132,7 +132,7 @@ namespace SX.WebCore.MvcApplication
             AreaRegistration.RegisterAllAreas();
             ControllerBuilder.Current.SetControllerFactory(new SxControllerFactory<TDbContext>());
             GlobalConfiguration.Configure(args.WebApiConfigRegister);
-            args.RegisterRoutes(RouteTable.Routes);
+            SxRouteConfig.RegisterRoutes(RouteTable.Routes, args.DefaultControllerNamespaces, args.PreRouteAction, args.PostRouteAction);
 
             ViewEngines.Engines.Clear();
             ViewEngines.Engines.Add(new SxRazorViewEngine());
@@ -157,9 +157,14 @@ namespace SX.WebCore.MvcApplication
     public sealed class SxApplicationEventArgs : EventArgs
     {
         public Action<HttpConfiguration> WebApiConfigRegister { get; set; }
-        public Action<RouteCollection> RegisterRoutes { get; set; }
+
         public Action<IMapperConfigurationExpression> MapperConfigurationExpression { get; set; }
         public bool LoggingRequest { get; set; }
+
+        //routes
+        public string[] DefaultControllerNamespaces { get; set; }
+        public Action<RouteCollection> PreRouteAction { get; set; } = null;
+        public Action<RouteCollection> PostRouteAction { get; set; } = null;
     }
 
 }

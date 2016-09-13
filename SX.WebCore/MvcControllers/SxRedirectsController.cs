@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -26,12 +27,14 @@ namespace SX.WebCore.MvcControllers
         private static int _pageSize = 20;
 
         [HttpGet]
-        public virtual ViewResult Index(int page = 1)
+        public virtual ActionResult Index(int page = 1)
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order };
             
             var viewModel = _repo.Read(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -39,13 +42,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual async Task<PartialViewResult> Index(SxVM301Redirect filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> Index(SxVM301Redirect filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
             var viewModel =await _repo.ReadAsync(filter);
-
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 

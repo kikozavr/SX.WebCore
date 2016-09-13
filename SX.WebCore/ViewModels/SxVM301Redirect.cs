@@ -8,6 +8,8 @@ namespace SX.WebCore.ViewModels
     {
         public Guid? Id { get; set; }
 
+        public DateTime DateCreate { get; set; }
+
         [MaxLength(255, ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "MaxLengthField")]
         [Required(ErrorMessageResourceType =typeof(Resources.Messages), ErrorMessageResourceName = "RequiredField")]
         [Display(Name = "Старый адрес")]

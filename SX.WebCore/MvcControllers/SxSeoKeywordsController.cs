@@ -1,5 +1,6 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -17,12 +18,14 @@ namespace SX.WebCore.MvcControllers
 
         private static readonly int _pageSize = 10;
         [HttpGet]
-        public virtual PartialViewResult Index(int stid, int page = 1)
+        public virtual ActionResult Index(int stid, int page = 1)
         {
             var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order=order, AddintionalInfo=new object[] { stid } };
 
             var viewModel = _repo.Read(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
             ViewBag.SeoTagsId = stid;
@@ -31,13 +34,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(int stid, SxVMSeoKeyword filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> Index(int stid, SxVMSeoKeyword filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { stid } };
             
-            var viewModel = _repo.Read(filter);
-
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            var viewModel = await _repo.ReadAsync(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
             ViewBag.PagerInfo = filter.PagerInfo;

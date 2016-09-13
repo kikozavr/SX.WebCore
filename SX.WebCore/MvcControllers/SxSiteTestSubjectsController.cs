@@ -1,5 +1,6 @@
 ﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -19,11 +20,15 @@ namespace SX.WebCore.MvcControllers
         private static int _pageSize = 10;
 
         [HttpPost]
-        public virtual PartialViewResult Index(int testId, SxVMSiteTestSubject filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> Index(int testId, SxVMSiteTestSubject filterModel, SxOrder order, int page = 1)
         {
             var defaultOrder = new SxOrder { FieldName = "dstq.Title", Direction = SortDirection.Asc };
             var filter = new SxFilter(page, _pageSize) { Order = order == null || order.Direction == SortDirection.Unknown ? defaultOrder : order, WhereExpressionObject = filterModel, AddintionalInfo = new object[] { testId } };
-            var viewModel = _repo.Read(filter);
+
+            var viewModel = await _repo.ReadAsync(filter);
+
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 

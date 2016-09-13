@@ -6,6 +6,7 @@ using System;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 
@@ -66,32 +67,29 @@ namespace SX.WebCore.Repositories
             sb.AppendFormat(@" FROM D_VIDEO AS dv {0} JOIN D_VIDEO_LINK AS dvl ON dvl.VideoId = dv.Id ", forMaterial ? "" : @"LEFT");
 
             object param = null;
-            sb.Append(getLinkedVideoWhereString(filter, forMaterial, out param));
+            var gws = getLinkedVideoWhereString(filter, forMaterial, out param);
+            sb.Append(gws);
 
             var defaultOrder = new SxOrder { FieldName = "dv.DateCreate", Direction = SortDirection.Desc };
             sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
             sb.Append(" OFFSET " + filter.PagerInfo.SkipCount + " ROWS FETCH NEXT " + filter.PagerInfo.PageSize + " ROWS ONLY");
 
+            //count
+            var sbCount = new StringBuilder();
+            sbCount.AppendFormat("SELECT COUNT(1) FROM D_VIDEO AS dv {0} JOIN D_VIDEO_LINK AS dvl ON dvl.VideoId = dv.Id ", forMaterial ? "" : @"LEFT");
+            sbCount.Append(gws);
+
             using (var conn = new SqlConnection(ConnectionString))
             {
                 var data = conn.Query<SxVMVideo>(sql: sb.ToString(), param: param);
+                filter.PagerInfo.TotalItems = conn.Query<int>(sbCount.ToString(), param: param).SingleOrDefault();
                 return data.ToArray();
             }
         }
-
-        public virtual int LinkedVideosCount(SxFilter filter, bool forMaterial)
+        public async Task<SxVMVideo[]> LinkedVideosAsync(SxFilter filter, bool forMaterial)
         {
-            var query = @"SELECT COUNT(1) FROM D_VIDEO AS dv " + (forMaterial ? "" : @"LEFT") + @" JOIN D_VIDEO_LINK AS dvl ON dvl.VideoId = dv.Id ";
-
-            object param = null;
-            query += getLinkedVideoWhereString(filter, forMaterial, out param);
-
-            using (var conn = new SqlConnection(ConnectionString))
-            {
-                return conn.Query<int>(query, param: param).Single();
-            }
+            return await Task.Run(()=> { return LinkedVideos(filter, forMaterial); });
         }
-
         private static void checkLinkedVideosFilter(SxFilter filter)
         {
             if(filter.AddintionalInfo==null)

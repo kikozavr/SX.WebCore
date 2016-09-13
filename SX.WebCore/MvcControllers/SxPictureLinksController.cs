@@ -2,6 +2,7 @@
 using SX.WebCore.ViewModels;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using static SX.WebCore.Enums;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
@@ -20,60 +21,70 @@ namespace SX.WebCore.MvcControllers
 
         private static readonly int _pageSize = 20;
         [HttpGet]
-        public virtual PartialViewResult Index(int mid, ModelCoreType mct, bool fm = true, int page = 1)
+        public virtual ActionResult Index(int mid, ModelCoreType mct, bool fm = true, int page = 1)
         {
-            var defaultOrder = new SxOrder { FieldName = "dp.DateCreate", Direction = SortDirection.Desc };
+            var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order= defaultOrder, AddintionalInfo= new object[] { mid, mct} };
-            filter.PagerInfo.TotalItems = _repo.LinkedPicturesCount(filter, fm);
-            ViewBag.PagerInfo = filter.PagerInfo;
+
+            var viewModel = _repo.LinkedPictures(filter, fm);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
+
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
             ViewBag.ModelCoreType = mct;
-
-            var viewModel = _repo.LinkedPictures(filter, fm);
+            
             return PartialView("_GridView", viewModel);
         }
 
         [HttpPost]
-        public virtual PartialViewResult Index(int mid, ModelCoreType mct, SxVMPicture filterModel, SxOrder order, bool fm = true, int page = 1)
+        public virtual async Task<ActionResult> Index(int mid, ModelCoreType mct, SxVMPicture filterModel, SxOrder order, bool fm = true, int page = 1)
         {
-            var defaultOrder = new SxOrder { FieldName = "dp.DateCreate", Direction = SortDirection.Desc };
+            var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, _pageSize) { Order = order==null || order.Direction==SortDirection.Unknown? defaultOrder:order, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { mid, mct } };
-            filter.PagerInfo.TotalItems = _repo.LinkedPicturesCount(filter, fm);
+
+            var viewModel = await _repo.LinkedPicturesAsync(filter, fm);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
+
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
             ViewBag.ModelCoreType = mct;
-
-            var viewModel = _repo.LinkedPictures(filter, fm);
 
             return PartialView("_GridView", viewModel);
         }
 
         [HttpGet]
-        public virtual PartialViewResult IndexNotlinked(int mid, ModelCoreType mct, bool fm = true, int page = 1)
+        public virtual ActionResult IndexNotlinked(int mid, ModelCoreType mct, bool fm = true, int page = 1)
         {
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, 10) { Order=defaultOrder, AddintionalInfo=new object[] { mid, mct } };
-            filter.PagerInfo.TotalItems = _repo.LinkedPicturesCount(filter, fm);
+
+            var viewModel = _repo.LinkedPictures(filter, fm);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
+
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
             ViewBag.ModelCoreType = mct;
 
-            var viewModel = _repo.LinkedPictures(filter, fm);
             return PartialView("_GridViewNotLinked", viewModel);
         }
 
         [HttpPost]
-        public virtual PartialViewResult IndexNotlinked(int mid, ModelCoreType mct, SxVMPicture filterModel, SxOrder order, bool fm = true, int page = 1)
+        public virtual async Task<ActionResult> IndexNotlinked(int mid, ModelCoreType mct, SxVMPicture filterModel, SxOrder order, bool fm = true, int page = 1)
         {
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             var filter = new SxFilter(page, 10) { Order = order==null || order.Direction==SortDirection.Unknown?defaultOrder:order, WhereExpressionObject = filterModel, AddintionalInfo=new object[] { mid, mct } };
-            filter.PagerInfo.TotalItems = _repo.LinkedPicturesCount(filter, fm); ;
+
+            var viewModel = await _repo.LinkedPicturesAsync(filter, fm);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
+
             ViewBag.Filter = filter;
             ViewBag.MaterialId = mid;
             ViewBag.ModelCoreType = mct;
 
-            var viewModel = _repo.LinkedPictures(filter, fm);
             return PartialView("_GridViewNotLinked", viewModel);
         }
 

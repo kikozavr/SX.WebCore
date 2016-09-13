@@ -6,6 +6,7 @@ using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
 using System.Configuration;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -48,6 +49,8 @@ namespace SX.WebCore.MvcControllers
             var filter = new SxFilter(page, _pageSize) { Order = order };
 
             var viewModel = _repo.Read(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 
@@ -55,13 +58,13 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual async Task<PartialViewResult> Index(TViewModel filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> Index(TViewModel filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
 
             var viewModel = await _repo.ReadAsync(filter);
-
-            filter.PagerInfo.Page = filter.PagerInfo.TotalItems <= _pageSize ? 1 : page;
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
 
             ViewBag.Filter = filter;
 

@@ -1,12 +1,16 @@
 ﻿using SX.WebCore.MvcApplication;
+using SX.WebCore.Providers;
 using SX.WebCore.Repositories;
 using SX.WebCore.Resources;
 using SX.WebCore.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
@@ -14,12 +18,14 @@ namespace SX.WebCore.MvcControllers
     [Authorize(Roles = "seo")]
     public class SxSeoController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        public static SxRepoSiteSetting<TDbContext> _repo=new SxRepoSiteSetting<TDbContext>();
+        public static SxRepoSiteSetting<TDbContext> _repo = new SxRepoSiteSetting<TDbContext>();
         public static SxRepoSiteSetting<TDbContext> Repo
         {
             get { return _repo; }
             set { _repo = value; }
         }
+
+        protected static Func<dynamic, string> SeoItemUrlFunc { get; set; }
 
         [HttpGet]
         public virtual ViewResult EditRobotsFile()
@@ -57,9 +63,10 @@ namespace SX.WebCore.MvcControllers
                 }
                 else if (isExists && isModified)
                 {
-                    var data= _repo.Update(new SxSiteSetting { Id = Settings.robotsFileSetting, Value = model.FileContent }, true, "Value");
+                    var data = _repo.Update(new SxSiteSetting { Id = Settings.robotsFileSetting, Value = model.FileContent }, true, "Value");
                     ViewBag.EditSiteSettingsMessage = "Настройки успешно обновлены";
-                    model = new SxVMRobotsFile {
+                    model = new SxVMRobotsFile
+                    {
                         FileContent = data.Value,
                         OldFileContent = data.Value
                     };
@@ -83,6 +90,31 @@ namespace SX.WebCore.MvcControllers
             if (fileContent != null)
                 return Content(fileContent.Value, "text/plain", Encoding.UTF8);
             else return null;
+        }
+
+#if !DEBUG
+        [OutputCache(Duration = 86400)]
+#endif
+        [AllowAnonymous]
+        public async Task<ContentResult> Sitemap()
+        {
+            var provider = new SxSiteMapProvider();
+            var data = await Repo.GetSiteMapAsync();
+            var viewModel = new SxVMSiteMapUrl[0];
+            if (data.Any())
+            {
+                SxVMMaterial item = null;
+                viewModel = new SxVMSiteMapUrl[data.Length];
+                for (int i = 0; i < data.Length; i++)
+                {
+                    item = data[i];
+                    viewModel[i] = new SxVMSiteMapUrl(Url.ContentAbsUrl(SeoItemUrlFunc != null ? SeoItemUrlFunc(item) : null)) {
+                        LasMod = item.DateUpdate
+                    };
+                }
+            }
+
+            return Content(provider.GenerateSiteMap(ref viewModel), "text/xml");
         }
     }
 }

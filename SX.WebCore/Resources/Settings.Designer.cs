@@ -61,7 +61,7 @@ namespace SX.WebCore.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SX Admin.
+        ///   Looks up a localized string similar to goldfish.
         /// </summary>
         public static string adminPanelName {
             get {

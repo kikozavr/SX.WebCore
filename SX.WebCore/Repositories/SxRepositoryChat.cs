@@ -15,7 +15,7 @@ namespace SX.WebCore.Repositories
             {
                 var connStr = ConfigurationManager.ConnectionStrings["DbContext"].ConnectionString;
                 if (connStr == null) return new SxVMAppUser[0];
-                var values = MvcApplication.SxApplication<TDbContext>.UsersOnSite.Values;
+                var values = MvcApplication.SxMvcApplication<TDbContext>.UsersOnSite.Values;
                 if (values.Count == 0) return new SxVMAppUser[0];
 
                 var sb = new StringBuilder();

@@ -85,7 +85,7 @@ namespace SX.WebCore.MvcControllers
                     }
 
                     ViewBag.EditSiteSettingsMessage = "Настройки успешно сохранены";
-                    SxApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
+                    SxMvcApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
                 }
                 else if (isExists && isModified)
                 {
@@ -97,7 +97,7 @@ namespace SX.WebCore.MvcControllers
                     _repo.Update(new SxSiteSetting { Id = Settings.siteFaveiconPath, Value = model.SiteFaveiconPath }, true, "Value");
                     _repo.Update(new SxSiteSetting { Id = Settings.siteDesc, Value = model.SiteDesc }, true, "Value");
                     ViewBag.EditSiteSettingsMessage = "Настройки успешно обновлены";
-                    SxApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
+                    SxMvcApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
                 }
                 else
                 {

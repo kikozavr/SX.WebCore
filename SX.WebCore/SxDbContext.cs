@@ -30,8 +30,6 @@ namespace SX.WebCore
 
         public DbSet<SxEmployee> Employees { get; set; }
 
-        public DbSet<SxHumor> Humors { get; set; }
-
         public DbSet<SxNet> Nets { get; set; }
 
         public DbSet<SxNews> News { get; set; }

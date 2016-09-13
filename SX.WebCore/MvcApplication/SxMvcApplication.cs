@@ -6,7 +6,6 @@ using System;
 using AutoMapper;
 using SX.WebCore.Providers;
 using System.IO;
-using SX.WebCore.Repositories;
 using System.Collections.Generic;
 using System.Web;
 using SX.WebCore.Managers;
@@ -17,7 +16,7 @@ using SX.WebCore.MvcControllerFactory;
 
 namespace SX.WebCore.MvcApplication
 {
-    public abstract class SxApplication<TDbContext> : HttpApplication where TDbContext : SxDbContext
+    public abstract class SxMvcApplication<TDbContext> : HttpApplication where TDbContext : SxDbContext
     {
         private static readonly string _logDirectoryPath = "~/logs";
         public static DateTime LastStartDate { get; set; }

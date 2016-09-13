@@ -86,7 +86,7 @@ namespace SX.WebCore.MvcControllers
         [OutputCache(Duration = 900)]
         public virtual ContentResult Robotstxt()
         {
-            var fileContent = SxApplication<TDbContext>.SiteSettingsProvider.Get(Settings.robotsFileSetting);
+            var fileContent = SxMvcApplication<TDbContext>.SiteSettingsProvider.Get(Settings.robotsFileSetting);
             if (fileContent != null)
                 return Content(fileContent.Value, "text/plain", Encoding.UTF8);
             else return null;

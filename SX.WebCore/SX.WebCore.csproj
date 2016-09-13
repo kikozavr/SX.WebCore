@@ -189,6 +189,7 @@
     <Compile Include="MvcApplication\SxAutoMapperConfig.cs" />
     <Compile Include="MvcApplication\SxRouteConfig.cs" />
     <Compile Include="MvcControllerFactory\SxControllerFactory.cs" />
+    <Compile Include="MvcControllers\SxErrorsController.cs" />
     <Compile Include="MvcControllers\SxSiteNetsController.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
     <Compile Include="MvcControllers\SxChatController.cs" />
@@ -253,7 +254,7 @@
     <Compile Include="Attrubutes\MaxWordsCountAttribute.cs" />
     <Compile Include="Attrubutes\NotLogRequestAttribute.cs" />
     <Compile Include="HtmlHelpers\SxGridView.cs" />
-    <Compile Include="MvcApplication\SxApplication.cs" />
+    <Compile Include="MvcApplication\SxMvcApplication.cs" />
     <Compile Include="MvcControllers\SxAccountController.cs" />
     <Compile Include="MvcControllers\SxBaseController.cs" />
     <Compile Include="MvcControllers\SxPicturesController.cs" />
@@ -313,6 +314,7 @@
     <Compile Include="SxBanner.cs" />
     <Compile Include="SxPictureLink.cs" />
     <Compile Include="SxSiteNet.cs" />
+    <Compile Include="SxSiteTestQuestion.cs" />
     <Compile Include="SxStatistic.cs" />
     <Compile Include="ViewModels\SxVMBadLink.cs" />
     <Compile Include="ViewModels\SxVMBannerCollection.cs" />
@@ -324,14 +326,12 @@
     <Compile Include="Enums.cs" />
     <Compile Include="SxEmployee.cs" />
     <Compile Include="SxDateStatistic.cs" />
-    <Compile Include="SxHumor.cs" />
     <Compile Include="SxRating.cs" />
     <Compile Include="SxShareButton.cs" />
     <Compile Include="SxNet.cs" />
     <Compile Include="SxOrder.cs" />
     <Compile Include="SxSiteTestAnswer.cs" />
     <Compile Include="SxSiteTestSubject.cs" />
-    <Compile Include="SxSiteTestQuestion.cs" />
     <Compile Include="SxSiteTestStep.cs" />
     <Compile Include="SxStatisticUserLogin.cs" />
     <Compile Include="SxManual.cs" />
@@ -372,6 +372,7 @@
     <Compile Include="ViewModels\SxVMSeoTags.cs" />
     <Compile Include="ViewModels\SxVMSiteMapUrl.cs" />
     <Compile Include="ViewModels\SxVMSiteNet.cs" />
+    <Compile Include="ViewModels\SxVMSiteQuetion.cs" />
     <Compile Include="ViewModels\SxVMSiteSetting.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />
     <Compile Include="ViewModels\SxVMSiteTest.cs" />

@@ -48,9 +48,9 @@ namespace SX.WebCore.MvcControllers
             var strD = d.ToString("dd/MM/yyyy");
             var url = string.Format("http://www.cbr.ru/scripts/XML_daily.asp?date_req={0}", strD);
 
-            if (SxApplication<TDbContext>.AppCache.Get("CACHE_VALUTES") == null)
-                SxApplication<TDbContext>.AppCache.Add(new CacheItem("CACHE_VALUTES", XDocument.Load(url)), SxCacheExpirationManager.GetExpiration(minutes:120));
-            var doc = (XDocument)SxApplication<TDbContext>.AppCache.Get("CACHE_VALUTES");
+            if (SxMvcApplication<TDbContext>.AppCache.Get("CACHE_VALUTES") == null)
+                SxMvcApplication<TDbContext>.AppCache.Add(new CacheItem("CACHE_VALUTES", XDocument.Load(url)), SxCacheExpirationManager.GetExpiration(minutes:120));
+            var doc = (XDocument)SxMvcApplication<TDbContext>.AppCache.Get("CACHE_VALUTES");
 
             var data = doc.Descendants("Valute")
                 .Select(x => new SxVMValute
@@ -96,6 +96,33 @@ namespace SX.WebCore.MvcControllers
             }
 
             return data;
+        }
+
+        [HttpPost]
+        public JsonResult GetCurCourse(string cc)
+        {
+            var strD = DateTime.Now.ToString("dd/MM/yyyy");
+            var url = string.Format("http://www.cbr.ru/scripts/XML_daily.asp?date_req={0}", strD);
+
+            var doc = (XDocument)SxMvcApplication<TDbContext>.AppCache["CACHE_VALUTES_XML_DOCUMENT"];
+            if (doc == null)
+            {
+                doc = XDocument.Load(url);
+                SxMvcApplication<TDbContext>.AppCache.Add("CACHE_VALUTES_XML_DOCUMENT", doc, SxCacheExpirationManager.GetExpiration(minutes: 60));
+            }
+
+            var data = doc.Descendants("Valute")
+                .Select(x => new SxVMValute
+                {
+                    Id = x.Attribute("ID").Value,
+                    NumCode = Convert.ToInt16(x.Element("NumCode").Value),
+                    CharCode = x.Element("CharCode").Value,
+                    Nominal = Convert.ToDecimal(x.Element("Nominal").Value),
+                    Name = x.Element("Name").Value,
+                    Value = Convert.ToDecimal(x.Element("Value").Value)
+                }).SingleOrDefault(x => x.CharCode == cc);
+
+            return Json(data);
         }
     }
 }

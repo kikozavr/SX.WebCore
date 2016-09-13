@@ -1,16 +1,17 @@
 ﻿using SX.WebCore.Providers;
+using SX.WebCore.ViewModels;
 using System.Web.Mvc;
 
 namespace SX.WebCore.HtmlHelpers
 {
     public static partial class SxExtantions
     {
-        public static MvcHtmlString SxVideo(this HtmlHelper htmlHelper, SxVideo video, SxVideoProvider.VideoQuality quality= SxVideoProvider.VideoQuality.Max, string url=null)
+        public static MvcHtmlString SxVideo(this HtmlHelper htmlHelper, SxVMVideo video, SxVideoProvider.VideoQuality quality= SxVideoProvider.VideoQuality.Max, string url=null)
         {
             return MvcHtmlString.Create(GetVideoTemplate(video, quality, url));
         }
 
-        public static string GetVideoTemplate(SxVideo video, SxVideoProvider.VideoQuality quality = SxVideoProvider.VideoQuality.Max, string url=null)
+        public static string GetVideoTemplate(SxVMVideo video, SxVideoProvider.VideoQuality quality = SxVideoProvider.VideoQuality.Max, string url=null)
         {
             var id = video.Id.ToString().ToLower();
             var figure = new TagBuilder("figure");

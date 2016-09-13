@@ -73,7 +73,7 @@ namespace SX.WebCore.MvcControllers
                 SxSiteNet newModel = null;
                 newModel = _repo.Update(redactModel);
 
-                SxApplication<TDbContext>.SiteNetsProvider.UpdateInCache(Mapper.Map<SxSiteNet, SxVMSiteNet>(newModel));
+                SxMvcApplication<TDbContext>.SiteNetsProvider.UpdateInCache(Mapper.Map<SxSiteNet, SxVMSiteNet>(newModel));
 
                 return RedirectToAction("Index");
             }

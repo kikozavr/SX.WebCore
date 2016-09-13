@@ -88,7 +88,7 @@ namespace SX.WebCore.MvcControllers
         private void fillUserStatuses(SxVMAppUser[] users)
         {
             SxVMAppUser item = null;
-            var usersOnSite = SxApplication<TDbContext>.UsersOnSite;
+            var usersOnSite = SxMvcApplication<TDbContext>.UsersOnSite;
             if (!usersOnSite.Any()) return;
 
             for (int i = 0; i < users.Length; i++)
@@ -101,7 +101,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet, AllowAnonymous]
         public PartialViewResult UsersOnSite()
         {
-            var emails = SxApplication<TDbContext>.UsersOnSite.Select(x => x.Value).Distinct().ToArray();
+            var emails = SxMvcApplication<TDbContext>.UsersOnSite.Select(x => x.Value).Distinct().ToArray();
             var data = _repo.GetUsersByEmails(emails);
             var viewModel = data.Select(x => Mapper.Map<SxAppUser, SxVMAppUser>(x)).ToArray();
 
@@ -130,7 +130,7 @@ namespace SX.WebCore.MvcControllers
                 AvatarId = data.AvatarId,
                 Email = data.Email,
                 NikName = data.NikName,
-                IsOnline = SxApplication<TDbContext>.UsersOnSite.ContainsValue(data.UserName),
+                IsOnline = SxMvcApplication<TDbContext>.UsersOnSite.ContainsValue(data.UserName),
                 IsEmployee = SxEmployeesController<TDbContext>.Repo.GetByKey(data.Id)!=null,
                 Description=data.Description
             };

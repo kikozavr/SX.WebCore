@@ -57,7 +57,7 @@ namespace SX.WebCore
             }
         }
 
-        public static void ReplaceVideo(ref string inputHtml, SxVideo[] videos, Func<SxVideo, string> videoTemplate=null)
+        public static void ReplaceVideo(ref string inputHtml, SxVMVideo[] videos, Func<SxVMVideo, string> videoTemplate=null)
         {
             if (inputHtml == null) return;
             if (videos == null || !videos.Any())

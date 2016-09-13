@@ -26,7 +26,7 @@ namespace SX.WebCore.MvcControllers
         public SxBaseController()
         {
             if (Mapper == null)
-                Mapper = SxApplication<TDbContext>.MapperConfiguration.CreateMapper();
+                Mapper = SxMvcApplication<TDbContext>.MapperConfiguration.CreateMapper();
         }
 
         public string SxAreaName { get; set; }
@@ -56,7 +56,7 @@ namespace SX.WebCore.MvcControllers
             //забаненные адреса
             if (SxUrlReferrer != null)
             {
-                if (SxApplication<TDbContext>.GetBannedUrls().Contains(SxUrlReferrer.ToString()))
+                if (SxMvcApplication<TDbContext>.GetBannedUrls().Contains(SxUrlReferrer.ToString()))
                 {
                     filterContext.Result = new HttpStatusCodeResult(403);
                     return;
@@ -88,7 +88,7 @@ namespace SX.WebCore.MvcControllers
             writeAffiliateCookies();
 
             //пишем информацию о запросе
-            if (Equals(SxApplication<TDbContext>.LoggingRequest, true))
+            if (Equals(SxMvcApplication<TDbContext>.LoggingRequest, true))
             {
                 writeRequestInfo(identityCookie);
             }
@@ -103,11 +103,11 @@ namespace SX.WebCore.MvcControllers
         private Sx301Redirect get301Redirect(CacheItemPolicy cip = null)
         {
             cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
-            var redirect = (Sx301Redirect)SxApplication<TDbContext>.AppCache["CACHE_REDIRECT_" + SxRawUrl];
+            var redirect = (Sx301Redirect)SxMvcApplication<TDbContext>.AppCache["CACHE_REDIRECT_" + SxRawUrl];
             if (redirect == null)
             {
                 redirect = SxRedirectsController<TDbContext>.Repo.Get301Redirect(SxRawUrl);
-                SxApplication<TDbContext>.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect, cip);
+                SxMvcApplication<TDbContext>.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect, cip);
             }
 
             return redirect;
@@ -115,11 +115,11 @@ namespace SX.WebCore.MvcControllers
 
         private SxSeoTags getPageSeoTags(CacheItemPolicy cip = null)
         {
-            var seoTags = (SxSeoTags)SxApplication<TDbContext>.AppCache["CACHE_SEOTAGS_" + SxRawUrl];
+            var seoTags = (SxSeoTags)SxMvcApplication<TDbContext>.AppCache["CACHE_SEOTAGS_" + SxRawUrl];
             if (seoTags == null)
             {
                 seoTags = SxSeoTagsController<TDbContext>.Repo.GetSeoTags(SxRawUrl);
-                SxApplication<TDbContext>.AppCache.Add("CACHE_SEOTAGS_" + SxRawUrl, seoTags, cip);
+                SxMvcApplication<TDbContext>.AppCache.Add("CACHE_SEOTAGS_" + SxRawUrl, seoTags, cip);
             }
             return seoTags;
         }
@@ -166,7 +166,7 @@ namespace SX.WebCore.MvcControllers
         private void writePageBanners()
         {
             var rawUrl = Request.RawUrl;
-            ViewBag.PageBanners = SxApplication<TDbContext>.BannerProvider.GetPageBanners(rawUrl);
+            ViewBag.PageBanners = SxMvcApplication<TDbContext>.BannerProvider.GetPageBanners(rawUrl);
         }
 
         private static readonly string _affiliateCookieName = ConfigurationManager.AppSettings["AffiliateCookieName"];

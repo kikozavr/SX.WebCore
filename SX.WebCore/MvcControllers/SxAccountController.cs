@@ -75,7 +75,7 @@ namespace SX.WebCore.MvcControllers
         {
             var date = DateTime.Now;
             var identityCookie = IdentityCookieValue;
-            var usersOnSite = SxApplication<TDbContext>.UsersOnSite;
+            var usersOnSite = SxMvcApplication<TDbContext>.UsersOnSite;
             if (!usersOnSite.ContainsKey(identityCookie))
                 usersOnSite.Add(identityCookie, model.Email);
             else
@@ -412,7 +412,7 @@ namespace SX.WebCore.MvcControllers
         private void unregisterLoginUser()
         {
             var identityCookie = IdentityCookieValue;
-            var usersOnSite = SxApplication<TDbContext>.UsersOnSite;
+            var usersOnSite = SxMvcApplication<TDbContext>.UsersOnSite;
             if (usersOnSite.ContainsKey(identityCookie))
             {
                 var email = usersOnSite[identityCookie];

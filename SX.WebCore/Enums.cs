@@ -1,4 +1,6 @@
-﻿namespace SX.WebCore
+﻿using System;
+
+namespace SX.WebCore
 {
     public static class Enums
     {
@@ -11,8 +13,10 @@
             Manual = 4,
             ProjectStep = 5,
             //custom, not for core
+            [Obsolete("Не должен поддерживаться в движке")]
             Aphorism = 6,
-            Humor=7
+            [Obsolete("Не должен поддерживаться в движке")]
+            Humor =7
         }
     }
 }

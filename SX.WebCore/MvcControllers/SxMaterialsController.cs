@@ -30,7 +30,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         private static SxRepoMaterial<TModel, TViewModel, TDbContext> _repo;
-        protected static SxRepoMaterial<TModel, TViewModel, TDbContext> Repo
+        public static SxRepoMaterial<TModel, TViewModel, TDbContext> Repo
         {
             get { return _repo; }
             set { _repo = value; }

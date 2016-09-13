@@ -6,9 +6,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace SX.WebCore
 {
     [Table("D_REDIRECT")]
-    public sealed class Sx301Redirect : SxDbUpdatedModel<Guid>
+    public sealed class SxRedirect : SxDbUpdatedModel<Guid>
     {
-        [MaxLength(255), Required]
+        [MaxLength(255), Required, Index]
         public string OldUrl { get; set; }
 
         [MaxLength(255), Required]

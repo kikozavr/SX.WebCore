@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using static SX.WebCore.HtmlHelpers.SxExtantions;
-using System.Linq;
-using System;
 
 namespace SX.WebCore.Providers
 {
     public static class SxQueryProvider
     {
-        public static string GetSelectString(string[] columns = null)
+        public static string GetSelectString(string[] columns = null, bool isDistinct=false)
         {
             var sb = new StringBuilder();
             if (columns == null)
@@ -24,7 +21,7 @@ namespace SX.WebCore.Providers
                 }
             }
             var s = sb.ToString();
-            return "SELECT " + s.Substring(1);
+            return "SELECT " + (isDistinct ?"DISTINCT ":null)+ s.Substring(1);
         }
 
         public static string GetOrderString(SxOrder defaultOrder, SxOrder order=null, Dictionary<string, string> replaceList=null)

@@ -100,14 +100,14 @@ namespace SX.WebCore.MvcControllers
             response.Headers.Remove("Server");
         }
 
-        private Sx301Redirect get301Redirect(CacheItemPolicy cip = null)
+        private SxRedirect get301Redirect(CacheItemPolicy cip = null)
         {
             cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
-            var redirect = (Sx301Redirect)SxMvcApplication<TDbContext>.AppCache["CACHE_REDIRECT_" + SxRawUrl];
+            var redirect = (SxRedirect)SxMvcApplication<TDbContext>.AppCache["CACHE_REDIRECT_" + SxRawUrl];
             if (redirect == null)
             {
-                redirect = SxRedirectsController<TDbContext>.Repo.Get301Redirect(SxRawUrl);
-                SxMvcApplication<TDbContext>.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect, cip);
+                redirect = SxRedirectsController<TDbContext>.Repo.GetPageRedirect(SxRawUrl);
+                SxMvcApplication<TDbContext>.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect ?? new SxRedirect { OldUrl=SxRawUrl, NewUrl=null }, cip);
             }
 
             return redirect;

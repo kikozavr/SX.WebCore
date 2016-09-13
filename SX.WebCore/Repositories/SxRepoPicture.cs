@@ -100,8 +100,9 @@ namespace SX.WebCore.Repositories
             sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT anu.AvatarId FROM AspNetUsers AS anu)");
             sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT db.PictureId FROM D_BANNER AS db)");
             sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT dmc.FrontPictureId FROM D_MATERIAL_CATEGORY AS dmc)");
-            sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT dsts.PictureId FROM D_SITE_TEST_SUBJECT AS dsts)");
             sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT dm.FrontPictureId FROM DV_MATERIAL AS dm)");
+            sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT dpl.PictureId FROM D_PICTURE_LINK AS dpl)");
+            //sb.AppendLine(" INSERT INTO @result SELECT dp.Id FROM D_PICTURE AS dp WHERE dp.Id IN(SELECT dsts.PictureId FROM D_SITE_TEST_SUBJECT AS dsts)");
             sb.AppendLine(" DECLARE @value NVARCHAR(MAX) DECLARE c CURSOR LOCAL FORWARD_ONLY FAST_FORWARD FOR SELECT dss.[Value] FROM   D_SITE_SETTING AS dss OPEN c FETCH NEXT FROM c INTO @value WHILE @@FETCH_STATUS = 0 BEGIN DECLARE @pictureId UNIQUEIDENTIFIER BEGIN TRY SET @pictureId = CAST(@value AS UNIQUEIDENTIFIER) IF EXISTS( SELECT * FROM   D_PICTURE AS dp WHERE  dp.Id = @pictureId ) INSERT INTO @result VALUES ( @pictureId ) END TRY BEGIN CATCH END CATCH FETCH NEXT FROM c INTO @value END CLOSE c DEALLOCATE c");
 
             object param = null;
@@ -121,7 +122,8 @@ namespace SX.WebCore.Repositories
             var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order));
 
-            sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
+            if(filter.PagerInfo.Page < int.MaxValue)
+                sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);
 
             var p = new DynamicParameters();
             p.AddDynamicParams(param);
@@ -134,11 +136,31 @@ namespace SX.WebCore.Repositories
                 return data.ToArray();
             }
         }
-
         public virtual async Task<SxVMPicture[]> GetFreePicturesAsync(SxFilter filter)
         {
             return await Task.Run(()=> {
                 return GetFreePictures(filter);
+            });
+        }
+        public virtual async Task<int> DeleteFreePicturesAsync(List<Guid> pictures)
+        {
+            if (pictures == null || !pictures.Any())
+                return 0;
+
+            var sb = new StringBuilder();
+            foreach (var id in pictures)
+            {
+                sb.AppendFormat(",'{0}'", id);
+            }
+            sb.Remove(0, 1);
+
+            return await Task.Run(() =>
+            {
+                using (var connection = new SqlConnection(ConnectionString))
+                {
+                    var data = connection.Query<int>("dbo.del_free_pictures @ids", new { ids = sb.ToString() });
+                    return data.SingleOrDefault();
+                }
             });
         }
 

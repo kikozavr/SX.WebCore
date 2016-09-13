@@ -11,8 +11,8 @@ namespace SX.WebCore.MvcControllers
     [Authorize(Roles = "seo")]
     public class SxRedirectsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
-        private static SxRepo301Redirect<TDbContext> _repo=new SxRepo301Redirect<TDbContext>();
-        public static SxRepo301Redirect<TDbContext> Repo
+        private static SxRepoRedirect<TDbContext> _repo=new SxRepoRedirect<TDbContext>();
+        public static SxRepoRedirect<TDbContext> Repo
         {
             get
             {
@@ -42,7 +42,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost]
-        public virtual async Task<ActionResult> Index(SxVM301Redirect filterModel, SxOrder order, int page = 1)
+        public virtual async Task<ActionResult> Index(SxVMRedirect filterModel, SxOrder order, int page = 1)
         {
             var filter = new SxFilter(page, _pageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
             
@@ -58,18 +58,18 @@ namespace SX.WebCore.MvcControllers
         [HttpGet]
         public virtual ViewResult Edit(Guid? id)
         {
-            var model = id.HasValue ? _repo.GetByKey(id) : new Sx301Redirect();
-            var viewModel = Mapper.Map<Sx301Redirect, SxVM301Redirect>(model);
+            var model = id.HasValue ? _repo.GetByKey(id) : new SxRedirect();
+            var viewModel = Mapper.Map<SxRedirect, SxVMRedirect>(model);
             return View(viewModel);
         }
 
         [HttpPost,ValidateAntiForgeryToken]
-        public virtual ActionResult Edit(SxVM301Redirect model)
+        public virtual ActionResult Edit(SxVMRedirect model)
         {
             if (ModelState.IsValid)
             {
-                var redactModel = Mapper.Map<SxVM301Redirect, Sx301Redirect>(model);
-                Sx301Redirect newModel = null;
+                var redactModel = Mapper.Map<SxVMRedirect, SxRedirect>(model);
+                SxRedirect newModel = null;
                 if (model.Id == Guid.Empty)
                     newModel = _repo.Create(redactModel);
                 else
@@ -81,7 +81,7 @@ namespace SX.WebCore.MvcControllers
         }
 
         [HttpPost, ValidateAntiForgeryToken]
-        public virtual ActionResult Delete(Sx301Redirect model)
+        public virtual ActionResult Delete(SxRedirect model)
         {
             var data = _repo.GetByKey(model.Id);
             if (data == null)

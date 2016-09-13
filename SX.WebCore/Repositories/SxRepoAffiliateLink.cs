@@ -39,9 +39,9 @@ namespace SX.WebCore.Repositories
             var gws = getAffiliateLinksWhereString(filter, out param);
             sb.Append(gws);
 
-            var defaultOrder = new SxOrder { FieldName = "dal.DateCreate", Direction = SortDirection.Desc };
+            var defaultOrder = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
             sb.Append(SxQueryProvider.GetOrderString(defaultOrder, filter.Order, new Dictionary<string, string> {
-                { "DateCreate", "dal.DateCreate" }
+                ["DateCreate"] = "dal.DateCreate"
             }));
 
             sb.AppendFormat(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY", filter.PagerInfo.SkipCount, filter.PagerInfo.PageSize);

@@ -3,10 +3,12 @@ using SX.WebCore.Providers;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -190,6 +192,58 @@ namespace SX.WebCore.MvcControllers
             ViewBag.Filter = filter;
 
             return PartialView("_FindGridView", viewModel);
+        }
+
+        private static readonly int _freePageSize = 10;
+
+        [HttpGet]
+        [Authorize(Roles = "photo-redactor")]
+        public ActionResult FreePictures(int page = 1)
+        {
+            var order = new SxOrder { FieldName = "Size", Direction = SortDirection.Desc };
+            var filter = new SxFilter(page, _freePageSize) { Order = order };
+
+            var viewModel = Repo.GetFreePictures(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
+
+            ViewBag.Filter = filter;
+
+            return PartialView("_FreePictures", viewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "photo-redactor")]
+        public async Task<ActionResult> FreePictures(SxVMPicture filterModel, SxOrder order, int page = 1)
+        {
+            var filter = new SxFilter(page, _freePageSize) { Order = order != null && order.Direction != SortDirection.Unknown ? order : null, WhereExpressionObject = filterModel };
+
+            var viewModel = await Repo.GetFreePicturesAsync(filter);
+            if (page > 1 && !viewModel.Any())
+                return new HttpNotFoundResult();
+
+            ViewBag.Filter = filter;
+
+            return PartialView("_FreePictures", viewModel);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "photo-redactor")]
+        public async Task<ActionResult> DeleteFreePictures()
+        {
+            var filter = new SxFilter(int.MaxValue, _freePageSize);
+            var freePicturesId = (await Repo.GetFreePicturesAsync(filter)).Select(x=>x.Id).ToList();
+            var data = await Repo.DeleteFreePicturesAsync(freePicturesId);
+
+            //получаем оставшиеся фото
+            var order = new SxOrder { FieldName = "DateCreate", Direction = SortDirection.Desc };
+            filter = new SxFilter(1, _pageSize) { Order = order };
+
+            var viewModel = _repo.Read(filter);
+
+            ViewBag.Filter = filter;
+
+            return PartialView("_GridView", viewModel);
         }
     }
 }

@@ -48,8 +48,8 @@ namespace SX.WebCore.MvcApplication
                     cfg.CreateMap<SxVMPicture, SxPicture>();
 
                     //redirect
-                    cfg.CreateMap<Sx301Redirect, SxVM301Redirect>();
-                    cfg.CreateMap<SxVM301Redirect, Sx301Redirect>();
+                    cfg.CreateMap<SxRedirect, SxVMRedirect>();
+                    cfg.CreateMap<SxVMRedirect, SxRedirect>();
 
                     //request
                     cfg.CreateMap<SxRequest, SxVMRequest>();

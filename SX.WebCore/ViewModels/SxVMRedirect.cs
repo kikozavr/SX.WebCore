@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SX.WebCore.ViewModels
 {
-    public sealed class SxVM301Redirect
+    public sealed class SxVMRedirect
     {
         public Guid? Id { get; set; }
 
@@ -20,5 +20,7 @@ namespace SX.WebCore.ViewModels
         [Display(Name = "Новый адрес")]
         [NotEqual("OldUrl", ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "NotEqualField")]
         public string NewUrl { get; set; }
+
+        public bool IsDuplicate { get; set; }
     }
 }

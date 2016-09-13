@@ -213,9 +213,6 @@
     <Compile Include="MvcControllers\SxSeoTagsController.cs" />
     <Compile Include="MvcControllers\SxSeoWordCounterController.cs" />
     <Compile Include="MvcControllers\SxSiteSettingsController.cs" />
-    <Compile Include="MvcControllers\SxSiteTestsController.cs" />
-    <Compile Include="MvcControllers\SxSiteTestSubjectsController.cs" />
-    <Compile Include="MvcControllers\SxSiteTestQuestionsController.cs" />
     <Compile Include="MvcControllers\SxStatisticsController.cs" />
     <Compile Include="MvcControllers\SxUserRolesController.cs" />
     <Compile Include="MvcControllers\SxUsersController.cs" />
@@ -236,7 +233,6 @@
     <Compile Include="Repositories\SxRepoMaterialTag.cs" />
     <Compile Include="Repositories\SxRepoSeoKeyword.cs" />
     <Compile Include="Repositories\SxRepoSiteNet.cs" />
-    <Compile Include="Repositories\SxRepoSiteTestSubject.cs" />
     <Compile Include="Repositories\SxRepositoryChat.cs" />
     <Compile Include="Resources\Messages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -284,11 +280,9 @@
     <Compile Include="Repositories\SxRepoComment.cs" />
     <Compile Include="Repositories\SxRepoEmployee.cs" />
     <Compile Include="Repositories\SxRepoPicture.cs" />
-    <Compile Include="Repositories\SxRepo301Redirect.cs" />
+    <Compile Include="Repositories\SxRepoRedirect.cs" />
     <Compile Include="Repositories\SxRepoSeoTags.cs" />
     <Compile Include="Repositories\SxRepoSiteSetting.cs" />
-    <Compile Include="Repositories\SxRepoSiteTestQuestion.cs" />
-    <Compile Include="Repositories\SxRepoSiteTest.cs" />
     <Compile Include="Repositories\SxRepoVideo.cs" />
     <Compile Include="Repositories\SxRepoBannerGroup.cs" />
     <Compile Include="Repositories\SxRepoManual.cs" />
@@ -314,8 +308,8 @@
     <Compile Include="SxBanner.cs" />
     <Compile Include="SxPictureLink.cs" />
     <Compile Include="SxSiteNet.cs" />
-    <Compile Include="SxSiteTestQuestion.cs" />
     <Compile Include="SxStatistic.cs" />
+    <Compile Include="ViewModels\SxVMSiteError.cs" />
     <Compile Include="ViewModels\SxVMBadLink.cs" />
     <Compile Include="ViewModels\SxVMBannerCollection.cs" />
     <Compile Include="SxBannerGroup.cs" />
@@ -330,9 +324,6 @@
     <Compile Include="SxShareButton.cs" />
     <Compile Include="SxNet.cs" />
     <Compile Include="SxOrder.cs" />
-    <Compile Include="SxSiteTestAnswer.cs" />
-    <Compile Include="SxSiteTestSubject.cs" />
-    <Compile Include="SxSiteTestStep.cs" />
     <Compile Include="SxStatisticUserLogin.cs" />
     <Compile Include="SxManual.cs" />
     <Compile Include="SxMaterialCategory.cs" />
@@ -341,16 +332,15 @@
     <Compile Include="SxPicture.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SxProjectStep.cs" />
-    <Compile Include="Sx301Redirect.cs" />
+    <Compile Include="SxRedirect.cs" />
     <Compile Include="SxRequest.cs" />
     <Compile Include="SxSeoTags.cs" />
     <Compile Include="SxSeoKeyword.cs" />
     <Compile Include="SxSeoPhrase.cs" />
     <Compile Include="SxSiteSetting.cs" />
-    <Compile Include="SxSiteTest.cs" />
     <Compile Include="SxVideo.cs" />
     <Compile Include="SxVideoLink.cs" />
-    <Compile Include="ViewModels\SxVM301Redirect.cs" />
+    <Compile Include="ViewModels\SxVMRedirect.cs" />
     <Compile Include="ViewModels\SxVMAffiliateLink.cs" />
     <Compile Include="ViewModels\SxVMBannedUrl.cs" />
     <Compile Include="ViewModels\SxVMBanner.cs" />
@@ -375,13 +365,6 @@
     <Compile Include="ViewModels\SxVMSiteQuetion.cs" />
     <Compile Include="ViewModels\SxVMSiteSetting.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />
-    <Compile Include="ViewModels\SxVMSiteTest.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestAnswer.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestQuestion.cs" />
-    <Compile Include="ViewModels\SXVMSiteTestResult.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestResultNormal.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestStepNormal.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestSubject.cs" />
     <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />
     <Compile Include="ViewModels\SxVMSubscriber.cs" />
     <Compile Include="ViewModels\SxVMValute.cs" />
@@ -399,7 +382,6 @@
     <Compile Include="ViewModels\SxVMAppRole.cs" />
     <Compile Include="ViewModels\SxVMAppUser.cs" />
     <Compile Include="ViewModels\SxVMVideo.cs" />
-    <Compile Include="ViewModels\SxVMSiteTestStepGuess.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

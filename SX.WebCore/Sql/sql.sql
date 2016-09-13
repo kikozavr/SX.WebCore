@@ -1745,18 +1745,95 @@ END
 GO
 
 /*******************************************
- * Все редиректы сайта
+ * Получить редирект страницы
  *******************************************/
-IF OBJECT_ID(N'dbo.get_redirect', N'P') IS NOT NULL
-    DROP PROCEDURE dbo.get_redirect;
+IF OBJECT_ID(N'dbo.get_page_redirect', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.get_page_redirect;
 GO
-CREATE PROCEDURE dbo.get_redirect
-	@url VARCHAR(255)
+CREATE PROCEDURE dbo.get_page_redirect
+	@rawUrl VARCHAR(255)
 AS
 BEGIN
 	SELECT TOP(1) *
 	FROM   D_REDIRECT AS dr
-	WHERE  dr.OldUrl = @url
+	WHERE  dr.OldUrl = @rawUrl
+END
+GO
+
+/*******************************************
+ * Добавить редирект страницы
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_redirect', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_redirect;
+GO
+CREATE PROCEDURE dbo.add_redirect
+	@oldUrl VARCHAR(255),
+	@newUrl VARCHAR(255)
+AS
+	BEGIN TRANSACTION
+	DECLARE @date DATETIME = GETDATE();
+	
+	IF NOT EXISTS (
+	       SELECT TOP 1 dr.Id
+	       FROM   D_REDIRECT AS dr
+	       WHERE  dr.OldUrl = @oldUrl
+	   )
+	BEGIN
+	    UPDATE D_REDIRECT
+	    SET    NewUrl         = @newUrl,
+	           DateUpdate     = @date
+	    WHERE  NewUrl         = @oldUrl;
+	    
+	    DECLARE @newId UNIQUEIDENTIFIER = NEWID();
+	    
+	    INSERT INTO D_REDIRECT
+	      (
+	        Id,
+	        OldUrl,
+	        NewUrl,
+	        DateUpdate,
+	        DateCreate
+	      )
+	    VALUES
+	      (
+	        @newId,
+	        @oldUrl,
+	        @newUrl,
+	        @date,
+	        @date
+	      );
+	    
+	    SELECT TOP(1) *
+	    FROM   D_REDIRECT AS dr
+	    WHERE  dr.Id = @newId;
+	END
+	
+	COMMIT TRANSACTION
+GO
+
+/*******************************************
+ * Обновить редирект страницы
+ *******************************************/
+IF OBJECT_ID(N'dbo.update_redirect', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.update_redirect;
+GO
+CREATE PROCEDURE dbo.update_redirect
+	@redirectId UNIQUEIDENTIFIER,
+	@oldUrl VARCHAR(255),
+	@newUrl VARCHAR(255)
+AS
+BEGIN
+	DECLARE @date DATETIME = GETDATE();
+	
+	UPDATE D_REDIRECT
+	SET    OldUrl = @oldUrl,
+	       NewUrl = @newUrl,
+	       DateUpdate = @date
+	WHERE  Id = @redirectId
+	
+	SELECT TOP(1) *
+	FROM   D_REDIRECT AS dr
+	WHERE  dr.Id = @redirectId;
 END
 GO
 
@@ -1969,6 +2046,24 @@ AS
 	WHERE  Id = @pictureId
 	
 	COMMIT TRANSACTION
+GO
+
+/*******************************************
+ * Удалить неиспользуемые картинки
+ *******************************************/
+IF OBJECT_ID(N'dbo.del_free_pictures', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.del_free_pictures;
+GO
+CREATE PROCEDURE dbo.del_free_pictures
+	@ids NVARCHAR(MAX)
+AS
+BEGIN
+	EXEC (
+	         'DECLARE @size FLOAT=0;
+	         SELECT @size=SUM(dp.[Size]) FROM D_PICTURE AS dp WHERE Id IN (' + @ids 
+	         + ');  DELETE FROM D_PICTURE WHERE Id IN (' + @ids + '); SELECT @size'
+	     );
+END
 GO
 
 /*******************************************

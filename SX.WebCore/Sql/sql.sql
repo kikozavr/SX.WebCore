@@ -1,6 +1,6 @@
 /************************************************************
  * Code formatted by SoftTree SQL Assistant © v6.5.278
- * Time: 05.09.2016 15:30:54
+ * Time: 14.09.2016 15:59:23
  ************************************************************/
 
 /*******************************************
@@ -196,6 +196,9 @@ BEGIN
 	RETURN LTRIM(RTRIM(@HTMLText))
 END
 GO
+
+
+
 
 
 
@@ -446,6 +449,9 @@ BEGIN
 	RETURN @res
 END
 GO
+
+
+
 
 
 
@@ -2061,7 +2067,8 @@ BEGIN
 	EXEC (
 	         'DECLARE @size FLOAT=0;
 	         SELECT @size=SUM(dp.[Size]) FROM D_PICTURE AS dp WHERE Id IN (' + @ids 
-	         + ');  DELETE FROM D_PICTURE WHERE Id IN (' + @ids + '); SELECT @size'
+	         + ');  DELETE FROM D_PICTURE WHERE Id IN (' + @ids +
+	         '); SELECT @size'
 	     );
 END
 GO
@@ -2108,7 +2115,7 @@ BEGIN
 	    @rawUrl
 	  )
 	
-	SELECT TOP 1 * 
+	SELECT TOP 1 *
 	FROM   D_REQUEST AS dr
 	WHERE  dr.Id = @id
 END
@@ -3359,7 +3366,7 @@ BEGIN
 	FROM   D_SITE_NET              AS dsn
 	       RIGHT OUTER JOIN D_NET  AS dn
 	            ON  dn.Id = dsn.NetId
-	WHERE  dsn.Show=1
+	WHERE  dsn.Show = 1
 END
 GO
 
@@ -3402,4 +3409,71 @@ AS
 	END
 	
 	EXEC dbo.get_site_net @netId
+GO
+
+/*******************************************
+ * Добавить сессию анализатора
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_analizator_session', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_analizator_session;
+GO
+CREATE PROCEDURE dbo.add_analizator_session
+	@userId NVARCHAR(128)
+AS
+BEGIN
+	DECLARE @date DATETIME = GETDATE();
+	
+	INSERT INTO D_ANALIZATOR_SESSION
+	  (
+	    UserId,
+	    DateCreate
+	  )
+	VALUES
+	  (
+	    @userId,
+	    @date
+	  )
+	
+	DECLARE @id INT = @@identity;
+	SELECT TOP 1 *
+	FROM   D_ANALIZATOR_SESSION AS das
+	WHERE  das.Id = @id;
+END
+GO
+
+/*******************************************
+ * Добавить Url сессии
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_analizator_session_url', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_analizator_session_url;
+GO
+CREATE PROCEDURE dbo.add_analizator_session_url
+	@url NVARCHAR(255),
+	@sessionId INT
+AS
+BEGIN
+	DECLARE @date DATETIME = GETDATE();
+	IF NOT EXISTS (
+	       SELECT TOP 1 dau.Id
+	       FROM   D_ANALIZATOR_URL AS dau
+	       WHERE  dau.[Url] = @url
+	              AND dau.AnalizatorSessionId = @sessionId
+	   )
+	BEGIN
+	    INSERT INTO D_ANALIZATOR_URL
+	      (
+	        [Url],
+	        AnalizatorSessionId,
+	        StatusCode,
+	        DateCreate
+	      )
+	    VALUES
+	      (
+	        @url,
+	        @sessionId,
+	        NULL,
+	        @date
+	      )
+	END
+END
 GO

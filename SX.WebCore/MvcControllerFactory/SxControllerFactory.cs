@@ -31,20 +31,23 @@ namespace SX.WebCore.MvcControllerFactory
             {
                 controller = base.CreateController(requestContext, controllerName);
             }
-            catch { }
-
-            var cName = controllerName.ToLower();
-            if (controller==null && _coreControllerCache.ContainsKey(cName))
+            catch
             {
-                var cType = _coreControllerCache[cName];
-                if (cType.IsGenericType)
+                var cName = controllerName.ToLower();
+                if (controller == null && _coreControllerCache.ContainsKey(cName))
                 {
-                    Type[] typeArgs = { typeof(TDbContext) };
-                    controller = (IController)Activator.CreateInstance(cType.MakeGenericType(typeArgs));
+                    var cType = _coreControllerCache[cName];
+                    if (cType.IsGenericType)
+                    {
+                        Type[] typeArgs = { typeof(TDbContext) };
+                        controller = (IController)Activator.CreateInstance(cType.MakeGenericType(typeArgs));
+                    }
+                    else
+                        controller = (IController)Activator.CreateInstance(cType);
                 }
-                else
-                    controller = (IController)Activator.CreateInstance(cType);
             }
+
+            
 
             return controller;
         }

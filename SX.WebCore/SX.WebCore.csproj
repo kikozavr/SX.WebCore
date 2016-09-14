@@ -52,6 +52,10 @@
       <HintPath>..\packages\EPPlus.4.1.0\lib\net40\EPPlus.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="HtmlAgilityPack, Version=2.0.20.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\..\leavingrussia.ru\packages\HtmlAgilityPack.Net45.2.0.20\lib\net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\..\GE\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
@@ -189,6 +193,9 @@
     <Compile Include="MvcApplication\SxAutoMapperConfig.cs" />
     <Compile Include="MvcApplication\SxRouteConfig.cs" />
     <Compile Include="MvcControllerFactory\SxControllerFactory.cs" />
+    <Compile Include="MvcControllers\SxAnalizatorController.cs" />
+    <Compile Include="MvcControllers\SxAnalizatorSessionsController.cs" />
+    <Compile Include="MvcControllers\SxAnalizatorUrlsController.cs" />
     <Compile Include="MvcControllers\SxErrorsController.cs" />
     <Compile Include="MvcControllers\SxSiteNetsController.cs" />
     <Compile Include="MvcControllers\SxAffiliateLinksController.cs" />
@@ -224,6 +231,8 @@
     <Compile Include="Providers\SxSiteNetProvider.cs" />
     <Compile Include="RazorViewEngine\SxRazorViewEngine.cs" />
     <Compile Include="Repositories\SxRepoAffiliateLink.cs" />
+    <Compile Include="Repositories\SxRepoAnalizatorSession.cs" />
+    <Compile Include="Repositories\SxRepoAnalizatorUrl.cs" />
     <Compile Include="Repositories\SxRepoAppRole.cs" />
     <Compile Include="Repositories\SxRepoMaterial.cs" />
     <Compile Include="Repositories\SxRepoRating.cs" />
@@ -241,6 +250,7 @@
     </Compile>
     <Compile Include="SxAffiliateBannerView.cs" />
     <Compile Include="SxAffiliateLink.cs" />
+    <Compile Include="SxAnalizatorSession.cs" />
     <Compile Include="SxBannersStatistic.cs" />
     <Compile Include="SxFilter.cs" />
     <Compile Include="Abstract\SxMaterial.cs" />
@@ -308,7 +318,9 @@
     <Compile Include="SxBanner.cs" />
     <Compile Include="SxPictureLink.cs" />
     <Compile Include="SxSiteNet.cs" />
+    <Compile Include="SxAnalizatorUrl.cs" />
     <Compile Include="SxStatistic.cs" />
+    <Compile Include="ViewModels\SxVMAnalizatorSession.cs" />
     <Compile Include="ViewModels\SxVMSiteError.cs" />
     <Compile Include="ViewModels\SxVMBadLink.cs" />
     <Compile Include="ViewModels\SxVMBannerCollection.cs" />
@@ -365,6 +377,7 @@
     <Compile Include="ViewModels\SxVMSiteQuetion.cs" />
     <Compile Include="ViewModels\SxVMSiteSetting.cs" />
     <Compile Include="ViewModels\SxVMSiteSettings.cs" />
+    <Compile Include="ViewModels\SxVMAnalizatorUrl.cs" />
     <Compile Include="ViewModels\SxVMStatisticUserLogin.cs" />
     <Compile Include="ViewModels\SxVMSubscriber.cs" />
     <Compile Include="ViewModels\SxVMValute.cs" />

@@ -25,5 +25,6 @@ namespace SX.WebCore
         public object[] AddintionalInfo { get; set; }
         public SxOrder Order { get; set; }
         public bool? OnlyShow { get; set; }
+        public string UserId { get; set; }
     }
 }

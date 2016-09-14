@@ -69,7 +69,7 @@ namespace SX.WebCore.HtmlHelpers
                 throw new ArgumentNullException("DataAjaxUrl");
 
             settings = settings ?? new SxGridViewSettings<TModel>();
-            settings.HasRow = collection.Any();
+            settings.HasRow = collection!=null && collection.Any();
             var filter = (SxFilter)htmlHelper.ViewBag.Filter;
             if (filter != null)
                 settings.Filter = filter;

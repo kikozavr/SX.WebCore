@@ -147,6 +147,8 @@ namespace SX.WebCore.MvcControllers
 
         private void writeRequestInfo(string identityCookie)
         {
+            if (Request.UserAgent == null) return;
+
             Task.Run(() =>
             {
                 var requestInstance = new SxRequest

@@ -16,6 +16,8 @@ namespace SX.WebCore
             return context;
         }
 
+        public DbSet<SxAnalizatorSession> AnalizerSessions { get; set; }
+
         public DbSet<SxArticle> Articles { get; set; }
 
         public DbSet<SxAffiliateLink> AffiliateLinks { get; set; }

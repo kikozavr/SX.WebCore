@@ -40,20 +40,9 @@ namespace SX.WebCore.Abstract
 
             return model;
         }
-        private static void prepareUpdatedModel(SxDbModel<TKey> model)
+        public virtual async Task<TModel> CreateAsync(TModel model)
         {
-            var date = DateTime.Now;
-            if (model.DateCreate == DateTime.MinValue)
-                model.DateCreate = date;
-            if (model is SxDbUpdatedModel<TKey>)
-            {
-                var m = model as SxDbUpdatedModel<TKey>;
-                if (m.DateUpdate == DateTime.MinValue)
-                    m.DateUpdate = date;
-                if (model is SxMaterial)
-                    (model as SxMaterial).DateOfPublication = model.DateCreate;
-            }
-
+            return await Task.Run(()=> { return Create(model); });
         }
 
         //read
@@ -129,6 +118,22 @@ namespace SX.WebCore.Abstract
             {
                 Delete(model);
             });
+        }
+
+        private static void prepareUpdatedModel(SxDbModel<TKey> model)
+        {
+            var date = DateTime.Now;
+            if (model.DateCreate == DateTime.MinValue)
+                model.DateCreate = date;
+            if (model is SxDbUpdatedModel<TKey>)
+            {
+                var m = model as SxDbUpdatedModel<TKey>;
+                if (m.DateUpdate == DateTime.MinValue)
+                    m.DateUpdate = date;
+                if (model is SxMaterial)
+                    (model as SxMaterial).DateOfPublication = model.DateCreate;
+            }
+
         }
 
         //get all

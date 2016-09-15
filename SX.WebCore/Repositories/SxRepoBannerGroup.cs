@@ -10,7 +10,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoBannerGroup<TDbContext> : SxDbRepository<Guid, SxBannerGroup, TDbContext, SxVMBannerGroup> where TDbContext : SxDbContext
+    public sealed class SxRepoBannerGroup : SxDbRepository<Guid, SxBannerGroup, SxVMBannerGroup>
     {
         public override SxVMBannerGroup[] Read(SxFilter filter)
         {

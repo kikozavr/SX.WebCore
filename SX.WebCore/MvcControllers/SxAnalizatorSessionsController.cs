@@ -15,11 +15,10 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles="seo")]
-    public abstract class SxAnalizatorSessionsController<TDbContext> : SxBaseController<TDbContext>
-        where TDbContext : SxDbContext
+    public abstract class SxAnalizatorSessionsController : SxBaseController
     {
-        private static SxRepoAnalizatorSession<TDbContext> _repo = new SxRepoAnalizatorSession<TDbContext>();
-        public static SxRepoAnalizatorSession<TDbContext> Repo
+        private static SxRepoAnalizatorSession _repo = new SxRepoAnalizatorSession();
+        public static SxRepoAnalizatorSession Repo
         {
             get { return _repo; }
             set { _repo = value; }

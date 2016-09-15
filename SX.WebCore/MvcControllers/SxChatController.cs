@@ -4,10 +4,10 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize]
-    public abstract class SxChatController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxChatController : SxBaseController
     {
-        private static SxRepositoryChat<TDbContext> _repo=new SxRepositoryChat<TDbContext>();
-        public static SxRepositoryChat<TDbContext> Repo
+        private static SxRepositoryChat _repo=new SxRepositoryChat();
+        public static SxRepositoryChat Repo
         {
             get { return _repo; }
             set { _repo = value; }

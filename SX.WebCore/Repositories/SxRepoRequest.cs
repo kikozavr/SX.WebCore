@@ -11,7 +11,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoRequest<TDbContext> : SxDbRepository<Guid, SxRequest, TDbContext, SxVMRequest> where TDbContext : SxDbContext
+    public class SxRepoRequest : SxDbRepository<Guid, SxRequest, SxVMRequest>
     {
         public override SxRequest Create(SxRequest model)
         {

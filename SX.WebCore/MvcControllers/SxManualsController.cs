@@ -6,12 +6,12 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxManualsController<TDbContext>: SxMaterialsController<SxManual, SxVMMaterial, TDbContext> where TDbContext: SxDbContext
+    public abstract class SxManualsController: SxMaterialsController<SxManual, SxVMMaterial>
     {
         public SxManualsController() :base(Enums.ModelCoreType.Manual)
         {
-            if (Repo == null)
-                Repo = new SxRepoManual<TDbContext>();
+            if (Repo == null || !(Repo is SxRepoManual))
+                Repo = new SxRepoManual();
         }
 
         private static int _pageSize = 20;

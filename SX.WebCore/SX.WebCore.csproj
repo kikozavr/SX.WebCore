@@ -191,6 +191,7 @@
     <Compile Include="Hubs\SxChatHub.cs" />
     <Compile Include="Managers\SxCacheExpirationManager.cs" />
     <Compile Include="MvcApplication\SxAutoMapperConfig.cs" />
+    <Compile Include="MvcApplication\SxOwinStartup.cs" />
     <Compile Include="MvcApplication\SxRouteConfig.cs" />
     <Compile Include="MvcControllerFactory\SxControllerFactory.cs" />
     <Compile Include="MvcControllers\SxAnalizatorController.cs" />

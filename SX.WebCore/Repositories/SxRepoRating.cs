@@ -9,7 +9,7 @@ using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoRating<TDbContext> : SxDbRepository<int, SxRating, TDbContext, SxVMRating> where TDbContext: SxDbContext
+    public sealed class SxRepoRating : SxDbRepository<int, SxRating, SxVMRating>
     {
         public async Task<double> AddRatingAsync(SxRating model)
         {

@@ -12,7 +12,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoAffiliateLink<TDbContext> : SxDbRepository<Guid, SxAffiliateLink, TDbContext, SxVMAffiliateLink> where TDbContext : SxDbContext
+    public class SxRepoAffiliateLink : SxDbRepository<Guid, SxAffiliateLink, SxVMAffiliateLink>
     {
         public override SxAffiliateLink Create(SxAffiliateLink model)
         {

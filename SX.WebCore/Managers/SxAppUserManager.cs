@@ -13,7 +13,8 @@ namespace SX.WebCore.Managers
         {
         }
 
-        public static SxAppUserManager Create<TDbContext>(IdentityFactoryOptions<SxAppUserManager> options, IOwinContext context) where TDbContext: SxDbContext
+        public static SxAppUserManager Create<TDbContext>(IdentityFactoryOptions<SxAppUserManager> options, IOwinContext context)
+            where TDbContext: SxDbContext
         {
             var manager = new SxAppUserManager(new UserStore<SxAppUser>(context.Get<TDbContext>()));
             // Configure validation logic for usernames

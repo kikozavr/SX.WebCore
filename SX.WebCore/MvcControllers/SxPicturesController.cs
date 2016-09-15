@@ -15,10 +15,10 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxPicturesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxPicturesController : SxBaseController
     {
-        private static SxRepoPicture<TDbContext> _repo = new SxRepoPicture<TDbContext>();
-        public static SxRepoPicture<TDbContext> Repo
+        private static SxRepoPicture _repo = new SxRepoPicture();
+        public static SxRepoPicture Repo
         {
             get { return _repo; }
             set { _repo = value; }
@@ -70,8 +70,10 @@ namespace SX.WebCore.MvcControllers
         [HttpPost, ValidateAntiForgeryToken]
         public async Task<ActionResult> AddMany(HttpPostedFileBase[] files)
         {
+            var httpContext = System.Web.HttpContext.Current;
             return await Task.Run(() =>
             {
+                System.Web.HttpContext.Current = httpContext;
                 var data = files.Where(x => x.ContentLength <= maxSize && allowFormats.Contains(x.ContentType));
                 foreach (var file in data)
                 {

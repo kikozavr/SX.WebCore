@@ -2043,9 +2043,9 @@ AS
 	--SET    PictureId = NULL
 	--WHERE  PictureId = @pictureId
 	
-	UPDATE D_SITE_TEST_SUBJECT
-	SET    PictureId = NULL
-	WHERE  PictureId = @pictureId
+	--UPDATE D_SITE_TEST_SUBJECT
+	--SET    PictureId = NULL
+	--WHERE  PictureId = @pictureId
 	
 	DELETE 
 	FROM   D_PICTURE
@@ -3042,12 +3042,12 @@ CREATE PROCEDURE dbo.get_first_material_video
 	@mct INT
 AS
 BEGIN
-	SELECT TOP(1) *
-	FROM   D_VIDEO_LINK  AS dvl
-	       JOIN D_VIDEO  AS dv
-	            ON  dv.Id = dvl.VideoId
-	WHERE  dvl.MaterialId = @mid
-	       AND dvl.ModelCoreType = @mct
+	SELECT TOP(1) dv.* 
+	FROM   D_VIDEO            AS dv
+	       JOIN D_VIDEO_LINK  AS dvl
+	            ON  dvl.VideoId = dv.Id
+	            AND dvl.MaterialId = @mid
+	            AND dvl.ModelCoreType = @mct
 	ORDER BY
 	       dv.DateCreate DESC
 END

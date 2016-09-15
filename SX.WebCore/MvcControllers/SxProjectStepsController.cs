@@ -8,10 +8,10 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles ="admin")]
-    public abstract class SxProjectStepsController<TDbContext>:SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxProjectStepsController:SxBaseController
     {
-        private static SxRepoProjectStep<TDbContext> _repo=new SxRepoProjectStep<TDbContext>();
-        public static SxRepoProjectStep<TDbContext> Repo
+        private static SxRepoProjectStep _repo=new SxRepoProjectStep();
+        public static SxRepoProjectStep Repo
         {
             get { return _repo; }
             set { _repo = value; }

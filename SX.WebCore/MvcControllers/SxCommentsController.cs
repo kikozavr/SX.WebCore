@@ -7,10 +7,10 @@ using static SX.WebCore.Enums;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxCommentsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxCommentsController : SxBaseController
     {
-        private static SxRepoComment<TDbContext> _repo = new SxRepoComment<TDbContext>();
-        public static SxRepoComment<TDbContext> Repo
+        private static SxRepoComment _repo = new SxRepoComment();
+        public static SxRepoComment Repo
         {
             get { return _repo; }
             set { _repo = value; }

@@ -1,5 +1,4 @@
-﻿using SX.WebCore.Abstract;
-using SX.WebCore.Repositories;
+﻿using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,11 +8,11 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles ="admin")]
-    public abstract class SxBannedUrlsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxBannedUrlsController : SxBaseController
     {
         private static int _pageSize = 20;
-        private static SxRepoBannedUrl<TDbContext> _repo=new SxRepoBannedUrl<TDbContext>();
-        public static SxRepoBannedUrl<TDbContext> Repo
+        private static SxRepoBannedUrl _repo=new SxRepoBannedUrl();
+        public static SxRepoBannedUrl Repo
         {
             get { return _repo; }
             set { _repo = value; }

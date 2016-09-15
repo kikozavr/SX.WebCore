@@ -8,11 +8,11 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles ="admin")]
-    public abstract class SxStatisticsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxStatisticsController : SxBaseController
     {
         private static int _pageUserLoginsSize = 20;
-        private static SxRepoStatistic<TDbContext> _repo=new SxRepoStatistic<TDbContext>();
-        public static SxRepoStatistic<TDbContext> Repo
+        private static SxRepoStatistic _repo=new SxRepoStatistic();
+        public static SxRepoStatistic Repo
         {
             get { return _repo; }
             set { _repo = value; }

@@ -9,10 +9,10 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "smm")]
-    public abstract class SxSiteNetsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxSiteNetsController : SxBaseController
     {
-        private static SxRepoSiteNet<TDbContext> _repo=new SxRepoSiteNet<TDbContext>();
-        public static SxRepoSiteNet<TDbContext> Repo
+        private static SxRepoSiteNet _repo=new SxRepoSiteNet();
+        public static SxRepoSiteNet Repo
         {
             get { return _repo; }
             set { _repo = value; }
@@ -73,13 +73,13 @@ namespace SX.WebCore.MvcControllers
                 SxSiteNet newModel = null;
                 newModel = _repo.Update(redactModel);
 
-                SxMvcApplication<TDbContext>.SiteNetsProvider.UpdateInCache(Mapper.Map<SxSiteNet, SxVMSiteNet>(newModel));
+                SxMvcApplication.SiteNetsProvider.UpdateInCache(Mapper.Map<SxSiteNet, SxVMSiteNet>(newModel));
 
                 return RedirectToAction("Index");
             }
             else
             {
-                model.Net = Mapper.Map<SxNet, SxVMNet>(SxNetsController<TDbContext>.Repo.GetByKey(model.NetId));
+                model.Net = Mapper.Map<SxNet, SxVMNet>(SxNetsController.Repo.GetByKey(model.NetId));
                 return View(model);
             }
         }

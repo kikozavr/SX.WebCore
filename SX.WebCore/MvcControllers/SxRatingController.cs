@@ -5,10 +5,10 @@ using static SX.WebCore.Enums;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxRatingController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxRatingController : SxBaseController
     {
-        private static SxRepoRating<TDbContext> _repo=new SxRepoRating<TDbContext>();
-        public static SxRepoRating<TDbContext> Repo
+        private static SxRepoRating _repo=new SxRepoRating();
+        public static SxRepoRating Repo
         {
             get { return _repo; }
             set { _repo = value; }

@@ -11,7 +11,7 @@ using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoShareButton<TDbContext> : SxDbRepository<int, SxShareButton, TDbContext, SxVMShareButton> where TDbContext : SxDbContext
+    public sealed class SxRepoShareButton : SxDbRepository<int, SxShareButton, SxVMShareButton>
     {
         public override SxVMShareButton[] Read(SxFilter filter)
         {

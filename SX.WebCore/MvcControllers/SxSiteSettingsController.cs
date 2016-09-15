@@ -8,12 +8,12 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxSiteSettingsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxSiteSettingsController : SxBaseController
     {
         private const string __notSetSettingValue = "Настройка не определена";
 
-        private static SxRepoSiteSetting<TDbContext> _repo=new SxRepoSiteSetting<TDbContext>();
-        public static SxRepoSiteSetting<TDbContext> Repo
+        private static SxRepoSiteSetting _repo=new SxRepoSiteSetting();
+        public static SxRepoSiteSetting Repo
         {
             get { return _repo; }
             set { _repo = value; }
@@ -85,7 +85,7 @@ namespace SX.WebCore.MvcControllers
                     }
 
                     ViewBag.EditSiteSettingsMessage = "Настройки успешно сохранены";
-                    SxMvcApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
+                    SxMvcApplication.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
                 }
                 else if (isExists && isModified)
                 {
@@ -97,7 +97,7 @@ namespace SX.WebCore.MvcControllers
                     _repo.Update(new SxSiteSetting { Id = Settings.siteFaveiconPath, Value = model.SiteFaveiconPath }, true, "Value");
                     _repo.Update(new SxSiteSetting { Id = Settings.siteDesc, Value = model.SiteDesc }, true, "Value");
                     ViewBag.EditSiteSettingsMessage = "Настройки успешно обновлены";
-                    SxMvcApplication<TDbContext>.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
+                    SxMvcApplication.SiteSettingsProvider.Set(Settings.siteDomain, model.SiteDomain);
                 }
                 else
                 {
@@ -122,14 +122,14 @@ namespace SX.WebCore.MvcControllers
             {
                 Guid.TryParse(model.LogoPath, out guid);
                 if (guid != Guid.Empty)
-                    ViewData["LogoPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
+                    ViewData["LogoPathCaption"] = SxPicturesController.Repo.GetByKey(guid).Caption;
             }
 
             if (!string.IsNullOrEmpty(model.SiteBgPath))
             {
                 Guid.TryParse(model.SiteBgPath, out guid);
                 if (guid != Guid.Empty)
-                    ViewData["SiteBgPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
+                    ViewData["SiteBgPathCaption"] = SxPicturesController.Repo.GetByKey(guid).Caption;
             }
 
 
@@ -137,7 +137,7 @@ namespace SX.WebCore.MvcControllers
             {
                 Guid.TryParse(model.SiteFaveiconPath, out guid);
                 if (guid != Guid.Empty)
-                    ViewData["SiteFaveiconPathCaption"] = SxPicturesController<TDbContext>.Repo.GetByKey(guid).Caption;
+                    ViewData["SiteFaveiconPathCaption"] = SxPicturesController.Repo.GetByKey(guid).Caption;
             }
         }
     }

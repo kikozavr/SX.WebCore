@@ -9,7 +9,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSeoKeyword<TDbContext> : SxDbRepository<int, SxSeoKeyword, TDbContext, SxVMSeoKeyword> where TDbContext : SxDbContext
+    public sealed class SxRepoSeoKeyword : SxDbRepository<int, SxSeoKeyword, SxVMSeoKeyword>
     {
         public override SxSeoKeyword Create(SxSeoKeyword model)
         {

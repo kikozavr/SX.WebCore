@@ -11,8 +11,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoAnalizatorSession<TDbContext> : SxDbRepository<int, SxAnalizatorSession, TDbContext, SxVMAnalizatorSession>
-        where TDbContext: SxDbContext
+    public sealed class SxRepoAnalizatorSession : SxDbRepository<int, SxAnalizatorSession, SxVMAnalizatorSession>
     {
         public new SxAnalizatorSession Create(SxAnalizatorSession model)
         {

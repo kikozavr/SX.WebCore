@@ -5,8 +5,7 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
-    public abstract class SxAnalizatorController<TDbContext> : SxBaseController<TDbContext>
-        where TDbContext : SxDbContext
+    public abstract class SxAnalizatorController : SxBaseController
     {
         private static readonly int _pageSize = 20;
 
@@ -20,14 +19,14 @@ namespace SX.WebCore.MvcControllers
             ViewBag.UserId = userId;
 
             var filter = new SxFilter() { UserId = userId };
-            var sessions = SxAnalizatorSessionsController<TDbContext>.Repo.Read(filter);
+            var sessions = SxAnalizatorSessionsController.Repo.Read(filter);
             ViewBag.Sessions = sessions;
             ViewBag.Filter = filter;
 
             if (sessions.Any())
             {
                 filter = new SxFilter(1, _pageSize) { AddintionalInfo = new object[] { sessionId } };
-                var urls = SxAnalizatorUrlsController<TDbContext>.Repo.Read(filter);
+                var urls = SxAnalizatorUrlsController.Repo.Read(filter);
                 ViewBag.Urls = urls;
             }
 

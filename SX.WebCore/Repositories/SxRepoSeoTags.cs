@@ -11,7 +11,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSeoTags<TDbContext> : SxDbRepository<int, SxSeoTags, TDbContext, SxVMSeoTags> where TDbContext : SxDbContext
+    public sealed class SxRepoSeoTags : SxDbRepository<int, SxSeoTags, SxVMSeoTags>
     {
         public override SxVMSeoTags[] Read(SxFilter filter)
         {

@@ -11,10 +11,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoMaterial<TModel, TViewModel, TDbContext> : SxDbRepository<int, TModel, TDbContext, TViewModel>
+    public class SxRepoMaterial<TModel, TViewModel> : SxDbRepository<int, TModel, TViewModel>
         where TModel : SxMaterial
         where TViewModel : SxVMMaterial
-        where TDbContext : SxDbContext
     {
         private static ModelCoreType _mct;
         protected static ModelCoreType ModelCoreType

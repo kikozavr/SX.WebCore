@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxLogsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxLogsController : SxBaseController
     {
         [HttpGet]
         public virtual async Task<FileResult> GetLog(string siteName = null)

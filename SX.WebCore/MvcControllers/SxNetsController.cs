@@ -8,10 +8,10 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxNetsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxNetsController : SxBaseController
     {
-        private static SxRepoNet<TDbContext> _repo=new SxRepoNet<TDbContext>();
-        public static SxRepoNet<TDbContext> Repo
+        private static SxRepoNet _repo=new SxRepoNet();
+        public static SxRepoNet Repo
         {
             get { return _repo; }
             set { _repo = value; }

@@ -12,10 +12,10 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
-    public abstract class SxSeoController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxSeoController : SxBaseController
     {
-        public static SxRepoSiteSetting<TDbContext> _repo = new SxRepoSiteSetting<TDbContext>();
-        public static SxRepoSiteSetting<TDbContext> Repo
+        public static SxRepoSiteSetting _repo = new SxRepoSiteSetting();
+        public static SxRepoSiteSetting Repo
         {
             get { return _repo; }
             set { _repo = value; }
@@ -82,7 +82,7 @@ namespace SX.WebCore.MvcControllers
         [OutputCache(Duration = 900)]
         public virtual ContentResult Robotstxt()
         {
-            var fileContent = SxMvcApplication<TDbContext>.SiteSettingsProvider.Get(Settings.robotsFileSetting);
+            var fileContent = SxMvcApplication.SiteSettingsProvider.Get(Settings.robotsFileSetting);
             if (fileContent != null)
                 return Content(fileContent.Value, "text/plain", Encoding.UTF8);
             else return null;

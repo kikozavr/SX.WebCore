@@ -10,7 +10,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoBannedUrl<TDbContext> : SxDbRepository<int, SxBannedUrl, TDbContext, SxVMBannedUrl> where TDbContext : SxDbContext
+    public sealed class SxRepoBannedUrl : SxDbRepository<int, SxBannedUrl, SxVMBannedUrl>
     {
         public override SxBannedUrl Create(SxBannedUrl model)
         {

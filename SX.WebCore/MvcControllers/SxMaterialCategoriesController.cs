@@ -11,12 +11,11 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxMaterialCategoriesController<TViewModel, TDbContext> : SxBaseController<TDbContext>
-        where TDbContext: SxDbContext
+    public abstract class SxMaterialCategoriesController<TViewModel> : SxBaseController
         where TViewModel : class, IHierarchy<TViewModel>
     {
-        private static SxRepoMaterialCategory<TDbContext> _repo=new SxRepoMaterialCategory<TDbContext>();
-        public static SxRepoMaterialCategory<TDbContext> Repo
+        private static SxRepoMaterialCategory _repo=new SxRepoMaterialCategory();
+        public static SxRepoMaterialCategory Repo
         {
             get { return _repo; }
             set { _repo = value; }

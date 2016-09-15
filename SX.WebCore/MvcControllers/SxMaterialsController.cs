@@ -15,10 +15,9 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public abstract class SxMaterialsController<TModel, TViewModel, TDbContext> : SxBaseController<TDbContext>
+    public abstract class SxMaterialsController<TModel, TViewModel> : SxBaseController
         where TModel : SxMaterial
         where TViewModel : SxVMMaterial, new()
-        where TDbContext : SxDbContext
     {
         private static ModelCoreType _mct;
         protected static ModelCoreType ModelCoreType
@@ -29,8 +28,8 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
-        private static SxRepoMaterial<TModel, TViewModel, TDbContext> _repo;
-        public static SxRepoMaterial<TModel, TViewModel, TDbContext> Repo
+        private static SxRepoMaterial<TModel, TViewModel> _repo;
+        public static SxRepoMaterial<TModel, TViewModel> Repo
         {
             get { return _repo; }
             set { _repo = value; }
@@ -136,7 +135,7 @@ namespace SX.WebCore.MvcControllers
             if(!string.IsNullOrEmpty(cat))
             {
                 filter.CategoryId = cat;
-                var category = SxMaterialCategoriesController<SxVMMaterialCategory, TDbContext>.Repo.GetByKey(cat);
+                var category = SxMaterialCategoriesController<SxVMMaterialCategory>.Repo.GetByKey(cat);
                 ViewBag.Category = Mapper.Map<SxMaterialCategory, SxVMMaterialCategory>(category);
             }
 
@@ -144,7 +143,7 @@ namespace SX.WebCore.MvcControllers
             var tag = Request.QueryString.Get("tag");
             if (!string.IsNullOrEmpty(tag))
             {
-                filter.Tag = SxMaterialTagsController<TDbContext>.Repo.GetByKey(tag, _mct);
+                filter.Tag = SxMaterialTagsController.Repo.GetByKey(tag, _mct);
                 ViewBag.Tag = Mapper.Map<SxMaterialTag, SxVMMaterialTag>(filter.Tag);
             }
 
@@ -251,12 +250,12 @@ namespace SX.WebCore.MvcControllers
             return PartialView("_LikeMaterials", viewModel);
         }
 
-        [HttpGet, NotLogRequest]
+        [ChildActionOnly]
         public virtual PartialViewResult ByDateMaterial(int mid, ModelCoreType mct, bool dir = false, int amount = 3)
         {
             var viewModel = _repo.GetByDateMaterials(mid, mct, dir, amount);
             ViewBag.ModelCoreType = mct;
-            return PartialView("ByDateMaterial", viewModel);
+            return PartialView("_ByDateMaterial", viewModel);
         }
 
 #if !DEBUG

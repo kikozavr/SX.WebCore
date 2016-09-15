@@ -6,10 +6,10 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [AllowAnonymous]
-    public abstract class SxFAQController<TDbContext>:SxBaseController<TDbContext> where TDbContext: SxDbContext
+    public abstract class SxFAQController : SxBaseController
     {
-        private static SxRepoManual<TDbContext> _repo=new SxRepoManual<TDbContext>();
-        public static SxRepoManual<TDbContext> Repo
+        private static SxRepoManual _repo=new SxRepoManual();
+        public static SxRepoManual Repo
         {
             get { return _repo; }
             set { _repo = value; }

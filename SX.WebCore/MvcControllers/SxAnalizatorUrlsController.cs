@@ -4,11 +4,10 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
-    public abstract class SxAnalizatorUrlsController<TDbContext> : SxBaseController<TDbContext>
-        where TDbContext : SxDbContext
+    public abstract class SxAnalizatorUrlsController : SxBaseController
     {
-        private static SxRepoAnalizatorUrl<TDbContext> _repo = new SxRepoAnalizatorUrl<TDbContext>();
-        public static SxRepoAnalizatorUrl<TDbContext> Repo
+        private static SxRepoAnalizatorUrl _repo = new SxRepoAnalizatorUrl();
+        public static SxRepoAnalizatorUrl Repo
         {
             get { return _repo; }
             set { _repo = value; }

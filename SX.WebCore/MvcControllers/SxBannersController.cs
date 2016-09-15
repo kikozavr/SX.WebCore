@@ -13,11 +13,11 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles ="admin")]
-    public abstract class SxBannersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxBannersController : SxBaseController
     {
         private static int _pageSize = 20;
-        private static SxRepoBanner<TDbContext> _repo=new SxRepoBanner<TDbContext>();
-        public static SxRepoBanner<TDbContext> Repo
+        private static SxRepoBanner _repo=new SxRepoBanner();
+        public static SxRepoBanner Repo
         {
             get { return _repo; }
             set { _repo = value; }
@@ -93,7 +93,7 @@ namespace SX.WebCore.MvcControllers
             else
             {
                 if (model.PictureId.HasValue)
-                    model.Picture = Mapper.Map<SxPicture, SxVMPicture>(SxPicturesController<TDbContext>.Repo.GetByKey(model.PictureId));
+                    model.Picture = Mapper.Map<SxPicture, SxVMPicture>(SxPicturesController.Repo.GetByKey(model.PictureId));
 
                 return View(model);
             }

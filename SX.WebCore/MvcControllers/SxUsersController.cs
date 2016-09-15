@@ -15,10 +15,10 @@ using System.Threading.Tasks;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxUsersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxUsersController : SxBaseController
     {
-        private static SxRepoAppUser<TDbContext> _repo=new SxRepoAppUser<TDbContext>();
-        public static SxRepoAppUser<TDbContext> Repo
+        private static SxRepoAppUser _repo=new SxRepoAppUser();
+        public static SxRepoAppUser Repo
         {
             get { return _repo; }
             set { _repo = value; }
@@ -88,7 +88,7 @@ namespace SX.WebCore.MvcControllers
         private void fillUserStatuses(SxVMAppUser[] users)
         {
             SxVMAppUser item = null;
-            var usersOnSite = SxMvcApplication<TDbContext>.UsersOnSite;
+            var usersOnSite = SxMvcApplication.UsersOnSite;
             if (!usersOnSite.Any()) return;
 
             for (int i = 0; i < users.Length; i++)
@@ -101,7 +101,7 @@ namespace SX.WebCore.MvcControllers
         [HttpGet, AllowAnonymous]
         public PartialViewResult UsersOnSite()
         {
-            var emails = SxMvcApplication<TDbContext>.UsersOnSite.Select(x => x.Value).Distinct().ToArray();
+            var emails = SxMvcApplication.UsersOnSite.Select(x => x.Value).Distinct().ToArray();
             var data = _repo.GetUsersByEmails(emails);
             var viewModel = data.Select(x => Mapper.Map<SxAppUser, SxVMAppUser>(x)).ToArray();
 
@@ -130,8 +130,8 @@ namespace SX.WebCore.MvcControllers
                 AvatarId = data.AvatarId,
                 Email = data.Email,
                 NikName = data.NikName,
-                IsOnline = SxMvcApplication<TDbContext>.UsersOnSite.ContainsValue(data.UserName),
-                IsEmployee = SxEmployeesController<TDbContext>.Repo.GetByKey(data.Id)!=null,
+                IsOnline = SxMvcApplication.UsersOnSite.ContainsValue(data.UserName),
+                IsEmployee = SxEmployeesController.Repo.GetByKey(data.Id)!=null,
                 Description=data.Description
             };
 
@@ -148,12 +148,12 @@ namespace SX.WebCore.MvcControllers
         private void addEmployee(SxVMAppUser model)
         {
             var redactModel = Mapper.Map<SxVMAppUser, SxEmployee>(model);
-            var data = SxEmployeesController<TDbContext>.Repo.Create(redactModel);
+            var data = SxEmployeesController.Repo.Create(redactModel);
         }
 
         public void delEmployee(SxVMAppUser model)
         {
-            SxEmployeesController<TDbContext>.Repo.Delete(new SxEmployee { Id=model.Id });
+            SxEmployeesController.Repo.Delete(new SxEmployee { Id=model.Id });
         }
 
         [HttpPost, ValidateAntiForgeryToken]

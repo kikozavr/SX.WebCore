@@ -9,11 +9,11 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxBannerGroupsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxBannerGroupsController : SxBaseController
     {
         private static int _pageSize = 20;
-        private static SxRepoBannerGroup<TDbContext> _repo=new SxRepoBannerGroup<TDbContext>();
-        public static SxRepoBannerGroup<TDbContext> Repo
+        private static SxRepoBannerGroup _repo=new SxRepoBannerGroup();
+        public static SxRepoBannerGroup Repo
         {
             get { return _repo; }
             set { _repo = value; }
@@ -110,7 +110,7 @@ namespace SX.WebCore.MvcControllers
 
             var filter = new SxFilter(1, 20) { WhereExpressionObject = new SxVMBanner { BannerGroupId = bgid }, AddintionalInfo=new object[] { true } };
 
-            var viewModel = await SxBannersController<TDbContext>.Repo.ReadAsync(filter);
+            var viewModel = await SxBannersController.Repo.ReadAsync(filter);
             
             ViewBag.PagerInfo = filter.PagerInfo;
             ViewBag.BannerGroupId = bgid;

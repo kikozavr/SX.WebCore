@@ -10,7 +10,7 @@ namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
     [SessionState(SessionStateBehavior.Default)]
-    public abstract class SxSeoWordCounterController<TDbContext> :SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxSeoWordCounterController :SxBaseController
     {
         private ISxSeoWordCounter _counter;
 

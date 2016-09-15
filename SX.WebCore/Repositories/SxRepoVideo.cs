@@ -12,7 +12,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoVideo<TDbContext> : SxDbRepository<Guid, SxVideo, TDbContext, SxVMVideo> where TDbContext : SxDbContext
+    public class SxRepoVideo : SxDbRepository<Guid, SxVideo, SxVMVideo>
     {
         public override SxVMVideo[] Read(SxFilter filter)
         {

@@ -8,7 +8,7 @@ using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoManual<TDbContext> : SxRepoMaterial<SxManual, SxVMMaterial, TDbContext> where TDbContext: SxDbContext
+    public class SxRepoManual : SxRepoMaterial<SxManual, SxVMMaterial>
     {
         public SxRepoManual() : base(Enums.ModelCoreType.Manual) { }
 

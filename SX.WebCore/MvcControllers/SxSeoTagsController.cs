@@ -9,10 +9,10 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles ="seo")]
-    public abstract class SxSeoTagsController<TDbContext>: SxBaseController<TDbContext> where TDbContext: SxDbContext
+    public abstract class SxSeoTagsController: SxBaseController
     {
-        private static SxRepoSeoTags<TDbContext> _repo=new SxRepoSeoTags<TDbContext>();
-        public static SxRepoSeoTags<TDbContext> Repo
+        private static SxRepoSeoTags _repo=new SxRepoSeoTags();
+        public static SxRepoSeoTags Repo
         {
             get { return _repo; }
             set { _repo = value; }

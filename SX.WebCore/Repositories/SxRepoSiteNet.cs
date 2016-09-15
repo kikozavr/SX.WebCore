@@ -11,7 +11,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoSiteNet<TDbContext> : SxDbRepository<int, SxSiteNet, TDbContext, SxVMSiteNet> where TDbContext : SxDbContext
+    public sealed class SxRepoSiteNet : SxDbRepository<int, SxSiteNet, SxVMSiteNet>
     {
         public override SxSiteNet Create(SxSiteNet model)
         {

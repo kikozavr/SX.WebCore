@@ -9,8 +9,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoAppRole<TDbContext>: SxDbRepository<string, SxAppRole, TDbContext, SxVMAppRole>
-        where TDbContext: SxDbContext
+    public sealed class SxRepoAppRole : SxDbRepository<string, SxAppRole, SxVMAppRole>
     {
         public override SxVMAppRole[] Read(SxFilter filter)
         {

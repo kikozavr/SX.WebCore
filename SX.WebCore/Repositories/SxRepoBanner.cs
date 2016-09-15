@@ -12,7 +12,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoBanner<TDbContext> : SxDbRepository<Guid, SxBanner, TDbContext, SxVMBanner> where TDbContext : SxDbContext
+    public sealed class SxRepoBanner : SxDbRepository<Guid, SxBanner, SxVMBanner>
     {
         public override SxVMBanner[] Read(SxFilter filter)
         {

@@ -12,7 +12,7 @@ using System.Linq;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public abstract class SxUserRolesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxUserRolesController : SxBaseController
     {
         private static int _rolePageSize = 10;
 
@@ -29,8 +29,8 @@ namespace SX.WebCore.MvcControllers
             }
         }
 
-        private static SxRepoAppRole<SxDbContext> _repo=new SxRepoAppRole<SxDbContext>();
-        public static SxRepoAppRole<SxDbContext> Repo
+        private static SxRepoAppRole _repo=new SxRepoAppRole();
+        public static SxRepoAppRole Repo
         {
             get { return _repo; }
             set { _repo = value; }

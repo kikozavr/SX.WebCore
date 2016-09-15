@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoSiteSetting<TDbContext> : SxDbRepository<string, SxSiteSetting, TDbContext, SxVMSiteSetting> where TDbContext : SxDbContext
+    public class SxRepoSiteSetting : SxDbRepository<string, SxSiteSetting, SxVMSiteSetting>
     {
         public override SxSiteSetting GetByKey(params object[] id)
         {

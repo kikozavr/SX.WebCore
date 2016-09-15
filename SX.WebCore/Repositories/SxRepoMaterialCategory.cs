@@ -10,8 +10,7 @@ using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoMaterialCategory<TDbContext> : SxDbRepository<string, SxMaterialCategory, TDbContext, SxVMMaterialCategory>
-        where TDbContext : SxDbContext
+    public class SxRepoMaterialCategory : SxDbRepository<string, SxMaterialCategory, SxVMMaterialCategory>
     {
         public override SxMaterialCategory Create(SxMaterialCategory model)
         {

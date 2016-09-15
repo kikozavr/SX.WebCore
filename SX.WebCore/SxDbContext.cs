@@ -1,20 +1,13 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using SX.WebCore.Abstract;
-using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 
 namespace SX.WebCore
 {
-    public class SxDbContext : IdentityDbContext<SxAppUser>
+    public partial class SxDbContext : IdentityDbContext<SxAppUser>
     {
         public SxDbContext(string connectionString) : base(connectionString, throwIfV1Schema: false) { }
-
-        public static TDbContext Create<TDbContext>()
-        {
-            var context = Activator.CreateInstance<TDbContext>();
-            return context;
-        }
 
         public DbSet<SxAnalizatorSession> AnalizerSessions { get; set; }
 

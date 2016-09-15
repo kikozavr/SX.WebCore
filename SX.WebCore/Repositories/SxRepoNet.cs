@@ -10,7 +10,7 @@ using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoNet<TDbContext> : SxDbRepository<int, SxNet, TDbContext, SxVMNet> where TDbContext : SxDbContext
+    public sealed class SxRepoNet : SxDbRepository<int, SxNet, SxVMNet>
     {
         public override SxVMNet[] Read(SxFilter filter)
         {

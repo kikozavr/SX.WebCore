@@ -17,16 +17,16 @@ using System.Web.SessionState;
 namespace SX.WebCore.MvcControllers
 {
     [SessionState(SessionStateBehavior.Disabled)]
-    public abstract class SxBaseController<TDbContext> : Controller where TDbContext : SxDbContext
+    public abstract class SxBaseController : Controller
     {
         protected static IMapper Mapper { get; set; }
 
-        protected static Action<SxBaseController<TDbContext>> WriteBreadcrumbs { get; set; }
+        protected static Action<SxBaseController> WriteBreadcrumbs { get; set; }
 
         public SxBaseController()
         {
             if (Mapper == null)
-                Mapper = SxMvcApplication<TDbContext>.MapperConfiguration.CreateMapper();
+                Mapper = SxMvcApplication.MapperConfiguration.CreateMapper();
         }
 
         public string SxAreaName { get; set; }
@@ -56,7 +56,7 @@ namespace SX.WebCore.MvcControllers
             //забаненные адреса
             if (SxUrlReferrer != null)
             {
-                if (SxMvcApplication<TDbContext>.GetBannedUrls().Contains(SxUrlReferrer.ToString()))
+                if (SxMvcApplication.GetBannedUrls().Contains(SxUrlReferrer.ToString()))
                 {
                     filterContext.Result = new HttpStatusCodeResult(403);
                     return;
@@ -100,11 +100,11 @@ namespace SX.WebCore.MvcControllers
         private SxRedirect get301Redirect(CacheItemPolicy cip = null)
         {
             cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
-            var redirect = (SxRedirect)SxMvcApplication<TDbContext>.AppCache["CACHE_REDIRECT_" + SxRawUrl];
+            var redirect = (SxRedirect)SxMvcApplication.AppCache["CACHE_REDIRECT_" + SxRawUrl];
             if (redirect == null)
             {
-                redirect = SxRedirectsController<TDbContext>.Repo.GetPageRedirect(SxRawUrl);
-                SxMvcApplication<TDbContext>.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect ?? new SxRedirect { OldUrl=SxRawUrl, NewUrl=null }, cip);
+                redirect = SxRedirectsController.Repo.GetPageRedirect(SxRawUrl);
+                SxMvcApplication.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect ?? new SxRedirect { OldUrl=SxRawUrl, NewUrl=null }, cip);
             }
 
             return redirect;
@@ -112,11 +112,11 @@ namespace SX.WebCore.MvcControllers
 
         private SxSeoTags getPageSeoTags(CacheItemPolicy cip = null)
         {
-            var seoTags = (SxSeoTags)SxMvcApplication<TDbContext>.AppCache["CACHE_SEOTAGS_" + SxRawUrl];
+            var seoTags = (SxSeoTags)SxMvcApplication.AppCache["CACHE_SEOTAGS_" + SxRawUrl];
             if (seoTags == null)
             {
-                seoTags = SxSeoTagsController<TDbContext>.Repo.GetSeoTags(SxRawUrl);
-                SxMvcApplication<TDbContext>.AppCache.Add("CACHE_SEOTAGS_" + SxRawUrl, seoTags, cip);
+                seoTags = SxSeoTagsController.Repo.GetSeoTags(SxRawUrl);
+                SxMvcApplication.AppCache.Add("CACHE_SEOTAGS_" + SxRawUrl, seoTags, cip);
             }
             return seoTags;
         }
@@ -158,14 +158,14 @@ namespace SX.WebCore.MvcControllers
                     SessionId = identityCookie,
                     UserAgent = Request.UserAgent
                 };
-                SxRequestsController<TDbContext>.Repo.Create(requestInstance);
+                SxRequestsController.Repo.Create(requestInstance);
             });
         }
 
         private void writePageBanners()
         {
             var rawUrl = Request.RawUrl;
-            ViewBag.PageBanners = SxMvcApplication<TDbContext>.BannerProvider.GetPageBanners(rawUrl);
+            ViewBag.PageBanners = SxMvcApplication.BannerProvider.GetPageBanners(rawUrl);
         }
 
         private static readonly string _affiliateCookieName = ConfigurationManager.AppSettings["AffiliateCookieName"];
@@ -182,7 +182,7 @@ namespace SX.WebCore.MvcControllers
             if (!Guid.TryParse(ak, out akGuid)) return;
 
             if (!string.IsNullOrEmpty(ak))
-                SxAffiliateLinksController<TDbContext>.Repo.AddViewAsync(akGuid);
+                SxAffiliateLinksController.Repo.AddViewAsync(akGuid);
 
             if (cookies == null && !string.IsNullOrEmpty(ak))
             {

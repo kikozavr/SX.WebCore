@@ -13,7 +13,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public class SxRepoPicture<TDbContext> : SxDbRepository<Guid, SxPicture, TDbContext, SxVMPicture> where TDbContext : SxDbContext
+    public class SxRepoPicture : SxDbRepository<Guid, SxPicture, SxVMPicture>
     {
         public override SxVMPicture[] Read(SxFilter filter)
         {

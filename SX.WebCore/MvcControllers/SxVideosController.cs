@@ -9,10 +9,10 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "video-redactor")]
-    public abstract class SxVideosController<TDbContext> : SxBaseController<TDbContext> where TDbContext: SxDbContext
+    public abstract class SxVideosController : SxBaseController
     {
-        private static SxRepoVideo<TDbContext> _repo=new SxRepoVideo<TDbContext>();
-        public static SxRepoVideo<TDbContext> Repo
+        private static SxRepoVideo _repo=new SxRepoVideo();
+        public static SxRepoVideo Repo
         {
             get { return _repo; }
             set { _repo = value; }

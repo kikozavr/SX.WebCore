@@ -15,8 +15,7 @@ using Newtonsoft.Json;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize]
-    public abstract class SxAccountController<TDbContext> : SxBaseController<TDbContext>
-        where TDbContext : SxDbContext
+    public abstract class SxAccountController : SxBaseController
     {
         public SxAppSignInManager SignInManager
         {
@@ -76,7 +75,7 @@ namespace SX.WebCore.MvcControllers
         {
             var date = DateTime.Now;
             var identityCookie = IdentityCookieValue;
-            var usersOnSite = SxMvcApplication<TDbContext>.UsersOnSite;
+            var usersOnSite = SxMvcApplication.UsersOnSite;
             if (!usersOnSite.ContainsKey(identityCookie))
                 usersOnSite.Add(identityCookie, model.Email);
             else
@@ -95,7 +94,7 @@ namespace SX.WebCore.MvcControllers
         private async Task addStatisticUserLoginAsync(DateTime date, string email)
         {
             var user = await UserManager.FindByEmailAsync(email);
-            SxStatisticsController<TDbContext>.Repo.CreateStatisticUserLogin(date, user.Id);
+            SxStatisticsController.Repo.CreateStatisticUserLogin(date, user.Id);
 
             var context = Microsoft.AspNet.SignalR.GlobalHost.ConnectionManager.GetHubContext<SxChatHub>();
             var json = JsonConvert.SerializeObject(Mapper.Map<SxAppUser, SxVMAppUser>(user));
@@ -413,7 +412,7 @@ namespace SX.WebCore.MvcControllers
         private void unregisterLoginUser()
         {
             var identityCookie = IdentityCookieValue;
-            var usersOnSite = SxMvcApplication<TDbContext>.UsersOnSite;
+            var usersOnSite = SxMvcApplication.UsersOnSite;
             if (usersOnSite.ContainsKey(identityCookie))
             {
                 var email = usersOnSite[identityCookie];

@@ -16,7 +16,7 @@ using SX.WebCore.MvcControllerFactory;
 
 namespace SX.WebCore.MvcApplication
 {
-    public abstract class SxMvcApplication<TDbContext> : HttpApplication where TDbContext : SxDbContext
+    public abstract class SxMvcApplication : HttpApplication
     {
         private static readonly string _logDirectoryPath = "~/logs";
         public static DateTime LastStartDate { get; set; }
@@ -33,8 +33,8 @@ namespace SX.WebCore.MvcApplication
             {
                 cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes:60);
                 cacheBanners = new SxVMBannerCollection();
-                cacheBanners.Banners = SxBannersController<TDbContext>.Repo.All;
-                cacheBanners.BannerGroups = SxBannerGroupsController<TDbContext>.Repo.All;
+                cacheBanners.Banners = SxBannersController.Repo.All;
+                cacheBanners.BannerGroups = SxBannerGroupsController.Repo.All;
 
                 AppCache.Add("CACHE_SITE_BANNERS", cacheBanners, cip);
             }
@@ -49,7 +49,7 @@ namespace SX.WebCore.MvcApplication
             if (data == null)
             {
                 cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
-                data = SxSiteSettingsController<TDbContext>.Repo.GetAll();
+                data = SxSiteSettingsController.Repo.GetAll();
                 AppCache.Add("CACHE_SITE_SETTINGS", data, cip);
             }
 
@@ -63,7 +63,7 @@ namespace SX.WebCore.MvcApplication
             if (data == null)
             {
                 cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
-                data = SxBannedUrlsController<TDbContext>.Repo.GetAllUrls();
+                data = SxBannedUrlsController.Repo.GetAllUrls();
                 AppCache.Add("CACHE_SITE_BANNED_URL", data, cip);
             }
 
@@ -77,7 +77,7 @@ namespace SX.WebCore.MvcApplication
                 var list = (SxShareButton[])AppCache.Get("CACHE_LIKE_BUTTONS");
                 if (list == null)
                 {
-                    list = SxShareButtonsController<TDbContext>.Repo.ShareButtonsList;
+                    list = SxShareButtonsController.Repo.ShareButtonsList;
                     AppCache.Add("CACHE_LIKE_BUTTONS", list, SxCacheExpirationManager.GetExpiration(minutes: 60));
                 }
                 return list;
@@ -105,7 +105,7 @@ namespace SX.WebCore.MvcApplication
             var data = (SxVMSiteNet[])AppCache["CACHE_SITE_NETS"];
             if (data == null)
             {
-                data = SxSiteNetsController<TDbContext>.Repo.SiteNets;
+                data = SxSiteNetsController.Repo.SiteNets;
                 AppCache.Add("CACHE_SITE_NETS", data, SxCacheExpirationManager.GetExpiration(minutes: 60));
             }
 
@@ -127,7 +127,7 @@ namespace SX.WebCore.MvcApplication
             SiteNetsProvider = new SxSiteNetProvider(getSiteNets);
 
             AreaRegistration.RegisterAllAreas();
-            ControllerBuilder.Current.SetControllerFactory(new SxControllerFactory<TDbContext>());
+            ControllerBuilder.Current.SetControllerFactory(new SxControllerFactory());
             GlobalConfiguration.Configure(args.WebApiConfigRegister);
             SxRouteConfig.RegisterRoutes(RouteTable.Routes, args.DefaultControllerNamespaces, args.PreRouteAction, args.PostRouteAction);
 

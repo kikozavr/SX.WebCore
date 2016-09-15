@@ -6,7 +6,7 @@ using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoComment<TDbContext> : SxDbRepository<int, SxComment, TDbContext, SxVMComment> where TDbContext: SxDbContext
+    public sealed class SxRepoComment : SxDbRepository<int, SxComment, SxVMComment>
     {
         public override SxVMComment[] Read(SxFilter filter)
         {

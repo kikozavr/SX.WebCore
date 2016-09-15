@@ -10,7 +10,7 @@ using System;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoMaterialTag<TDbContext> : SxDbRepository<string, SxMaterialTag, TDbContext, SxVMMaterialTag> where TDbContext : SxDbContext
+    public sealed class SxRepoMaterialTag : SxDbRepository<string, SxMaterialTag, SxVMMaterialTag>
     {
         public override SxMaterialTag Create(SxMaterialTag model)
         {

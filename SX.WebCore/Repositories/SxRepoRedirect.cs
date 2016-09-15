@@ -10,7 +10,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepoRedirect<TDbContext> : SxDbRepository<Guid, SxRedirect, TDbContext, SxVMRedirect> where TDbContext : SxDbContext
+    public sealed class SxRepoRedirect : SxDbRepository<Guid, SxRedirect, SxVMRedirect>
     {
         /// <summary>
         /// Добавить редирект страницы

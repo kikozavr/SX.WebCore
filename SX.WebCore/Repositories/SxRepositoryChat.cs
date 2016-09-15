@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using SX.WebCore.MvcApplication;
 using SX.WebCore.ViewModels;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace SX.WebCore.Repositories
 {
-    public sealed class SxRepositoryChat<TDbContext> where TDbContext : SxDbContext
+    public sealed class SxRepositoryChat
     {
         public SxVMAppUser[] OnlineUsers
         {
@@ -15,7 +16,7 @@ namespace SX.WebCore.Repositories
             {
                 var connStr = ConfigurationManager.ConnectionStrings["DbContext"].ConnectionString;
                 if (connStr == null) return new SxVMAppUser[0];
-                var values = MvcApplication.SxMvcApplication<TDbContext>.UsersOnSite.Values;
+                var values = SxMvcApplication.UsersOnSite.Values;
                 if (values.Count == 0) return new SxVMAppUser[0];
 
                 var sb = new StringBuilder();

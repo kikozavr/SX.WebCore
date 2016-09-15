@@ -12,7 +12,7 @@ using System.Linq;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public class SxUserRolesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxUserRolesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static int _rolePageSize = 10;
 

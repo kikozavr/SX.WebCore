@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace SX.WebCore.MvcControllers
 {
-    public class SxValutesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxValutesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static readonly int _pageSize = 15;
 

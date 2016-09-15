@@ -9,7 +9,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
-    public class SxRedirectsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxRedirectsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoRedirect<TDbContext> _repo=new SxRepoRedirect<TDbContext>();
         public static SxRepoRedirect<TDbContext> Repo

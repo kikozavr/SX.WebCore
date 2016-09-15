@@ -4,7 +4,8 @@ using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
-    public class SxAnalizatorController<TDbContext> : SxBaseController<TDbContext>
+    [Authorize(Roles = "seo")]
+    public abstract class SxAnalizatorController<TDbContext> : SxBaseController<TDbContext>
         where TDbContext : SxDbContext
     {
         private static readonly int _pageSize = 20;

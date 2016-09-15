@@ -8,7 +8,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public class SxShareButtonsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxShareButtonsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoShareButton<TDbContext> _repo=new SxRepoShareButton<TDbContext>();
         public static SxRepoShareButton<TDbContext> Repo

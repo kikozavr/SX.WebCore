@@ -15,7 +15,8 @@ using Newtonsoft.Json;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize]
-    public class SxAccountController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxAccountController<TDbContext> : SxBaseController<TDbContext>
+        where TDbContext : SxDbContext
     {
         public SxAppSignInManager SignInManager
         {

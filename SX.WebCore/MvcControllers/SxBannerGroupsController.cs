@@ -9,7 +9,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public class SxBannerGroupsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxBannerGroupsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static int _pageSize = 20;
         private static SxRepoBannerGroup<TDbContext> _repo=new SxRepoBannerGroup<TDbContext>();

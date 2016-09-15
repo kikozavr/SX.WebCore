@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public class SxUsersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxUsersController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoAppUser<TDbContext> _repo=new SxRepoAppUser<TDbContext>();
         public static SxRepoAppUser<TDbContext> Repo

@@ -4,19 +4,15 @@ using SX.WebCore.Repositories;
 using SX.WebCore.Resources;
 using SX.WebCore.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "seo")]
-    public class SxSeoController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxSeoController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         public static SxRepoSiteSetting<TDbContext> _repo = new SxRepoSiteSetting<TDbContext>();
         public static SxRepoSiteSetting<TDbContext> Repo

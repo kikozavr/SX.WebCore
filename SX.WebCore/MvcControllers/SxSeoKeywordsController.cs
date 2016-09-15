@@ -7,7 +7,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public class SxSeoKeywordsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxSeoKeywordsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoSeoKeyword<TDbContext> _repo=new SxRepoSeoKeyword<TDbContext>();
         public static SxRepoSeoKeyword<TDbContext> Repo

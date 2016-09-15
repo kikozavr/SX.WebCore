@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
-    public class SxErrorsController : Controller
+    public abstract class SxErrorsController : Controller
     {
         public ActionResult NotFound()
         {

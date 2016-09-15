@@ -10,7 +10,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "photo-redactor")]
-    public class SxPictureLinksController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxPictureLinksController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoPicture<TDbContext> _repo=new SxRepoPicture<TDbContext>();
         public static SxRepoPicture<TDbContext> Repo

@@ -8,7 +8,8 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public class SxAffiliateLinksController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxAffiliateLinksController<TDbContext> : SxBaseController<TDbContext>
+        where TDbContext : SxDbContext
     {
         private static SxRepoAffiliateLink<TDbContext> _repo = new SxRepoAffiliateLink<TDbContext>();
         public static SxRepoAffiliateLink<TDbContext> Repo

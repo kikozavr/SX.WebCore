@@ -14,7 +14,8 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    internal sealed class SxAnalizatorSessionsController<TDbContext> : SxBaseController<TDbContext>
+    [Authorize(Roles="seo")]
+    public abstract class SxAnalizatorSessionsController<TDbContext> : SxBaseController<TDbContext>
         where TDbContext : SxDbContext
     {
         private static SxRepoAnalizatorSession<TDbContext> _repo = new SxRepoAnalizatorSession<TDbContext>();

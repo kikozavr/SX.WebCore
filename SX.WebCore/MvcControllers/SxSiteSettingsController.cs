@@ -8,7 +8,7 @@ using System.Web.Mvc;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "admin")]
-    public class SxSiteSettingsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxSiteSettingsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private const string __notSetSettingValue = "Настройка не определена";
 

@@ -7,7 +7,7 @@ using static SX.WebCore.Enums;
 
 namespace SX.WebCore.MvcControllers
 {
-    public class SxCommentsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxCommentsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoComment<TDbContext> _repo = new SxRepoComment<TDbContext>();
         public static SxRepoComment<TDbContext> Repo

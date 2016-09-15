@@ -9,7 +9,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 namespace SX.WebCore.MvcControllers
 {
     [Authorize(Roles = "smm")]
-    public class SxSiteNetsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxSiteNetsController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoSiteNet<TDbContext> _repo=new SxRepoSiteNet<TDbContext>();
         public static SxRepoSiteNet<TDbContext> Repo

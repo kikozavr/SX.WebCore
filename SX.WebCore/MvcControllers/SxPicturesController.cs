@@ -3,12 +3,10 @@ using SX.WebCore.Providers;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -17,7 +15,7 @@ using static SX.WebCore.HtmlHelpers.SxExtantions;
 
 namespace SX.WebCore.MvcControllers
 {
-    public class SxPicturesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
+    public abstract class SxPicturesController<TDbContext> : SxBaseController<TDbContext> where TDbContext : SxDbContext
     {
         private static SxRepoPicture<TDbContext> _repo = new SxRepoPicture<TDbContext>();
         public static SxRepoPicture<TDbContext> Repo

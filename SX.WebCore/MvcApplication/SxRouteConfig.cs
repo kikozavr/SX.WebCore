@@ -39,6 +39,7 @@ namespace SX.WebCore.MvcApplication
                 name: null,
                 url: "{controller}/{year}/{month}/{day}/{titleUrl}",
                 defaults: new { controller = "Articles", action = "Details", area = "" },
+                constraints: new { year = @"\d{4}" },
                 namespaces: dafaultNamespaces
             );
 

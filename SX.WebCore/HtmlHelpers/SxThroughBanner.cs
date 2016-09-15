@@ -1,11 +1,12 @@
-﻿using System;
+﻿using SX.WebCore.ViewModels;
+using System;
 using System.Web.Mvc;
 
 namespace SX.WebCore.HtmlHelpers
 {
     public static partial class SxExtantions
     {
-        public static MvcHtmlString SxThroughBanner(this HtmlHelper htmlHelper, SxBanner banner, Func<SxBanner, string> FuncBannerImgUrl, Func<SxBanner, string> FuncBannerUrl)
+        public static MvcHtmlString SxThroughBanner(this HtmlHelper htmlHelper, SxVMBanner banner, Func<SxVMBanner, string> FuncBannerImgUrl, Func<SxVMBanner, string> FuncBannerUrl)
         {
             if (banner == null) return null;
 

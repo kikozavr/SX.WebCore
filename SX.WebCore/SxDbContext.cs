@@ -54,10 +54,6 @@ namespace SX.WebCore
 
         public DbSet<SxSiteSetting> SiteSettings { get; set; }
 
-        //public DbSet<SxSiteTest> SiteTests { get; set; }
-
-        //public DbSet<SxSiteTestQuestion> SiteTestQuestions { get; set; }
-
         public DbSet<SxStatistic> Statistic { get; set; }
 
         public DbSet<SxVideo> Videos { get; set; }
@@ -97,10 +93,6 @@ namespace SX.WebCore
             modelBuilder.Entity<SxBanner>().Property(x => x.TargetCost).HasColumnType("money");
             modelBuilder.Entity<SxBanner>().Property(x => x.CPM).HasColumnType("money");
             modelBuilder.Entity<SxAffiliateLink>().Property(x => x.ClickCost).HasColumnType("money");
-
-            //modelBuilder.Entity<SxSiteTestAnswer>().HasKey(x => new { x.QuestionId, x.SubjectId });
-            //modelBuilder.Entity<SxSiteTestAnswer>().HasRequired(x => x.Question).WithMany().WillCascadeOnDelete(false);
-            //modelBuilder.Entity<SxSiteTestAnswer>().HasRequired(x => x.Subject).WithMany().WillCascadeOnDelete(false);
 
             modelBuilder.Entity<SxAffiliateBannerView>().HasKey(x => new { x.BannerId, x.AffiliatelinkId }).Ignore(x => x.Id);
 

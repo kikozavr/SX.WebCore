@@ -2,7 +2,7 @@
 
 namespace SX.WebCore.ViewModels
 {
-    public sealed class SxVMSiteQuetion
+    public sealed class SxVMSiteQuestion
     {
         public int Id { get; set; }
 

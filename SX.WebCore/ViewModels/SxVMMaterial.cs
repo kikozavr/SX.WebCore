@@ -11,7 +11,7 @@ namespace SX.WebCore.ViewModels
     {
         public SxVMMaterial()
         {
-            Videos = new SxVideo[0];
+            Videos = new SxVMVideo[0];
             MaterialTags = new SxVMMaterialTag[0];
         }
 
@@ -50,7 +50,7 @@ namespace SX.WebCore.ViewModels
         public virtual SxVMMaterialCategory Category { get; set; }
         public string CategoryId { get; set; }
 
-        public SxVideo[] Videos { get; set; }
+        public SxVMVideo[] Videos { get; set; }
 
         public int LikeUpCount { get; set; }
 

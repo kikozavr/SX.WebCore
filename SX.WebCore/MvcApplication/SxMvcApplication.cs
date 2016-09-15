@@ -22,7 +22,6 @@ namespace SX.WebCore.MvcApplication
         public static DateTime LastStartDate { get; set; }
         public static MemoryCache AppCache { get; set; }
         public static SxErrorProvider ErrorProvider { get; set; }
-        public static bool LoggingRequest { get; set; }
         public static MapperConfiguration MapperConfiguration { get; set; }
 
         public static SxBannerProvider BannerProvider { get; set; }
@@ -122,7 +121,6 @@ namespace SX.WebCore.MvcApplication
             ErrorProvider = new SxErrorProvider(Server.MapPath(_logDirectoryPath));
 
             var args = (SxApplicationEventArgs)e;
-            LoggingRequest = args.LoggingRequest;
             MapperConfiguration = SxAutoMapperConfig.MapperConfigurationInstance(args.MapperConfigurationExpression);
             BannerProvider = new SxBannerProvider(()=>getBannerCollection());
             SiteSettingsProvider = new SxSiteSettingsProvider(() => getSiteSettings());
@@ -158,7 +156,6 @@ namespace SX.WebCore.MvcApplication
         public Action<HttpConfiguration> WebApiConfigRegister { get; set; }
 
         public Action<IMapperConfigurationExpression> MapperConfigurationExpression { get; set; }
-        public bool LoggingRequest { get; set; }
 
         //routes
         public string[] DefaultControllerNamespaces { get; set; }

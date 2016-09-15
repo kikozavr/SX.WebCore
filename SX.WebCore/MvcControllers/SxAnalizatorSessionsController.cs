@@ -74,7 +74,7 @@ namespace SX.WebCore.MvcControllers
                         set.Add(att.Value);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 return RedirectToAction("Index", "Analizator", new { messageCode = 1 }); //Ошибка создания сессии
             }

@@ -2,8 +2,6 @@
 using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using SX.WebCore.ViewModels;
-using System;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -135,7 +133,7 @@ namespace SX.WebCore.Repositories
                         data.SeoTags.Keywords = connection.Query<SxVMSeoKeyword>("dbo.get_page_seo_info_keywords @seoTagsId", new { seoTagsId = (int)data.SeoTagsId }).ToArray();
 
                     //videos
-                    data.Videos = connection.Query<SxVideo>("dbo.get_material_videos @mid, @mct", new { mid = data.Id, mct = data.ModelCoreType }).ToArray();
+                    data.Videos = connection.Query<SxVMVideo>("dbo.get_material_videos @mid, @mct", new { mid = data.Id, mct = data.ModelCoreType }).ToArray();
 
                     //cloud
                     data.MaterialTags = connection.Query<SxVMMaterialTag>("dbo.get_material_cloud @amount, @mid, @mct", new { amount = materialTagsCount, mid = data.Id, mct = data.ModelCoreType }).ToArray();

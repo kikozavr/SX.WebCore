@@ -87,11 +87,8 @@ namespace SX.WebCore.MvcControllers
             //пишем куки партнерок
             writeAffiliateCookies();
 
-            //пишем информацию о запросе
-            if (Equals(SxMvcApplication<TDbContext>.LoggingRequest, true))
-            {
-                writeRequestInfo(identityCookie);
-            }
+            //пишем информацию о запросе (не для админ area)
+            writeRequestInfo(identityCookie);
 
             base.OnActionExecuting(filterContext);
         }

@@ -116,6 +116,10 @@
       <HintPath>..\..\leavingrussia.ru\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="RazorGenerator.Mvc, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\..\leavingrussia.ru\packages\RazorGenerator.Mvc.2.4.7\lib\net40\RazorGenerator.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -166,11 +170,16 @@
       <HintPath>..\..\leavingrussia.ru\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\..\leavingrussia.ru\packages\WebActivatorEx.2.1.0\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\IHasLikes.cs" />
@@ -181,7 +190,404 @@
     <Compile Include="Abstract\ISxHasFrontPicture.cs" />
     <Compile Include="Abstract\ISxHasHtml.cs" />
     <Compile Include="Abstract\SxDbModel.cs" />
-    <Compile Include="Abstract\SxDbRepository.cs" />
+    <Compile Include="App_Start\RazorGeneratorMvcStart.cs" />
+    <Compile Include="Areas\Admin\Views\AffiliateLinks\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\AffiliateLinks\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\AffiliateLinks\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\BannedUrls\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\BannedUrls\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\BannedUrls\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\BannerGroups\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\BannerGroups\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\BannerGroups\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Banners\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Banners\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Banners\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Banners\_GroupBanners.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GroupBanners.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Home\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\MaterialCategories\Edit.generated.cs">
+      <DependentUpon>Edit.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\MaterialCategories\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\MaterialCategories\_TreeView.generated.cs">
+      <DependentUpon>_TreeView.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\MaterialCategories\_TreeViewEditable.generated.cs">
+      <DependentUpon>_TreeViewEditable.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\MaterialCategories\_TreeViewMenu.generated.cs">
+      <DependentUpon>_TreeViewMenu.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\MaterialTags\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Nets\Index.generated.cs">
+      <DependentUpon>Index.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Nets\_GridView.generated.cs">
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\PictureLinks\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\PictureLinks\_GridViewNotLinked.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridViewNotLinked.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Pictures\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Pictures\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Pictures\_FindGridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_FindGridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Pictures\_FreePictures.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_FreePictures.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Pictures\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Redirects\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Redirects\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Redirects\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Requests\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Requests\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SeoKeywords\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SeoTags\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SeoTags\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SeoTags\_EditForMaterial.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_EditForMaterial.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SeoTags\_GeneralEdit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GeneralEdit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SeoTags\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Seo\EditRobotsFile.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditRobotsFile.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\ShareButtons\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\ShareButtons\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\ShareButtons\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\EditorTemplates\Boolean.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Boolean.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\EditorTemplates\_EditDate.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_EditDate.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\EditorTemplates\_MaterialCategoryLookupGrid.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_MaterialCategoryLookupGrid.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\EditorTemplates\_PicturesLookupGrid.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_PicturesLookupGrid.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\_EditMaterial.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_EditMaterial.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\_GridMaterials.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridMaterials.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\_IndexMaterials.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_IndexMaterials.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\_Layout.generated.cs">
+      <DependentUpon>_Layout.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\_NotMaterialPictures.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_NotMaterialPictures.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Shared\_NotMaterialVideos.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_NotMaterialVideos.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SiteNets\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SiteNets\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SiteNets\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SiteSettings\EditSite.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>EditSite.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\SiteSettings\ReleaseNotes.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ReleaseNotes.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Statistics\UserLogins.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>UserLogins.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Statistics\_UserLoginsGridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_UserLoginsGridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\UserRoles\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\UserRoles\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\UserRoles\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Users\Edit.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Edit.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Users\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Users\_GridView.generated.cs">
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Users\_UserInfo.generated.cs">
+      <DependentUpon>_UserInfo.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Users\_UserReports.generated.cs">
+      <DependentUpon>_UserReports.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Users\_UserRoles.generated.cs">
+      <DependentUpon>_UserRoles.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Users\_UsersOnSite.generated.cs">
+      <DependentUpon>_UsersOnSite.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Valutes\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Valutes\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\VideoLinks\_GridView.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\VideoLinks\_GridViewNotLinked.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_GridViewNotLinked.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Videos\Edit.generated.cs">
+      <DependentUpon>Edit.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Videos\Index.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Index.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\Videos\_GridView.generated.cs">
+      <DependentUpon>_GridView.cshtml</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Include="Areas\Admin\Views\_ViewStart.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>_ViewStart.cshtml</DependentUpon>
+    </Compile>
+    <Compile Include="Providers\SxCacheProvider.cs" />
+    <Compile Include="Repositories\Abstract\SxDbRepository.cs" />
     <Compile Include="Abstract\SxDbUpdatedModel.cs" />
     <Compile Include="Attrubutes\NotEqualAttribute.cs" />
     <Compile Include="Extantions\ArrayExtantions.cs" />
@@ -263,7 +669,7 @@
     <Compile Include="HtmlHelpers\SxGridView.cs" />
     <Compile Include="MvcApplication\SxMvcApplication.cs" />
     <Compile Include="MvcControllers\SxAccountController.cs" />
-    <Compile Include="MvcControllers\SxBaseController.cs" />
+    <Compile Include="MvcControllers\Abstract\SxBaseController.cs" />
     <Compile Include="MvcControllers\SxPicturesController.cs" />
     <Compile Include="MvcControllers\SxLogsController.cs" />
     <Compile Include="HtmlHelpers\SxIndicatorGroup.cs" />
@@ -415,10 +821,331 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Admin\Views\AffiliateLinks\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\AffiliateLinks\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\AffiliateLinks\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\MaterialCategories\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\MaterialCategories\_TreeView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_TreeView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\MaterialCategories\_TreeViewEditable.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_TreeViewEditable.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\MaterialCategories\_TreeViewMenu.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_TreeViewMenu.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Nets\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Nets\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Pictures\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Pictures\_FindGridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_FindGridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Pictures\_FreePictures.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_FreePictures.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Pictures\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_Layout.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_Layout.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Users\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Users\_UserInfo.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_UserInfo.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Users\_UserReports.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_UserReports.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Users\_UserRoles.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_UserRoles.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Users\_UsersOnSite.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_UsersOnSite.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Videos\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Videos\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Areas\Admin\Views\BannedUrls\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\BannedUrls\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\BannedUrls\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\BannerGroups\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\BannerGroups\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\BannerGroups\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Banners\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Banners\_GroupBanners.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GroupBanners.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Banners\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Banners\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\MaterialTags\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\PictureLinks\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\PictureLinks\_GridViewNotLinked.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridViewNotLinked.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Pictures\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Requests\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Requests\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Redirects\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Redirects\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Redirects\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Seo\EditRobotsFile.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditRobotsFile.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SeoKeywords\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SeoTags\_EditForMaterial.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_EditForMaterial.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SeoTags\_GeneralEdit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GeneralEdit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SeoTags\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SeoTags\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SeoTags\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\MaterialCategories\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\ShareButtons\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\ShareButtons\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\ShareButtons\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SiteNets\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SiteNets\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SiteNets\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SiteSettings\EditSite.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>EditSite.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\SiteSettings\ReleaseNotes.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>ReleaseNotes.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Statistics\_UserLoginsGridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_UserLoginsGridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Statistics\UserLogins.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>UserLogins.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\UserRoles\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\UserRoles\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\UserRoles\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Users\Edit.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Edit.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Users\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Valutes\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Valutes\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\VideoLinks\_GridView.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridView.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\VideoLinks\_GridViewNotLinked.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridViewNotLinked.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Videos\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Home\Index.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Index.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\_ViewStart.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_ViewStart.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_NotMaterialPictures.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_NotMaterialPictures.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_NotMaterialVideos.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_NotMaterialVideos.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\EditorTemplates\Boolean.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>Boolean.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\EditorTemplates\_EditDate.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_EditDate.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\EditorTemplates\_MaterialCategoryLookupGrid.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_MaterialCategoryLookupGrid.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\EditorTemplates\_PicturesLookupGrid.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_PicturesLookupGrid.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_IndexMaterials.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_IndexMaterials.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_GridMaterials.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_GridMaterials.generated.cs</LastGenOutput>
+    </Content>
+    <Content Include="Areas\Admin\Views\Shared\_EditMaterial.cshtml">
+      <Generator>RazorGenerator</Generator>
+      <LastGenOutput>_EditMaterial.generated.cs</LastGenOutput>
+    </Content>
     <None Include="packages.config" />
     <None Include="Resources\ReleaseNotes.txt" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Admin\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

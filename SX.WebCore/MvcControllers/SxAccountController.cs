@@ -11,6 +11,7 @@ using System;
 using SX.WebCore.MvcApplication;
 using SX.WebCore.Hubs;
 using Newtonsoft.Json;
+using SX.WebCore.MvcControllers.Abstract;
 
 namespace SX.WebCore.MvcControllers
 {

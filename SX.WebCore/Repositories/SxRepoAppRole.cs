@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.Repositories.Abstract;
 using SX.WebCore.ViewModels;
 using System.Data.SqlClient;
 using System.Linq;
@@ -47,8 +47,8 @@ namespace SX.WebCore.Repositories
             query.Append(" WHERE (anr.[Name] LIKE '%'+@name+'%' OR @name IS NULL)");
             query.Append(" AND (anr.[Description] LIKE '%'+@desc+'%' OR @desc IS NULL)");
 
-            var name = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Name != null ? (string)filter.WhereExpressionObject.Name : null;
-            var desc = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Description != null ? (string)filter.WhereExpressionObject.Description : null;
+            string name = filter.WhereExpressionObject?.Name;
+            string desc = filter.WhereExpressionObject?.Description;
 
             param = new
             {

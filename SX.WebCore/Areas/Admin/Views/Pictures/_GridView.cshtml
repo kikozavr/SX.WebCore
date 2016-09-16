@@ -1,0 +1,31 @@
+﻿@model SxVMPicture[]
+@{
+    Layout = null;
+}
+
+@Html.SxGridView(Model,
+        new SxExtantions.SxGridViewSettings<SxVMPicture>
+        {
+            Columns = new SxExtantions.SxGridViewColumn<SxVMPicture>[]{
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Id", Caption="Идентификатор", Template=(p)=> {
+                return string.Format("<b class=\"text-info\">{0}</b>", p.Id);
+            } },
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Caption", Caption="Название"},
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Description", Caption="Описание"},
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Width", Caption="Ширина, px"},
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Height", Caption="Высота, px"},
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Size", Caption="Размер, Kb", Template=(p)=> {
+                return string.Format("<span>{0}</span>", Math.Round((double)p.Size/1024, 2));
+            } },
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Id", Caption="Картинка", Template=(p)=> {
+                return string.Format("<a data-lightbox=\"roadtrip\" data-title=\"{1}\" data-toggle=\"tooltip\" title=\"Помотреть картинку\" href=\"/pictures/picture/{0}\"><i class=\"fa fa-picture-o\"></i></a>", p.Id, p.Caption);
+            } }
+        },
+            EnableCreating = true,
+            CreateRowUrl = Url.Action("Edit", "Pictures"),
+            EnableEditing = true,
+            EditRowUrl = (x) => { return Url.Action("Edit", "Pictures", new { id=x.Id }); },
+            DataAjaxUrl = Url.Action("Index","Pictures"),
+            ShowPagerInfo=true
+        }
+    )

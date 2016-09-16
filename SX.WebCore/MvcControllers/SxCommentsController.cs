@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
 using SX.WebCore.Attrubutes;
+using SX.WebCore.MvcControllers.Abstract;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Web.Mvc;

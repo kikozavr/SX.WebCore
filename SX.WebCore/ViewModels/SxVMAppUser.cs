@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
 
 namespace SX.WebCore.ViewModels
 {
@@ -21,7 +23,7 @@ namespace SX.WebCore.ViewModels
 
         public SxVMAppRole[] Roles { get; set; }
 
-        [Display(Name = "Аватар"), UIHint("PicturesLookupGrid")]
+        [Display(Name = "Аватар"), UIHint("_PicturesLookupGrid")]
         public Guid? AvatarId { get; set; }
         public SxVMPicture Avatar { get; set; }
 
@@ -32,5 +34,21 @@ namespace SX.WebCore.ViewModels
 
         [Display(Name ="Описание"), MaxLength(400), DataType(DataType.MultilineText)]
         public string Description { get; set; }
+
+        public string RoleNames
+        {
+            get
+            {
+                if (!Roles.Any()) return null;
+
+                var sb = new StringBuilder();
+                for (int i = 0; i < Roles.Length; i++)
+                {
+                    sb.AppendFormat("; {0}", Roles[i].Name);
+                }
+                sb.Remove(0, 2);
+                return sb.ToString();
+            }
+        }
     }
 }

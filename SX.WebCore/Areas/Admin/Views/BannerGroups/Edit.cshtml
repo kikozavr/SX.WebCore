@@ -1,0 +1,100 @@
+﻿@model SxVMBannerGroup
+@{
+    var isNew = Model.Id == Guid.Empty;
+    ViewBag.Title = isNew ? "Добавить группу баннеров" : "Редактировать группу баннеров \"" + Model.Title + "\"";
+}
+
+@section styles{
+    @if (!isNew)
+    {
+        <link href="~/Areas/Admin/content/dist/css/lightbox.min.css" rel="stylesheet" />
+    }
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="alert alert-danger">
+    <b>Внимание!</b> Функционал пока не реализован. Решается вопрос о целесообразности внедрения в движок
+</div>
+
+@if (!isNew)
+{
+    <div class="text-right">
+        <form method="post" action="@Url.Action("Delete", "BannerGroups")">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => x.Id)
+            <button type="submit" class="btn btn-danger" onclick="if (!confirm('Удалить запись?')) { return false;}">Удалить</button>
+        </form>
+    </div>
+}
+
+
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#info" aria-controls="info" role="tab" data-toggle="tab">Основные параметры</a></li>
+    @if (!isNew)
+    {
+        <li role="presentation"><a href="#banners" aria-controls="banners" role="tab" data-toggle="tab">Баннеры группы</a></li>
+    }
+</ul>
+<br />
+
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="info">
+        <form method="post" action="@Url.Action("Edit", "BannerGroups")">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => x.Id)
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Title)
+                @Html.EditorFor(x => x.Title, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите заголовок группы" } })
+                @Html.ValidationMessageFor(x => x.Title)
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(x => x.Description)
+                @Html.EditorFor(x => x.Description, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите описание группы" } })
+                @Html.ValidationMessageFor(x => x.Description)
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">@(isNew ? "Добавить" : "Сохранить")</button>
+                <a class="btn btn-default" href="@Url.Action("Index", "BannerGroups")">Назад</a>
+            </div>
+        </form>
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="banners">
+        <h4>Баннеры группы</h4>
+
+        <div id="banners-block">
+
+        </div>
+    </div>
+</div>
+
+    @section scripts{
+        <script>
+            $(function () {
+                $('#banners-block').sx_gv();
+
+                $('a[href="#banners"]').on('show.bs.tab', function (e) {
+                    $a = $(e.target);
+
+                    $.ajax({
+                        method: 'get',
+                        url: '@Url.Action("GroupBanners", "Banners")',
+                        data: { bgid: '@Model.Id' },
+                        beforeSend: function () {
+                            $('a[role="tab"]').find('.tab-spinner').remove();
+                            $a.prepend('<i class="fa fa-spinner fa-spin tab-spinner"></i>');
+                        },
+                        success: function (result) {
+                            $('#banners-block').html(result);
+                        },
+                        complete: function () {
+                            $a.find('.tab-spinner').remove();
+                        }
+                    });
+                })
+            });
+        </script>
+    }

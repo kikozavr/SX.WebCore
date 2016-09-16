@@ -18,53 +18,51 @@ namespace SX.WebCore.MvcApplication
 {
     public abstract class SxMvcApplication : HttpApplication
     {
+        public static Func<SxDbContext> GetDbContextInstance { get; set; }
         private static readonly string _logDirectoryPath = "~/logs";
         public static DateTime LastStartDate { get; set; }
-        public static MemoryCache AppCache { get; set; }
+        public static SxCacheProvider CacheProvider { get; set; }
         public static SxErrorProvider ErrorProvider { get; set; }
         public static MapperConfiguration MapperConfiguration { get; set; }
 
         public static SxBannerProvider BannerProvider { get; set; }
-        private static SxVMBannerCollection getBannerCollection(CacheItemPolicy cip = null)
+        private static SxVMBannerCollection getBannerCollection()
         {
-            var cacheBanners = (SxVMBannerCollection)AppCache["CACHE_SITE_BANNERS"];
+            var cacheBanners = CacheProvider.Get<SxVMBannerCollection>("CACHE_SITE_BANNERS");
 
             if (cacheBanners == null)
             {
-                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes:60);
                 cacheBanners = new SxVMBannerCollection();
                 cacheBanners.Banners = SxBannersController.Repo.All;
                 cacheBanners.BannerGroups = SxBannerGroupsController.Repo.All;
 
-                AppCache.Add("CACHE_SITE_BANNERS", cacheBanners, cip);
+                CacheProvider.Set("CACHE_SITE_BANNERS", cacheBanners, 60);
             }
 
             return cacheBanners;
         }
 
-        public static SxSiteSettingsProvider SiteSettingsProvider { get; set; }
-        private static Dictionary<string, SxSiteSetting> getSiteSettings(CacheItemPolicy cip = null)
+        public static SxSiteSettingsProvider SiteSettingsProvider{ get; set; }
+        private static Dictionary<string, SxSiteSetting> getSiteSettings()
         {
-            var data = (Dictionary<string, SxSiteSetting>)AppCache["CACHE_SITE_SETTINGS"];
+            var data = CacheProvider.Get<Dictionary<string, SxSiteSetting>>("CACHE_SITE_SETTINGS");
             if (data == null)
             {
-                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
                 data = SxSiteSettingsController.Repo.GetAll();
-                AppCache.Add("CACHE_SITE_SETTINGS", data, cip);
+                CacheProvider.Set("CACHE_SITE_SETTINGS", data, 60);
             }
 
             return data;
         }
 
-        public static string[] GetBannedUrls(CacheItemPolicy cip = null)
+        public static string[] GetBannedUrls()
         {
-            var data = (string[])AppCache["CACHE_SITE_BANNED_URL"];
+            var data = CacheProvider.Get<string[]>("CACHE_SITE_BANNED_URL");
 
             if (data == null)
             {
-                cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
                 data = SxBannedUrlsController.Repo.GetAllUrls();
-                AppCache.Add("CACHE_SITE_BANNED_URL", data, cip);
+                CacheProvider.Set("CACHE_SITE_BANNED_URL", data, 60);
             }
 
             return data;
@@ -74,13 +72,15 @@ namespace SX.WebCore.MvcApplication
         {
             get
             {
-                var list = (SxShareButton[])AppCache.Get("CACHE_LIKE_BUTTONS");
-                if (list == null)
+                var data = CacheProvider.Get<SxShareButton[]>("CACHE_SHARE_BUTTONS");
+
+                if (data == null)
                 {
-                    list = SxShareButtonsController.Repo.ShareButtonsList;
-                    AppCache.Add("CACHE_LIKE_BUTTONS", list, SxCacheExpirationManager.GetExpiration(minutes: 60));
+                    data = SxShareButtonsController.Repo.ShareButtonsList;
+                    CacheProvider.Set("CACHE_SHARE_BUTTONS", data, 60);
                 }
-                return list;
+
+                return data;
             }
         }
 
@@ -88,11 +88,11 @@ namespace SX.WebCore.MvcApplication
         {
             get
             {
-                var data = (Dictionary<string, string>)AppCache["CACHE_USERS_ON_SITE"];
+                var data = CacheProvider.Get<Dictionary<string, string>>("CACHE_USERS_ON_SITE");
                 if(data==null)
                 {
                     data = new Dictionary<string, string>();
-                    AppCache["CACHE_USERS_ON_SITE"] = data;
+                    CacheProvider.Set("CACHE_USERS_ON_SITE", data, int.MaxValue);
                 }
 
                 return data;
@@ -102,11 +102,11 @@ namespace SX.WebCore.MvcApplication
         public static SxSiteNetProvider SiteNetsProvider { get; set; }
         private static SxVMSiteNet[] getSiteNets()
         {
-            var data = (SxVMSiteNet[])AppCache["CACHE_SITE_NETS"];
+            var data = CacheProvider.Get<SxVMSiteNet[]>("CACHE_SITE_NETS");
             if (data == null)
             {
                 data = SxSiteNetsController.Repo.SiteNets;
-                AppCache.Add("CACHE_SITE_NETS", data, SxCacheExpirationManager.GetExpiration(minutes: 60));
+                CacheProvider.Set("CACHE_SITE_NETS", data, 60);
             }
 
             return data;
@@ -117,10 +117,13 @@ namespace SX.WebCore.MvcApplication
             MvcHandler.DisableMvcResponseHeader = true;
 
             createLogDirectory();
-            AppCache = new MemoryCache("APPLICATION_CACHE");
+            CacheProvider = new SxCacheProvider();
             ErrorProvider = new SxErrorProvider(Server.MapPath(_logDirectoryPath));
 
             var args = (SxApplicationEventArgs)e;
+            if (args.GetDbContextInstance == null)
+                throw new ArgumentNullException("Необходимо задать функцию получения контекста БД");
+            GetDbContextInstance = args.GetDbContextInstance;
             MapperConfiguration = SxAutoMapperConfig.MapperConfigurationInstance(args.MapperConfigurationExpression);
             BannerProvider = new SxBannerProvider(()=>getBannerCollection());
             SiteSettingsProvider = new SxSiteSettingsProvider(() => getSiteSettings());
@@ -153,6 +156,7 @@ namespace SX.WebCore.MvcApplication
 
     public sealed class SxApplicationEventArgs : EventArgs
     {
+        public Func<SxDbContext> GetDbContextInstance { get; set; }
         public Action<HttpConfiguration> WebApiConfigRegister { get; set; }
 
         public Action<IMapperConfigurationExpression> MapperConfigurationExpression { get; set; }

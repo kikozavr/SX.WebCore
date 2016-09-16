@@ -1,11 +1,11 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
 using static SX.WebCore.Enums;
 using SX.WebCore.ViewModels;
+using SX.WebCore.Repositories.Abstract;
 
 namespace SX.WebCore.Repositories
 {

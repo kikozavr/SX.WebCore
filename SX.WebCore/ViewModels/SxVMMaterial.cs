@@ -79,7 +79,7 @@ namespace SX.WebCore.ViewModels
 
     public class SxVMMaterialMetadata
     {
-        [UIHint("EditDate"), Display(Name ="Дата публикации")]
+        [UIHint("_EditDate"), Display(Name ="Дата публикации")]
         public DateTime DateOfPublication { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "RequiredField")]
@@ -102,13 +102,16 @@ namespace SX.WebCore.ViewModels
         [Display(Name ="Возможность просмотра")]
         public bool Show { get; set; }
 
-        [UIHint("PicturesLookupGrid"), Display(Name ="Картинка")]
+        [UIHint("_PicturesLookupGrid"), Display(Name ="Картинка")]
         public Guid? FrontPictureId { get; set; }
 
         [Display(Name = "Показывать на странице материала")]
         public bool ShowFrontPictureOnDetailPage { get; set; }
 
-        [Display(Name = "Категория материала"), UIHint("MaterialCategoryLookupGrid")]
+        [Display(Name = "Категория материала"), UIHint("_MaterialCategoryLookupGrid")]
         public string CategoryId { get; set; }
+
+        [Display(Name ="Флаг важности")]
+        public bool IsTop { get; set; }
     }
 }

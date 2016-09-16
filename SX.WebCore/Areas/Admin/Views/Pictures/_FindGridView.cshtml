@@ -1,0 +1,17 @@
+﻿@model SxVMPicture[]
+
+@Html.SxGridView(Model,
+    new SxExtantions.SxGridViewSettings<SxVMPicture>
+    {
+        Columns = new SxExtantions.SxGridViewColumn<SxVMPicture>[]{
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Caption", Caption="Картинка", ColumnCssClass=x=> { return "word-wrap"; } },
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Width", Caption="Ширина" },
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Height", Caption="Высота" },
+            new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Id", Caption="Картинка", Template=x=> {return string.Format("<a onclick=\"x()\" data-lightbox=\"roadtrip\" data-title=\"{1}\" data-toggle=\"tooltip\" title=\"Помотреть картинку\" href=\"/pictures/picture/{0}\"><i class=\"fa fa-picture-o\"></i></a>", x.Id, x.Caption); }, ColumnCssClass=x=> {return "col-cm col-img"; } }
+        },
+        DataAjaxUrl= Url.Action("FindGridView", "Pictures"),
+        RowId = x => { return x.Id.ToString(); },
+        RowText = x => { return x.Caption; },
+    },
+        htmlAttributes: new { @class="grid-pictures"}
+)

@@ -16,7 +16,7 @@ namespace SX.WebCore.ViewModels
         [Display(Name = "Описание"), DataType(DataType.MultilineText)]
         public string Description { get; set; }
 
-        [Display(Name = "Привязанные баннеры"), UIHint("AddBanner")]
+        [Display(Name = "Привязанные баннеры"), UIHint("_AddBanner")]
         public SxVMBanner[] Banners { get; set; }
 
         public SxVMBannerGroupBanner[] BannerLinks { get; set; }

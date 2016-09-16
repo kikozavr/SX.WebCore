@@ -1,0 +1,23 @@
+﻿@model SxVMShareButton[]
+
+@Html.SxGridView(Model,
+            new SxExtantions.SxGridViewSettings<SxVMShareButton>
+            {
+                Columns = new SxExtantions.SxGridViewColumn<SxVMShareButton>[]{
+                    new SxExtantions.SxGridViewColumn<SxVMShareButton>{FieldName="NetName", Caption="Сеть", Template=x=> {
+                        return string.Format("<small>{0}</small><br/><i class=\"{1}\"></i>", x.NetName, x.Net.LogoCssClass);
+                    }, ColumnCssClass=x=> { return "col-first"; } },
+                    new SxExtantions.SxGridViewColumn<SxVMShareButton>{FieldName="Show", Caption="Показывать", Template=x=> {
+                        return string.Format("<i class=\"fa {0} {1}\"></i>", x.Show?"fa-check ":"fa-times", x.Show?"text-success":"text-danger");
+                    } },
+                    new SxExtantions.SxGridViewColumn<SxVMShareButton>{FieldName="ShowCounter", Caption="Показывать счетчик", Template=x=> {
+                        return !x.Net.HasCounter?null: string.Format("<i class=\"fa {0} {1}\"></i>", x.ShowCounter?"fa-check ":"fa-times", x.ShowCounter?"text-success":"text-danger");
+                    } }
+                },
+                EnableEditing = true,
+                EditRowUrl = (x) => { return Url.Action("Edit", "ShareButtons", new { id = x.Id }); },
+                DataAjaxUrl = Url.Action("Index", "ShareButtons"),
+                ShowPagerInfo=true,
+                RowCssClass = (x) => { return x.Show ? null : "warning"; }
+            }
+    )

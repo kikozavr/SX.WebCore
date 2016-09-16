@@ -24,7 +24,7 @@ namespace SX.WebCore.ViewModels
         public string RawUrl { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(Resources.Messages), ErrorMessageResourceName = "RequiredField")]
-        [Display(Name = "Картинка"), UIHint("PicturesLookupGrid")]
+        [Display(Name = "Картинка"), UIHint("_PicturesLookupGrid")]
         public Guid? PictureId { get; set; }
         public SxVMPicture Picture { get; set; }
 

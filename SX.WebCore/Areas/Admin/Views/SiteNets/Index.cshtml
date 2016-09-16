@@ -1,0 +1,20 @@
+﻿@model SxVMSiteNet[]
+@{
+    ViewBag.Title = "Сети сайта";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="alert alert-info">
+    На данной странице Вы можете задать ссылки, которые ведут на социальные сети Вашего сайта.
+</div>
+
+<div id="grid">
+    @Html.Partial("_GridView", Model)
+</div>
+
+@section scripts{
+    <script>
+        $('#grid').sx_gv();
+    </script>
+}

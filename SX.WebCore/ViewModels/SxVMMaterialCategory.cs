@@ -27,7 +27,7 @@ namespace SX.WebCore.ViewModels
         public string ParentCategoryId { get; set; }
 
         public virtual SxVMPicture FrontPicture { get; set; }
-        [Display(Name = "Изображение"), UIHint("PicturesLookupGrid")]
+        [Display(Name = "Изображение"), UIHint("_PicturesLookupGrid")]
         public Guid? FrontPictureId { get; set; }
 
         public int Level { get; set; }

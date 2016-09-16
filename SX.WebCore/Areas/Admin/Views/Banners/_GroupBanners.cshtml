@@ -1,0 +1,24 @@
+﻿@model SxVMBanner[]
+@{
+    var bannerGroupId = (Guid)ViewBag.BannerGroupId;
+}
+
+
+@Html.SxGridView(Model, new SxExtantions.SxGridViewSettings<SxVMBanner>
+{
+    Columns = new SxExtantions.SxGridViewColumn<SxVMBanner>[] {
+        new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="Id", Caption="Идентификатор"},
+        new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="Url", Caption="Адрес перехода", Template=(b)=> {
+            return string.Format("<i class=\"fa fa-link\"></i>&nbsp;<a target=\"_blank\" href=\"{0}\">{0}</a>", b.Url);
+        } },
+        new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="Title", Caption="Заголовок"},
+        new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="PictureId", Caption="Картинка", Template=(p)=> {
+            return string.Format("<a data-lightbox=\"roadtrip\" data-title=\"{1}\" data-toggle=\"tooltip\" title=\"Помотреть картинку\" href=\"/pictures/picture/{0}\"><i class=\"fa fa-picture-o\"></i></a>", p.PictureId, p.Title);
+        }}
+},
+    DataAjaxUrl= Url.Action("GroupBanners", "Banners",new { bgid= bannerGroupId, forgroup= ViewBag.ForGroup }),
+    ShowSelectedCheckbox= ViewBag.ForGroup==null?false:true
+})
+
+<br />
+<a href="#info" aria-controls="info" class="btn btn-default" onclick="$('a[href=&quot;#info&quot;]').tab('show'); return false;"><i class="fa fa-long-arrow-left" aria-hidden="true"></i>&nbsp;Параметры</a>

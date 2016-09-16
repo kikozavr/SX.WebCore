@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SX.WebCore.MvcControllers.Abstract;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
@@ -7,10 +8,10 @@ using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers
 {
-    [Authorize(Roles ="admin")]
-    public abstract class SxProjectStepsController:SxBaseController
+    [Authorize(Roles = "admin")]
+    public abstract class SxProjectStepsController : SxBaseController
     {
-        private static SxRepoProjectStep _repo=new SxRepoProjectStep();
+        private static SxRepoProjectStep _repo = new SxRepoProjectStep();
         public static SxRepoProjectStep Repo
         {
             get { return _repo; }

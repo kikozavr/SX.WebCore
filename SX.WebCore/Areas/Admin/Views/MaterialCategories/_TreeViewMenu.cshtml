@@ -1,0 +1,27 @@
+﻿@model SxVMMaterialCategory[]
+@{
+    int maxLevel = ViewBag.MaxTreeViewLevel;
+    SX.WebCore.Enums.ModelCoreType mct = ViewBag.ModelCoreType;
+    string cur = ViewBag.CurrentCategory ?? ViewContext.ParentActionViewContext.ViewBag.CategoryId;
+    Func<SxVMMaterialCategory, string> funcContent = ViewBag.TreeViewMenuFuncContent;
+}
+
+@Html.SxTreeView(
+    data: Model,
+    settings: new SxExtantions.SxTreeViewTreeViewSettings<SxVMMaterialCategory>
+    {
+        FuncChildren = x => x.ChildCategories,
+        FuncContent = funcContent,
+        FuncCreateUrl = () => Url.Action("edit", new { controller= "MaterialCategories", mct=mct }),
+        FuncCurLevel = x => x.Level,
+        FuncEditUrl = x => Url.Action("edit", new { controller = "MaterialCategories", mct = x.ModelCoreType, id=x.Id }),
+        FuncEditSubNodeUrl = x => Url.Action("edit", new { controller = "MaterialCategories", mct = mct, pcid=x.Id }),
+        MaxLevel = maxLevel,
+        FuncSearchUrl = () => Url.Action("index", new { controller = "MaterialCategories" }),
+        UpdateTargetId = "matcat-tv",
+        EnableEditing = false,
+        EnableFiltering = false,
+        FunActiveRow = x => String.Compare(x.Id, cur, true) == 0
+    },
+    htmlAttributes: new { @class = "sx-tv table table-condensed table-bordered table-responsive" }
+    )

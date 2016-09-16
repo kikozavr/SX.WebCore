@@ -1,0 +1,29 @@
+﻿@model SxVMSiteNet
+@{
+    ViewBag.Title = "Редактировать сеть сайта \"" + Model.Net.Name + "\"";
+}
+<h2>@ViewBag.Title</h2>
+
+<form method="post" action="@Url.Action("Edit", "SiteNets")">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="@Html.NameFor(x=>x.NetId)" value="@Model.Net.Id" />
+    <div class="form-group">
+        @Html.LabelFor(x => x.Url, new { @class = "control-label" })
+        @Html.EditorFor(x => x.Url, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(x => x.Url)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(x => x.Show, new { @class = "control-label" })
+        @Html.EditorFor(x => x.Show, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(x => x.Show)
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="@Url.Action("Index")" class="btn btn-default">Назад</a>
+    </div>
+</form>
+
+@section scripts{
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.unobtrusive.min.js"></script>
+}

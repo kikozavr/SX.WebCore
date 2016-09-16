@@ -1,0 +1,18 @@
+﻿@model string
+@{
+    var caption = (string)ViewBag.MaterialCategoryTitle;
+    SX.WebCore.Enums.ModelCoreType mct = ViewBag.ModelCoreType;
+}
+
+<div id="@Html.IdForModel()">
+    <input type="hidden" value="@Html.ValueForModel()" name="@Html.IdForModel()" />
+
+    @Html.SxGridLookup(new SxExtantions.SxGridLookupSettings
+{
+    DataAjaxUrl = Url.Action("FindTreeView", "MaterialCategories", new { mct=mct }),
+    DefaulText = caption == null ? Html.ValueForModel().ToString() : caption,
+    Placeholder="Выберите категорию материала"
+},
+    new SxVMMaterialCategory [0]
+)
+</div>

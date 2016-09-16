@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SX.WebCore.Abstract;
+using SX.WebCore.MvcApplication;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;
@@ -7,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace SX.WebCore.Abstract
+namespace SX.WebCore.Repositories.Abstract
 {
     public abstract class SxDbRepository<TKey, TModel, TViewModel>
         where TModel : class
@@ -33,8 +35,7 @@ namespace SX.WebCore.Abstract
             if (model is SxDbModel<TKey>)
                 prepareUpdatedModel(model as SxDbModel<TKey>);
 
-            var dbContextType = HttpContext.Current.GetOwinContext().Get<Type>("owin.DbContext");
-            var dbContext = (SxDbContext)Activator.CreateInstance(dbContextType);
+            var dbContext = SxMvcApplication.GetDbContextInstance();
             dbContext.Configuration.AutoDetectChangesEnabled = false;
             dbContext.Entry(model).State = EntityState.Added;
             dbContext.Configuration.AutoDetectChangesEnabled = true;
@@ -63,8 +64,7 @@ namespace SX.WebCore.Abstract
         //updtae
         public virtual TModel Update(TModel model, bool changeDateUpdate = true, params string[] propertiesForChange)
         {
-            var dbContextType = HttpContext.Current.GetOwinContext().Get<Type>("owin.DbContext");
-            var dbContext = (SxDbContext)Activator.CreateInstance(dbContextType);
+            var dbContext = SxMvcApplication.GetDbContextInstance();
 
             var modelType = typeof(TModel);
             var keys = getEntityKeys(dbContext, modelType, model);
@@ -96,8 +96,7 @@ namespace SX.WebCore.Abstract
         }
         public virtual TModel Update(TModel model)
         {
-            var dbContextType = HttpContext.Current.GetOwinContext().Get<Type>("owin.DbContext");
-            var dbContext = (SxDbContext)Activator.CreateInstance(dbContextType);
+            var dbContext = SxMvcApplication.GetDbContextInstance();
             dbContext.Configuration.AutoDetectChangesEnabled = false;
             dbContext.Entry(model).State = EntityState.Modified;
             dbContext.Configuration.AutoDetectChangesEnabled = true;
@@ -112,8 +111,7 @@ namespace SX.WebCore.Abstract
         //delete
         public virtual void Delete(TModel model)
         {
-            var dbContextType = HttpContext.Current.GetOwinContext().Get<Type>("owin.DbContext");
-            var dbContext = (SxDbContext)Activator.CreateInstance(dbContextType);
+            var dbContext = SxMvcApplication.GetDbContextInstance();
             dbContext.Set<TModel>().Remove(model);
             dbContext.SaveChanges();
         }
@@ -153,8 +151,7 @@ namespace SX.WebCore.Abstract
         //get by key
         public virtual TModel GetByKey(params object[] id)
         {
-            var dbContextType = HttpContext.Current.GetOwinContext().Get<Type>("owin.DbContext");
-            var dbContext = (SxDbContext)Activator.CreateInstance(dbContextType);
+            var dbContext = SxMvcApplication.GetDbContextInstance();
             var dbSet = dbContext.Set<TModel>();
             return dbSet.Find(id);
         }

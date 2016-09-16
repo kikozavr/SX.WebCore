@@ -1,0 +1,103 @@
+﻿@model SxVMBanner
+@{
+    var isNew = Model.Id == Guid.Empty;
+    ViewBag.Title = isNew ? "Добавить баннер" : "Редактировать баннер \"" + Model.Title ?? Model.Id.ToString() + "\"";
+}
+
+@section styles{
+    <link href="~/Areas/Admin/content/dist/css/lightbox.min.css" rel="stylesheet" />
+}
+
+<h2>@ViewBag.Title</h2>
+@if (!isNew)
+{
+    <div class="text-right">
+        <form method="post" action="@Url.Action("Delete","Banners")">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(x => x.Id)
+            <button type="submit" class="btn btn-danger" onclick="if (!confirm('Удалить запись?')) { return false;}">Удалить</button>
+        </form>
+    </div>
+}
+<br />
+<form method="post" action="@Url.Action("Edit","Banners")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(x => x.Url)
+                @Html.EditorFor(x => x.Url, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите адрес ссылки баннера" } })
+                @Html.ValidationMessageFor(x => x.Url)
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(x => x.Title)
+                @Html.EditorFor(x => x.Title, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите заголовок" } })
+                @Html.ValidationMessageFor(x => x.Title)
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(x => x.PictureId)
+                @if (!isNew && Model.Picture != null)
+                {
+                    <a style="color:inherit; text-decoration:none;" data-lightbox="roadtrip" data-title="@Model.Picture.Caption" data-toggle="tooltip" data-placement="right" title="Помотреть картинку" href="@Url.Action("Picture","Pictures",new { id=Model.PictureId})">&nbsp;<i class="fa fa-picture-o"></i></a>
+                }
+                @Html.EditorFor(x => x.PictureId, new { htmlAttributes = new { @class = "form-control", @placeholder = "Укажите изображение" } })
+                @Html.ValidationMessageFor(x => x.PictureId)
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Description)
+        @Html.EditorFor(x => x.Description, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите описание" } })
+        @Html.ValidationMessageFor(x => x.Description)
+    </div>
+
+    <h4>Парметры сквозных баннеров</h4>
+    <p class="text-info" style="max-width:400px;">Баннер будет отображаться как сквозной только при условии задания этих парметров. Но даже если параметры заданы, баннер все равно может использоваться как обычный</p>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                @Html.LabelFor(x => x.Place)
+                <a style="color:inherit; text-decoration:none;" data-lightbox="cheme" data-title="Схема шаблона" data-toggle="tooltip" data-placement="right" title="Помотреть схему" href="~/Content/i/bannerPlaces.jpg">&nbsp;<i class="fa fa-question-circle-o"></i></a>
+                @Html.EnumDropDownListFor(x => x.Place, new { @class = "form-control", @placeholder = "Задайте место баннера на странице" })
+                @Html.ValidationMessageFor(x => x.Place)
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="form-group">
+                @Html.LabelFor(x => x.RawUrl)
+                @Html.EditorFor(x => x.RawUrl, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите внутренний адрес страницы" } })
+                @Html.ValidationMessageFor(x => x.RawUrl)
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@(isNew ? "Добавить" : "Сохранить")</button>
+        <a href="@Url.Action("Index","Banners")" class="btn btn-default">Назад</a>
+    </div>
+</form>
+
+@section scripts{
+    <script type="text/javascript" src="~/bower_components/ckeditor/ckeditor.js"></script>
+    <script src="~/Areas/Admin/content/dist/js/lightbox.min.js"></script>
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        if (CKEDITOR.instances['Description']) {
+            CKEDITOR.remove(CKEDITOR.instances['Description']);
+        }
+        CKEDITOR.replace('Description', { height: 300 });
+
+        $(function () {
+            $('#PictureId').sx_gvl();
+        });
+    </script>
+}

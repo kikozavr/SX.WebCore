@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.Repositories.Abstract;
 using SX.WebCore.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -57,16 +57,16 @@ namespace SX.WebCore.Repositories
             else if (forGroup == false)
                 query.Append(" AND (db.Id NOT IN (SELECT dbgl.BannerId FROM D_BANNER_GROUP_LINK dbgl WHERE dbgl.BannerGroupId=@bgid)) ");
 
-            var title = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Title != null ? (string)filter.WhereExpressionObject.Title : null;
-            var url = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Url != null ? (string)filter.WhereExpressionObject.Url : null;
+            string title = filter.WhereExpressionObject?.Title;
+            string url = filter.WhereExpressionObject?.Url;
 
             param = new
             {
                 title = title,
                 url = url,
                 bgid = filter.AddintionalInfo != null && filter.AddintionalInfo[0] != null ? filter.AddintionalInfo[0] : null,
-                mid = filter.WhereExpressionObject != null && filter.WhereExpressionObject.MaterialId != null ? (int)filter.WhereExpressionObject.MaterialId : (int?)null,
-                mct = filter.WhereExpressionObject != null && filter.WhereExpressionObject.ModelCoreType != null ? (int)filter.WhereExpressionObject.ModelCoreType : (int?)null,
+                mid = (int?)filter.WhereExpressionObject?.MaterialId,
+                mct = (int?)filter.WhereExpressionObject?.ModelCoreType,
             };
 
             return query.ToString();

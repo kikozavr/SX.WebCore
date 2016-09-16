@@ -1,0 +1,31 @@
+﻿@model SxVMMaterial
+
+<div class="modal fade" id="not-mat-pictures" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">@Model.Title</h4>
+                <p><small>Непривязанные фото</small></p>
+            </div>
+            <div class="modal-body" id="grid-not-mat-videos">
+
+            </div>
+            <div class="modal-footer">
+                <ul class="list-unstyled list-inline">
+                    <li>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                    </li>
+                    <li>
+                        <form method="post" action="@Url.Action("AddMaterialPicture", "PictureLinks")" id="not-mat-pictures-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="mid" value="@Model.Id" />
+                            <input type="hidden" name="mct" value="@Model.ModelCoreType" />
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

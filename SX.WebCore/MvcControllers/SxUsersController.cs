@@ -11,6 +11,7 @@ using Microsoft.AspNet.Identity;
 using System.Collections.Generic;
 using System;
 using System.Threading.Tasks;
+using SX.WebCore.MvcControllers.Abstract;
 
 namespace SX.WebCore.MvcControllers
 {
@@ -112,7 +113,7 @@ namespace SX.WebCore.MvcControllers
         public virtual ViewResult Edit(string id = null)
         {
             var data = UserManager.FindById(id);
-            var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray();
+            var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray().Select(x=>Mapper.Map<SxAppRole, SxVMAppRole>(x)).ToArray();
             ViewBag.Roles = allRoles;
             var viewModel = getEditUser(data, allRoles);
             if (viewModel.Avatar != null)
@@ -121,7 +122,7 @@ namespace SX.WebCore.MvcControllers
             return View(viewModel);
         }
 
-        private SxVMAppUser getEditUser(SxAppUser data, SxAppRole[] allRoles)
+        private SxVMAppUser getEditUser(SxAppUser data, SxVMAppRole[] allRoles)
         {
             var editUser = new SxVMAppUser
             {
@@ -159,7 +160,7 @@ namespace SX.WebCore.MvcControllers
         [HttpPost, ValidateAntiForgeryToken]
         public virtual PartialViewResult EditRoles(string userId)
         {
-            var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray();
+            var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray().Select(x=>Mapper.Map<SxAppRole, SxVMAppRole>(x)).ToArray();
             ViewBag.Roles = allRoles;
 
             var roles = Request.Form.GetValues("role");
@@ -218,7 +219,7 @@ namespace SX.WebCore.MvcControllers
                 else if (!user.IsEmployee)
                     delEmployee(user);
 
-                var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray();
+                var allRoles = RoleManager.Roles.Where(x => x.Name != _architectRole).ToArray().Select(x => Mapper.Map<SxAppRole, SxVMAppRole>(x)).ToArray();
                 var viewModel = getEditUser(oldUser, allRoles);
                 if (viewModel.Avatar != null)
                     ViewData["AvatarIdCaption"] = viewModel.Avatar.Caption;

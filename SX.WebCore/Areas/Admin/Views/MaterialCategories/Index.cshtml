@@ -1,0 +1,22 @@
+﻿@model SxVMMaterialCategory[]
+@{
+    SX.WebCore.Enums.ModelCoreType mct = ViewBag.ModelCoreType;
+    string title = ViewBag.PageTitle;
+}
+
+<h2>@title</h2>
+<br />
+
+<div id="matcat-tv">
+    @Html.Partial("_TreeViewEditable", Model)
+</div>
+
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip({
+                container: 'body'
+            });
+        });
+    </script>
+}

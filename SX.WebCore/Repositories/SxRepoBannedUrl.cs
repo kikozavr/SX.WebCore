@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.Repositories.Abstract;
 using SX.WebCore.ViewModels;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -89,8 +89,8 @@ namespace SX.WebCore.Repositories
             query.Append(" WHERE (dbu.Url LIKE '%'+@url+'%' OR @url IS NULL) ");
             query.Append(" AND (dbu.Couse LIKE '%'+@couse+'%' OR @couse IS NULL) ");
 
-            var url = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Url != null ? (string)filter.WhereExpressionObject.Url : null;
-            var couse = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Couse != null ? (string)filter.WhereExpressionObject.Couse : null;
+            string url = filter.WhereExpressionObject?.Url;
+            string couse = filter.WhereExpressionObject?.Couse;
 
             param = new
             {

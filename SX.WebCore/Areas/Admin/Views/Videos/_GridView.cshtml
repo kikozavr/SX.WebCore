@@ -1,0 +1,26 @@
+﻿@model SxVMVideo[]
+
+@Html.SxGridView(Model,
+            new SxExtantions.SxGridViewSettings<SxVMVideo>
+            {
+                Columns = new SxExtantions.SxGridViewColumn<SxVMVideo>[]{
+            new SxExtantions.SxGridViewColumn<SxVMVideo>{FieldName="Id", Caption="Внутренний идентификатор", Template=(v)=> {
+                return string.Format("<b class=\"text-info\">{0}</b>", v.Id);
+            }},
+            new SxExtantions.SxGridViewColumn<SxVMVideo>{FieldName="VideoId", Caption="Идентификатор", Template=(v)=> {
+                return string.Format("<b class=\"text-warning\">{0}</b>", v.VideoId);
+            } },
+            new SxExtantions.SxGridViewColumn<SxVMVideo>{FieldName="Title", Caption="Название видео"},
+            new SxExtantions.SxGridViewColumn<SxVMVideo>{FieldName="SourceUrl", Caption="Источник", Template=(v)=> {
+                return v.SourceUrl!=null?string.Format("<i class=\"fa fa-link\"></i>&nbsp;<a rel=\"nofollow\" href=\"{0}\">{0}</a>", v.SourceUrl):null;
+            } }
+        },
+                EnableCreating = true,
+                CreateRowUrl = Url.Action("Edit", "Videos"),
+                EnableEditing = true,
+                EditRowUrl = (x) => { return Url.Action("Edit", "Videos", new { id=x.Id}); },
+                DataAjaxUrl = Url.Action("Index", "Videos"),
+                RowCssClass = x => { return !string.IsNullOrEmpty(x.SourceUrl) ? "warning" : null; },
+                ShowPagerInfo=true
+            }
+    )

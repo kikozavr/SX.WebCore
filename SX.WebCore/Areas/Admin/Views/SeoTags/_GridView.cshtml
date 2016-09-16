@@ -1,0 +1,19 @@
+﻿@model SxVMSeoTags[]
+
+@Html.SxGridView(Model,
+        new SxExtantions.SxGridViewSettings<SxVMSeoTags>
+        {
+            Columns = new SxExtantions.SxGridViewColumn<SxVMSeoTags>[]{
+                new SxExtantions.SxGridViewColumn<SxVMSeoTags>{FieldName="RawUrl", Caption="Адрес"},
+                new SxExtantions.SxGridViewColumn<SxVMSeoTags>{FieldName="SeoTitle", Caption="Заголовок"},
+                new SxExtantions.SxGridViewColumn<SxVMSeoTags>{FieldName="SeoDescription", Caption="Описание"},
+                new SxExtantions.SxGridViewColumn<SxVMSeoTags>{FieldName="H1", Caption="H1"}
+            },
+            EnableCreating = true,
+            CreateRowUrl = Url.Action("Edit", "SeoTags"),
+            EnableEditing = true,
+            EditRowUrl = x => { return Url.Action("Edit", "SeoTags", new { id = x.Id }); },
+            DataAjaxUrl = Url.Action("Index", "SeoTags"),
+            ShowPagerInfo = true
+        }
+    )

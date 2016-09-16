@@ -1,0 +1,43 @@
+﻿@model SxVMBanner[]
+@{
+    ViewBag.Title = "Баннеры";
+    var showsCount = (int)ViewBag.ShowsCount;
+    var clicksCount = (int)ViewBag.ClicksCount;
+    var ctr = showsCount == 0 ? 0 : Math.Round((decimal)clicksCount * 100 / showsCount, 2);
+}
+
+@section styles{
+    <link href="~/Areas/Admin/content/dist/css/lightbox.min.css" rel="stylesheet" />
+}
+
+<h2>@ViewBag.Title</h2>
+<br />
+<table class="table table-condensed table-bordered table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>Всго показов</th>
+            <th>Всего кликов</th>
+            <th>Общий CTR, %</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>@showsCount</td>
+            <td>@clicksCount</td>
+            <td>@ctr</td>
+        </tr>
+    </tbody>
+</table>
+
+<div id="grid-banners">
+    @Html.Partial("_GridView", Model)
+</div>
+
+@section scripts{
+    <script src="~/Areas/Admin/content/dist/js/lightbox.min.js"></script>
+    <script>
+        $(function () {
+            $('#grid-banners').sx_gv();
+        });
+    </script>
+}

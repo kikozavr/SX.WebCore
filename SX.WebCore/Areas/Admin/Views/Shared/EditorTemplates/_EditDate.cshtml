@@ -1,0 +1,8 @@
+﻿@model DateTime
+
+<div class="input-group date">
+    <input class="form-control" id="@Html.IdForModel().ToString()" name="@Html.NameForModel().ToString()" value="@Model" type="datetime">
+    <span class="input-group-addon">
+        <i class="fa fa-calendar"></i>
+    </span>
+</div>

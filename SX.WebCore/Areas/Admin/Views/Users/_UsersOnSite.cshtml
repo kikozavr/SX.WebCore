@@ -1,0 +1,45 @@
+﻿@model SxVMAppUser[]
+@{
+    var colCount = 4;
+    var rowsCount = (int)Math.Ceiling((decimal)Model.Length / colCount);
+    SxVMAppUser item = null;
+}
+
+@if (Model.Any())
+{
+    for (int r = 0; r < rowsCount; r++)
+    {
+        var items = Model.Skip(r * colCount).Take(colCount).ToArray();
+        <div class="row">
+            @for (int c = 0; c < colCount; c++)
+            {
+                if (c < items.Length)
+                {
+                    item = items[c];
+                    <div class="col-md-@(12 / colCount)">
+                        <div class="us-on-site">
+                            <ul class="list-inline">
+                                <li>
+                                    @if (item.AvatarId.HasValue)
+                                    {
+                                        <img class="img-circle avatar" alt="@item.NikName" src="@Url.Action("picture", new { controller="pictures", id=item.AvatarId})" />
+                                    }
+                                </li>
+                                <li>
+                                    <div><strong>@item.NikName</strong></div>
+                                    <div><a href="mailto:@item.Email">@item.Email</a></div>
+                                    <div>@item.RoleNames</div>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-@(12 / colCount)"></div>
+                }
+            }
+        </div>
+    }
+}

@@ -1,0 +1,59 @@
+﻿@model SxVMRedirect
+@{
+    var isNew = Model.Id == Guid.Empty;
+    ViewBag.Title = isNew ? "Добавить 301 редирект" : "Редактировать 301 редирект для \"" + Model.OldUrl + "\"";
+}
+
+<h2>@ViewBag.Title</h2>
+@if (!isNew)
+{
+    <div class="text-right">
+        <div class="form-group">
+            <form method="post" action="@(Url.Action("Delete","Redirects"))">
+                @Html.HiddenFor(x => x.Id)
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger" onclick="if (!confirm('Удалить запись?')) { return false;}">Удалить редирект</button>
+            </form>
+        </div>
+    </div>
+}
+
+<form method="post" action="@(Url.Action("Edit","Redirects"))">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.OldUrl, new { @class = "control-label" })
+        @Html.EditorFor(x => x.OldUrl, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите старый адрес" } })
+        @Html.ValidationMessageFor(x => x.OldUrl)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.NewUrl, new { @class = "control-label" })
+        @Html.EditorFor(x => x.NewUrl, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите новый адрес" } })
+        @Html.ValidationMessageFor(x => x.NewUrl)
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@(isNew ? "Добавить" : "Сохранить")</button>
+        <a href="@Url.Action("Index", "Redirects")" class="btn btn-default">Назад</a>
+    </div>
+</form>
+
+@section scripts{
+    <script src="~/content/dist/js/jquery.validate.min.js"></script>
+    <script src="~/content/dist/js/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        jQuery.validator.unobtrusive.adapters.add(
+        'notequalto', ['other'], function (options) {
+            options.rules['notEqualTo'] = '#' + options.params.other;
+            if (options.message) {
+                options.messages['notEqualTo'] = options.message;
+            }
+        });
+
+        jQuery.validator.addMethod('notEqualTo', function (value, element, param) {
+            return this.optional(element) || value != $(param).val();
+        }, '');
+    </script>
+}

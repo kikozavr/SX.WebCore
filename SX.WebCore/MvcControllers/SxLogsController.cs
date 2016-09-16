@@ -1,5 +1,6 @@
 ﻿using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
+using SX.WebCore.MvcControllers.Abstract;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -10,15 +11,13 @@ namespace SX.WebCore.MvcControllers
     public abstract class SxLogsController : SxBaseController
     {
         [HttpGet]
-        public virtual async Task<FileResult> GetLog(string siteName = null)
+        public virtual async Task<FileResult> GetLog()
         {
             return await Task.Run(() =>
             {
                 var dir = Server.MapPath("~/logs");
                 if (!Directory.Exists(dir))
                     Directory.CreateDirectory(dir);
-
-                var zipname = string.Format("{0}-logs-{1}.zip", siteName ?? "site", DateTime.Now.ToString("yyyy-MM-dd"));
 
                 var ms = new MemoryStream();
                 var zipStream = new ZipOutputStream(ms);
@@ -47,6 +46,8 @@ namespace SX.WebCore.MvcControllers
                 ms.Position = 0;
 
                 string file_type = "application/zip";
+                var domain =Url.SeoFriendlyUrl(Request.Url.Authority);
+                var zipname = string.Format("{0}-logs-{1}.zip", domain, DateTime.Now.ToString("yyyy-MM-dd"));
                 return File(ms, file_type, zipname);
             });
         }

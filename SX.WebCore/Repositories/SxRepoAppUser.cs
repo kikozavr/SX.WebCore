@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.Repositories.Abstract;
 using SX.WebCore.ViewModels;
 using System.Configuration;
 using System.Data.SqlClient;
@@ -48,8 +48,8 @@ namespace SX.WebCore.Repositories
             query.Append(" WHERE (anu.[NikName] LIKE '%'+@nikName+'%' OR @nikName IS NULL)");
             query.Append(" AND (anu.[Email] LIKE '%'+@email+'%' OR @email IS NULL)");
 
-            var nikName = filter.WhereExpressionObject != null && filter.WhereExpressionObject.NikName != null ? (string)filter.WhereExpressionObject.NikName : null;
-            var email = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Email != null ? (string)filter.WhereExpressionObject.Email : null;
+            string nikName = filter.WhereExpressionObject?.NikName;
+            string email = filter.WhereExpressionObject?.Email;
 
             param = new
             {

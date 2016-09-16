@@ -1,6 +1,7 @@
 ﻿using SX.WebCore.HtmlHelpers;
 using SX.WebCore.Managers;
 using SX.WebCore.MvcApplication;
+using SX.WebCore.MvcControllers.Abstract;
 using SX.WebCore.ViewModels;
 using System;
 using System.Linq;
@@ -48,9 +49,9 @@ namespace SX.WebCore.MvcControllers
             var strD = d.ToString("dd/MM/yyyy");
             var url = string.Format("http://www.cbr.ru/scripts/XML_daily.asp?date_req={0}", strD);
 
-            if (SxMvcApplication.AppCache.Get("CACHE_VALUTES") == null)
-                SxMvcApplication.AppCache.Add(new CacheItem("CACHE_VALUTES", XDocument.Load(url)), SxCacheExpirationManager.GetExpiration(minutes:120));
-            var doc = (XDocument)SxMvcApplication.AppCache.Get("CACHE_VALUTES");
+            if (SxMvcApplication.CacheProvider.Get<XDocument>("CACHE_VALUTES") == null)
+                SxMvcApplication.CacheProvider.Set("CACHE_VALUTES", XDocument.Load(url), 120);
+            var doc = SxMvcApplication.CacheProvider.Get<XDocument>("CACHE_VALUTES");
 
             var data = doc.Descendants("Valute")
                 .Select(x => new SxVMValute
@@ -104,11 +105,11 @@ namespace SX.WebCore.MvcControllers
             var strD = DateTime.Now.ToString("dd/MM/yyyy");
             var url = string.Format("http://www.cbr.ru/scripts/XML_daily.asp?date_req={0}", strD);
 
-            var doc = (XDocument)SxMvcApplication.AppCache["CACHE_VALUTES_XML_DOCUMENT"];
+            var doc = SxMvcApplication.CacheProvider.Get<XDocument>("CACHE_VALUTES");
             if (doc == null)
             {
                 doc = XDocument.Load(url);
-                SxMvcApplication.AppCache.Add("CACHE_VALUTES_XML_DOCUMENT", doc, SxCacheExpirationManager.GetExpiration(minutes: 60));
+                SxMvcApplication.CacheProvider.Set("CACHE_VALUTES", doc, 120);
             }
 
             var data = doc.Descendants("Valute")

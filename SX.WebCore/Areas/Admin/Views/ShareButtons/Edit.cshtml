@@ -1,0 +1,53 @@
+﻿@model SxVMShareButton
+@{
+    var isNew = Model.Id == 0;
+    ViewBag.Title = "Редактировать кнопку шар для сети "+Model.Net.Name;
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form method="post" action="@Url.Action("Edit","ShareButtons")" autocomplete="off">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="row">
+        @if (Model.Net.HasCounter)
+        {
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Show, new { @class = "control-label" })
+                    @Html.EditorFor(x => x.Show, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.Show)
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    @Html.LabelFor(x => x.ShowCounter, new { @class = "control-label" })
+                    @Html.EditorFor(x => x.ShowCounter, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.ShowCounter)
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="col-md-12">
+                <div class="form-group">
+                    @Html.LabelFor(x => x.Show, new { @class = "control-label" })
+                    @Html.EditorFor(x => x.Show, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(x => x.Show)
+                </div>
+            </div>
+        }
+    </div>
+
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@(isNew ? "Добавить" : "Сохранить")</button>
+        <a href="@Url.Action("Index","ShareButtons")" class="btn btn-default">Назад</a>
+    </div>
+</form>
+
+@section scripts{
+    <script src="~/content/dist/js/jquery.validate.min.js"></script>
+    <script src="~/content/dist/js/jquery.validate.unobtrusive.min.js"></script>
+}

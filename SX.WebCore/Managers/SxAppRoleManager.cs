@@ -11,9 +11,9 @@ namespace SX.WebCore.Managers
                 : base(store)
         { }
 
-        public static SxAppRoleManager Create<TDbContext>(IdentityFactoryOptions<SxAppRoleManager> options, IOwinContext context) where TDbContext : SxDbContext
+        public static SxAppRoleManager Create(IdentityFactoryOptions<SxAppRoleManager> options, IOwinContext context)
         {
-            return new SxAppRoleManager(new RoleStore<SxAppRole>(context.Get<TDbContext>()));
+            return new SxAppRoleManager(new RoleStore<SxAppRole>(context.Get<SxDbContext>()));
         }
     }
 }

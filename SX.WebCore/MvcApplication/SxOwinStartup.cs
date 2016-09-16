@@ -8,15 +8,14 @@ using System;
 
 namespace SX.WebCore.MvcApplication
 {
-    public class SxOwinStartup<TDbContext>
-        where TDbContext : SxDbContext, new()
+    public class SxOwinStartup
     {
         public void Configuration(IAppBuilder app)
         {
-            app.CreatePerOwinContext<TDbContext>(createDbContext);
-            app.CreatePerOwinContext<SxAppUserManager>(SxAppUserManager.Create<TDbContext>);
+            app.CreatePerOwinContext<SxDbContext>(SxMvcApplication.GetDbContextInstance);
+            app.CreatePerOwinContext<SxAppUserManager>(SxAppUserManager.Create);
             app.CreatePerOwinContext<SxAppSignInManager>(SxAppSignInManager.Create);
-            app.CreatePerOwinContext<SxAppRoleManager>(SxAppRoleManager.Create<TDbContext>);
+            app.CreatePerOwinContext<SxAppRoleManager>(SxAppRoleManager.Create);
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
@@ -38,10 +37,10 @@ namespace SX.WebCore.MvcApplication
             app.MapSignalR();
         }
 
-        private static TDbContext createDbContext(IdentityFactoryOptions<TDbContext> v, IOwinContext context)
-        {
-            context.Set("owin.DbContext", typeof(TDbContext));
-            return new TDbContext();
-        }
+        //private static TDbContext createDbContext(IdentityFactoryOptions<TDbContext> v, IOwinContext context)
+        //{
+        //    context.Set("owin.DbContext", typeof(TDbContext));
+        //    return new TDbContext();
+        //}
     }
 }

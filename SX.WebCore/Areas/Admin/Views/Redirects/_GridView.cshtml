@@ -1,0 +1,19 @@
+﻿@model SxVMRedirect[]
+
+@Html.SxGridView(Model,
+            new SxExtantions.SxGridViewSettings<SxVMRedirect>
+            {
+                Columns = new SxExtantions.SxGridViewColumn<SxVMRedirect>[]{
+                    new SxExtantions.SxGridViewColumn<SxVMRedirect>{FieldName="DateCreate", Caption="Дата создания"},
+                    new SxExtantions.SxGridViewColumn<SxVMRedirect>{FieldName="OldUrl", Caption="Старый адрес"},
+                    new SxExtantions.SxGridViewColumn<SxVMRedirect>{FieldName="NewUrl", Caption="Новый адрес"}
+                },
+                EnableCreating = true,
+                CreateRowUrl = Url.Action("Edit", "Redirects"),
+                EnableEditing = true,
+                EditRowUrl = x => { return Url.Action("Edit", "Redirects", new { id = x.Id }); },
+                DataAjaxUrl = Url.Action("Index", "Redirects"),
+                ShowPagerInfo = true,
+                RowCssClass = x => { return x.IsDuplicate ? "danger" : null; }
+            }
+    )

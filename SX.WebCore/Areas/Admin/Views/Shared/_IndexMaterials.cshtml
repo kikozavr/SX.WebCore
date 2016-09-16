@@ -1,0 +1,16 @@
+﻿@model SxVMMaterial[]
+@{
+    ViewBag.Title = "Статьи";
+}
+
+<h2>@ViewBag.Title</h2>
+<br />
+<div id="grid">
+    @Html.Partial("_GridMaterials", Model)
+</div>
+
+@section scripts{
+    <script>
+        $('#grid').sx_gv();
+    </script>
+}

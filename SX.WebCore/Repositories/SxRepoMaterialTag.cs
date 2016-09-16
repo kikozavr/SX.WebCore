@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using SX.WebCore.ViewModels;
 using System.Data.SqlClient;
@@ -7,8 +6,9 @@ using System.Linq;
 using System.Text;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
 using System;
+using SX.WebCore.Repositories.Abstract;
 
-namespace SX.WebCore.Repositories
+namespace SX.WebCore.Repositorise
 {
     public sealed class SxRepoMaterialTag : SxDbRepository<string, SxMaterialTag, SxVMMaterialTag>
     {

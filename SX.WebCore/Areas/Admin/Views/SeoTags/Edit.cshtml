@@ -1,0 +1,56 @@
+﻿@model SxVMSeoTags
+@{
+    var isNew = Model.Id == 0;
+    ViewBag.Title = isNew ? "Добавить SEO теги" : "Редактировать SEO теги для адреса\"" + Model.RawUrl + "\"";
+}
+<h2>@ViewBag.Title</h2>
+<br />
+@if (!isNew)
+{
+    <div class="form-group">
+        <div class="text-right">
+            <form method="post" action="@Url.Action("Delete","SeoTags")">
+                @Html.HiddenFor(x => x.Id)
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-danger" onclick="if(!confirm('Удалить запись?')) return false;">Удалить</button>
+            </form>
+        </div>
+    </div>
+}
+<form method="post" action="@Url.Action("Edit","SeoTags")">
+    @Html.AntiForgeryToken()
+
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.RawUrl, new { @class = "control-label" })
+        <span class="text-info"> (необходимо использовать внутренний адрес)</span>
+        @Html.EditorFor(x => x.RawUrl, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите адрес" } })
+        @Html.ValidationMessageFor(x => x.RawUrl)
+    </div>
+    <br />
+    @Html.Partial("_GeneralEdit")
+    <br />
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@(Model.Id == 0 ? "Добавить" : "Сохранить")</button>
+        <a href="@Url.Action("Index","SeoTags")" class="btn btn-default">Назад</a>
+    </div>
+</form>
+
+<div id="seo-kw">
+    @if (!isNew)
+    {
+        @Html.Action("Index", "SeoKeywords", new { stid = Model.Id })
+    }
+</div>
+
+@section scripts{
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        $(function () {
+            $('#seo-kw').sx_gv();
+        });
+    </script>
+}

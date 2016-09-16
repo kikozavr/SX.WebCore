@@ -1,0 +1,30 @@
+﻿@model SxVMSeoKeyword[]
+@{
+    int seoTagsId = ViewBag.SeoTagsId;
+}
+
+<br />
+<h4>Ключевые слова<span class="small"> (Максимально рекомендуемое количество фраз - 20)</span></h4>
+@using (Ajax.BeginForm("edit", new { controller = "SeoKeywords", SeoTagsId = seoTagsId }, new AjaxOptions { HttpMethod = "post", UpdateTargetId = "seo-kw" }))
+{
+    @Html.AntiForgeryToken()
+    <label for="Value">Новое ключевое слово</label>
+    <div class="input-group">
+        <input type="text" id="Value" name="Value" class="form-control" placeholder="Введите ключевое слово" autocomplete="off" />
+        <span class="input-group-btn">
+            <button class="btn btn-default" type="submit">Добавить</button>
+        </span>
+    </div>
+}
+<br />
+@Html.SxGridView(Model,
+            new SxExtantions.SxGridViewSettings<SxVMSeoKeyword>
+            {
+                Columns = new SxExtantions.SxGridViewColumn<SxVMSeoKeyword>[]{
+                    new SxExtantions.SxGridViewColumn<SxVMSeoKeyword>{FieldName="Value", Caption="Ключевое слово"}
+                },
+                DataAjaxUrl = Url.Action("Index","SeoKeywords",new { stid= seoTagsId }),
+                EnableDeleting = true,
+                DeleteRowUrl = x => { return Url.Action("Delete", "SeoKeywords", new { Id= x.Id, SeoTagsId= seoTagsId }); }
+            }
+    )

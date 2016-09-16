@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SX.WebCore.Abstract;
 using SX.WebCore.Attrubutes;
+using SX.WebCore.MvcControllers.Abstract;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System;
@@ -53,7 +54,7 @@ namespace SX.WebCore.MvcControllers
 
             ViewBag.Filter = filter;
 
-            return View(viewModel);
+            return View("_IndexMaterials", viewModel);
         }
 
         [HttpPost]
@@ -67,7 +68,7 @@ namespace SX.WebCore.MvcControllers
 
             ViewBag.Filter = filter;
 
-            return PartialView("_GridView", viewModel);
+            return PartialView("_GridMaterials", viewModel);
         }
 
         [HttpGet]
@@ -85,7 +86,7 @@ namespace SX.WebCore.MvcControllers
 
             ViewBag.ModelCoreType = _mct;
 
-            return View(viewModel);
+            return View("_EditMaterial", viewModel);
         }
 
         [HttpPost, ValidateAntiForgeryToken]

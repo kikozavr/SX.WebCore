@@ -1,0 +1,12 @@
+﻿@model SxVMValute[]
+
+@Html.SxGridView(Model, new SxExtantions.SxGridViewSettings<SxVMValute> {
+    Columns = new SxExtantions.SxGridViewColumn<SxVMValute>[] {
+        new SxExtantions.SxGridViewColumn<SxVMValute> { FieldName="Name", Caption="Наименование"},
+        new SxExtantions.SxGridViewColumn<SxVMValute> { FieldName="Nominal", Caption="Номинал"},
+        new SxExtantions.SxGridViewColumn<SxVMValute> { FieldName="Value", Caption="Значение, руб."},
+    },
+    RowCssClass = (x) => { return Equals(x.CharCode, "USD") || Equals(x.CharCode, "EUR") ? "success" : null; },
+    DataAjaxUrl=Url.Action("Index","Valutes"),
+    ShowPagerInfo=true
+})

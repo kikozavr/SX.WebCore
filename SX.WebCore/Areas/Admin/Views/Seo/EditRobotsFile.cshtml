@@ -1,0 +1,26 @@
+﻿@model SxVMRobotsFile
+@{
+    ViewBag.Title = "Содержание Robots.txt";
+}
+
+<h2>@ViewBag.Title</h2>
+<br />
+@if (ViewBag.EditSiteSettingsMessage != null)
+{
+    <p class="text-success">@ViewBag.EditSiteSettingsMessage</p>
+}
+
+<form method="post" action="@Url.Action("EditRobotsFile","Seo")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.OldFileContent)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.FileContent, new { @class = "control-label" })
+        @Html.EditorFor(x => x.FileContent, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите содержание файла", @style = "min-height:400px;" } })
+        @Html.ValidationMessageFor(x => x.FileContent)
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>

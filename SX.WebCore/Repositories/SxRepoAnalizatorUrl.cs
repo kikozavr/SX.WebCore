@@ -1,4 +1,4 @@
-﻿using SX.WebCore.Abstract;
+﻿using SX.WebCore.Repositories.Abstract;
 using SX.WebCore.ViewModels;
 
 namespace SX.WebCore.Repositories

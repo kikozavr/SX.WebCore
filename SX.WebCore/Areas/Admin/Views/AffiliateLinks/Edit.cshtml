@@ -1,0 +1,55 @@
+﻿@model SxVMAffiliateLink
+@{
+    var isNew = Model.Id == Guid.Empty;
+    ViewBag.Title = isNew ? "Добавить партнерскую ссылку" : "Редактировать партнерскую ссылку \"" + Model.Id + "\"";
+}
+
+<h2>@ViewBag.Title</h2>
+@if (!isNew)
+{
+    <div class="form-group">
+        <div class="text-right">
+            <form method="post" action="@Url.Action("Delete", "AffiliateLinks")">
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => x.Id)
+                <button type="submit" class="btn btn-danger" onclick="if (!confirm('Удалить запись?')) { return false;}">Удалить</button>
+            </form>
+        </div>
+    </div>
+}
+
+<form method="post" action="@Url.Action("Edit", "AffiliateLinks")" autocomplete="off">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.ClickCost, new { @class = "control-label" })
+        @Html.EditorFor(x => x.ClickCost, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(x => x.ClickCost)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Description, new { @class = "control-label" })
+        @Html.EditorFor(x => x.Description, new { htmlAttributes = new { @class = "form-control" } })
+        @Html.ValidationMessageFor(x => x.Description)
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@(!isNew ? "Добавить" : "Сохранить")</button>
+        @Html.RouteLink("Назад", new { action = "Index" }, new { @class = "btn btn-default" })
+    </div>
+</form>
+
+
+
+@section scripts{
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.unobtrusive.min.js"></script>
+    <script type="text/javascript" src="~/bower_components/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript">
+        if (CKEDITOR.instances['Description']) {
+            CKEDITOR.remove(CKEDITOR.instances['Description']);
+        }
+        CKEDITOR.replace('Description', { height: 300 });
+    </script>
+}

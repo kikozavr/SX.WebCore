@@ -1,0 +1,21 @@
+﻿@model SxVMVideo[]
+@{
+    int mid = ViewBag.MaterialId;
+    SX.WebCore.Enums.ModelCoreType mct = ViewBag.ModelCoreType;
+}
+
+
+@Html.SxGridView(Model,
+            new SxExtantions.SxGridViewSettings<SxVMVideo>
+            {
+                Columns = new SxExtantions.SxGridViewColumn<SxVMVideo>[]{
+                    new SxExtantions.SxGridViewColumn<SxVMVideo>{FieldName="Id", Caption="Идентификатор видео"},
+                    new SxExtantions.SxGridViewColumn<SxVMVideo>{FieldName="Title", Caption="Название видео"},
+                    new SxExtantions.SxGridViewColumn<SxVMVideo>{FieldName="VideoId", Caption="Идентификатор"}
+                },
+                DataAjaxUrl = Url.Action("IndexNotlinked", "VideoLinks", new { mid = mid, mct = mct, fm = false }),
+                ShowSelectedCheckbox = true,
+                RowId = x => { return x.Id.ToString(); },
+                ShowPagerInfo=true
+            }
+    )

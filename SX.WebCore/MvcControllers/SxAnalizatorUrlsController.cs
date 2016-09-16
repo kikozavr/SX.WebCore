@@ -1,4 +1,5 @@
-﻿using SX.WebCore.Repositories;
+﻿using SX.WebCore.MvcControllers.Abstract;
+using SX.WebCore.Repositories;
 using System.Web.Mvc;
 
 namespace SX.WebCore.MvcControllers

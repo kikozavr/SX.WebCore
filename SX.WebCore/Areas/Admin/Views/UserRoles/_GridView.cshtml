@@ -1,0 +1,17 @@
+﻿@model SxVMAppRole[]
+@{
+    var canRedact = User.IsInRole("admin");
+}
+
+@Html.SxGridView(Model, new SxExtantions.SxGridViewSettings<SxVMAppRole>()
+{
+    Columns = new SxExtantions.SxGridViewColumn<SxVMAppRole>[] {
+        new SxExtantions.SxGridViewColumn<SxVMAppRole> { FieldName="Name", Caption="Роль"},
+        new SxExtantions.SxGridViewColumn<SxVMAppRole> { FieldName="Description", Caption="Описание"},
+    },
+    EnableCreating = canRedact,
+    CreateRowUrl = Url.Action("Edit", "UserRoles"),
+    EnableEditing = canRedact,
+    EditRowUrl = (x) => { return Url.Action("Edit", "UserRoles", new { id = x.Id }); },
+    DataAjaxUrl = Url.Action("Index", "UserRoles")
+})

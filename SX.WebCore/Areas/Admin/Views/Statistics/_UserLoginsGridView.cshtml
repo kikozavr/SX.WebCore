@@ -1,0 +1,11 @@
+﻿@model SxVMStatisticUserLogin[]
+
+@Html.SxGridView(Model, new SxExtantions.SxGridViewSettings<SxVMStatisticUserLogin>()
+{
+    Columns = new SxExtantions.SxGridViewColumn<SxVMStatisticUserLogin>[] {
+        new SxExtantions.SxGridViewColumn<SxVMStatisticUserLogin> { FieldName="DateCreate", Caption="Дата"},
+        new SxExtantions.SxGridViewColumn<SxVMStatisticUserLogin> { FieldName="NikName", Caption="Ник-нейм"}
+    },
+    DataAjaxUrl = Url.Action("UserLogins", "Statistics"),
+    ShowPagerInfo=true
+})

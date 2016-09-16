@@ -1,0 +1,47 @@
+﻿@model SxVMBannedUrl
+@{
+    var isNew = Model.Id == 0;
+    ViewBag.Title = isNew ? "Добавить адрес в бан" : "Редактировать забаненный адрес \"" + Model.Url + "\"";
+}
+
+<h2>@ViewBag.Title</h2>
+@if (!isNew)
+{
+    <div class="form-group">
+        <div class="text-right">
+            <form method="post" action="@Url.Action("Delete","BannedUrls")">
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(x => x.Id)
+                <button type="submit" class="btn btn-danger" onclick="if (!confirm('Удалить запись?')) { return false;}">Удалить</button>
+            </form>
+        </div>
+    </div>
+}
+
+<form method="post" action="@Url.Action("Edit","BannedUrls")">
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.Id)
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Url)
+        @Html.EditorFor(x => x.Url, new { htmlAttributes = new { @class = "form-control", @placeholder = "Введите адрес" } })
+        @Html.ValidationMessageFor(x => x.Url)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(x => x.Couse)
+        @Html.EditorFor(x => x.Couse, new { htmlAttributes = new { @class = "form-control", @placeholder = "Укажите причину бана" } })
+        @Html.ValidationMessageFor(x => x.Couse)
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">@(isNew ? "Добавить" : "Сохранить")</button>
+        <a href="@Url.Action("Index","BannedUrls")" class="btn btn-default">Назад</a>
+    </div>
+</form>
+
+
+@section scripts{
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.min.js"></script>
+    <script src="~/Areas/Admin/content/dist/js/jquery.validate.unobtrusive.min.js"></script>
+}

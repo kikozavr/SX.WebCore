@@ -2000,7 +2000,57 @@ END
 GO
 
 /*******************************************
- * get picture
+ * Добавить картинку
+ *******************************************/
+IF OBJECT_ID(N'dbo.add_picture', N'P') IS NOT NULL
+    DROP PROCEDURE dbo.add_picture;
+GO
+CREATE PROCEDURE dbo.add_picture
+	@format NVARCHAR(50),
+	@content VARBINARY(MAX),
+	@width INT,
+	@height INT,
+	@caption NVARCHAR(100),
+	@desc NVARCHAR(255),
+	@size INT
+AS
+BEGIN
+	DECLARE @id       UNIQUEIDENTIFIER = NEWID(),
+	        @date     DATETIME = GETDATE();
+	
+	INSERT INTO D_PICTURE
+	  (
+	    Id,
+	    ImgFormat,
+	    OriginalContent,
+	    Width,
+	    Height,
+	    Caption,
+	    [Description],
+	    [Size],
+	    DateUpdate,
+	    DateCreate
+	  )
+	VALUES
+	  (
+	    @id,
+	    @format,
+	    @content,
+	    @width,
+	    @height,
+	    @caption,
+	    @desc,
+	    @size,
+	    @date,
+	    @date
+	  )
+	
+	EXEC dbo.get_picture @id
+END
+GO
+
+/*******************************************
+ * Получить картинку
  *******************************************/
 IF OBJECT_ID(N'dbo.get_picture', N'P') IS NOT NULL
     DROP PROCEDURE dbo.get_picture;

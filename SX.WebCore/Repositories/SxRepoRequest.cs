@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.Repositories.Abstract;
 using SX.WebCore.ViewModels;
 using System;
 using System.Data.SqlClient;
@@ -84,13 +84,13 @@ namespace SX.WebCore.Repositories
             query.Append(" AND (dr.RequestType LIKE '%'+@rt+'%' OR @rt IS NULL)");
             query.Append(" AND (dr.RawUrl LIKE '%'+@raw_url+'%' OR @raw_url IS NULL)");
 
-            var sid = filter.WhereExpressionObject != null && filter.WhereExpressionObject.SessionId != null ? (string)filter.WhereExpressionObject.SessionId : null;
-            var urlRef = filter.WhereExpressionObject != null && filter.WhereExpressionObject.UrlRef != null ? (string)filter.WhereExpressionObject.UrlRef : null;
-            var browser = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Browser != null ? (string)filter.WhereExpressionObject.Browser : null;
-            var cip = filter.WhereExpressionObject != null && filter.WhereExpressionObject.ClientIP != null ? (string)filter.WhereExpressionObject.ClientIP : null;
-            var ua = filter.WhereExpressionObject != null && filter.WhereExpressionObject.UserAgent != null ? (string)filter.WhereExpressionObject.UserAgent : null;
-            var rt = filter.WhereExpressionObject != null && filter.WhereExpressionObject.RequestType != null ? (string)filter.WhereExpressionObject.RequestType : null;
-            var rawUrl = filter.WhereExpressionObject != null && filter.WhereExpressionObject.RawUrl != null ? (string)filter.WhereExpressionObject.RawUrl : null;
+            string sid = filter.WhereExpressionObject?.SessionId;
+            string urlRef = filter.WhereExpressionObject?.UrlRef;
+            string browser = filter.WhereExpressionObject?.Browser;
+            string cip = filter.WhereExpressionObject?.ClientIP;
+            string ua = filter.WhereExpressionObject?.UserAgent;
+            string rt = filter.WhereExpressionObject?.RequestType;
+            string rawUrl = filter.WhereExpressionObject?.RawUrl;
 
             param = new
             {

@@ -1,0 +1,28 @@
+﻿@model SxVMNet[]
+@{
+    Layout = null;
+}
+
+@Html.SxGridView(Model,
+            new SxExtantions.SxGridViewSettings<SxVMNet>
+            {
+                Columns = new SxExtantions.SxGridViewColumn<SxVMNet>[]{
+                    new SxExtantions.SxGridViewColumn<SxVMNet>{FieldName="Code", Caption="Код"},
+                    new SxExtantions.SxGridViewColumn<SxVMNet>{FieldName="Name", Caption="Название"},
+                    new SxExtantions.SxGridViewColumn<SxVMNet>{FieldName="Url", Caption="Ссылка", Template=x=> {
+                        return string.Format("<a href=\"{0}\" target=\"_blank\"><i class=\"fa fa-link\"></i>&nbsp;{0}</a>", x.Url);
+                    } },
+                    new SxExtantions.SxGridViewColumn<SxVMNet>{FieldName="LogoCssClass", Caption="Логотип", Template=x=> {
+                        return string.Format("<i class=\"{0}\"></i>", x.LogoCssClass, x.Color);
+                    } },
+                    new SxExtantions.SxGridViewColumn<SxVMNet>{FieldName="Color", Caption="Основной цвет (hex)", Template=x=> {
+                        return string.Format("<span style=\"color:{0}\">{0}</span>", x.Color);
+                    } },
+                    new SxExtantions.SxGridViewColumn<SxVMNet>{FieldName="HasCounter", Caption="Поддержка счётчика", Template=x=> {
+                        return string.Format("<i class=\"fa {0} {1}\"></i>", x.HasCounter?"fa-check ":"fa-times", x.HasCounter?"text-success":"text-danger");
+                    } }
+                },
+                DataAjaxUrl = Url.Action("Index", "Nets"),
+                ShowPagerInfo = true
+}
+    )

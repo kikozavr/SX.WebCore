@@ -8,6 +8,7 @@ using SX.WebCore.ViewModels;
 using System;
 using SX.WebCore.Repositories;
 using System.Linq;
+using SX.WebCore.MvcControllers.Abstract;
 
 namespace SX.WebCore.MvcControllers
 {

@@ -1,0 +1,20 @@
+﻿@model SxVMAffiliateLink[]
+
+@Html.SxGridView(Model,
+        new SxExtantions.SxGridViewSettings<SxVMAffiliateLink>
+        {
+            Columns = new SxExtantions.SxGridViewColumn<SxVMAffiliateLink>[]{
+                new SxExtantions.SxGridViewColumn<SxVMAffiliateLink>{FieldName="Id", Caption="Идентификатор", Template=x=> { return "<b class=\"text-info\">"+x.Id+"</b>"; } },
+                new SxExtantions.SxGridViewColumn<SxVMAffiliateLink>{FieldName="ClickCost", Caption="Стоимость клика, руб.", Template=x=> {
+                    return Math.Round((decimal)x.ClickCost, 2).ToString();
+                } },
+                new SxExtantions.SxGridViewColumn<SxVMAffiliateLink>{FieldName="ViewsCount", Caption="Кол-во переходов"}
+            },
+            DataAjaxUrl = Url.Action("Index", "AffiliateLinks"),
+            EnableCreating = true,
+            CreateRowUrl = Url.Action("Edit", "AffiliateLinks"),
+            EnableEditing = true,
+            EditRowUrl = x => { return Url.Action("Edit", "AffiliateLinks", new { id=x.Id}); },
+            ShowPagerInfo=true
+        }
+    )

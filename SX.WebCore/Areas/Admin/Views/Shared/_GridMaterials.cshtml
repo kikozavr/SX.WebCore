@@ -1,0 +1,25 @@
+﻿@model SxVMMaterial[]
+
+@Html.SxGridView(Model,
+    new SxExtantions.SxGridViewSettings<SxVMMaterial>
+    {
+        Columns = new SxExtantions.SxGridViewColumn<SxVMMaterial>[]{
+            new SxExtantions.SxGridViewColumn<SxVMMaterial>{FieldName="DateCreate", Caption="Дата создания"},
+            new SxExtantions.SxGridViewColumn<SxVMMaterial>{FieldName="DateOfPublication", Caption="Дата публикации"},
+            new SxExtantions.SxGridViewColumn<SxVMMaterial>{FieldName="Title", Caption="Заголовок"},
+            new SxExtantions.SxGridViewColumn<SxVMMaterial>{FieldName="SeoTagsId", Caption="Инфо", Template=(m)=> {
+                return !m.SeoTagsId.HasValue? "<i class=\"text-warning\" data-toggle=\"tooltip\" title=\"Если не заданы теги для SEO, они установяться программно на основе заголовка и дополнительных метаданных страницы\">не заданы теги seo</i>":null;
+            } },
+            new SxExtantions.SxGridViewColumn<SxVMMaterial>{FieldName="Show", Caption="Показывать", Template=(m)=> {
+                return m.Show? "Да":"Нет";
+            } }
+        },
+        DataAjaxUrl=Url.Action("Index","Articles"),
+        EnableCreating=true,
+        CreateRowUrl= Url.Action("Edit", "Articles"),
+        EnableEditing=true,
+        EditRowUrl = x => { return Url.Action("Edit", "Articles", new { id=x.Id }); },
+        RowCssClass = x => { return !x.Show ? "warning" : null; },
+        ShowPagerInfo=true
+    }
+    )

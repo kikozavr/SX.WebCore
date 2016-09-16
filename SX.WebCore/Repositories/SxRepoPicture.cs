@@ -1,6 +1,6 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
+using SX.WebCore.Repositories.Abstract;
 using SX.WebCore.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,24 @@ namespace SX.WebCore.Repositories
 {
     public class SxRepoPicture : SxDbRepository<Guid, SxPicture, SxVMPicture>
     {
+        public override SxPicture Create(SxPicture model)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                var data = connection.Query<SxPicture>("dbo.add_picture @format, @content, @width, @height, @caption, @desc, @size", new {
+                    @format=model.ImgFormat,
+                    @content=model.OriginalContent,
+                    @width=model.Width,
+                    @height=model.Height,
+                    @caption=model.Caption,
+                    @desc=model.Description,
+                    @size=model.Size
+                });
+
+                return data.SingleOrDefault();
+            }
+        }
+
         public override SxVMPicture[] Read(SxFilter filter)
         {
             var sb = new StringBuilder();
@@ -58,10 +76,10 @@ namespace SX.WebCore.Repositories
             query.Append(" AND (dp.Width >=@w OR @w=0)");
             query.Append(" AND (dp.Height >=@h OR @h=0)");
 
-            var caption = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Caption != null ? (string)filter.WhereExpressionObject.Caption : null;
-            var desc = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Description != null ? (string)filter.WhereExpressionObject.Description : null;
-            var w = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Width != null ? (int)filter.WhereExpressionObject.Width : 0;
-            var h = filter.WhereExpressionObject != null && filter.WhereExpressionObject.Height != null ? (int)filter.WhereExpressionObject.Height : 0;
+            string caption = filter.WhereExpressionObject?.Caption;
+            string desc = filter.WhereExpressionObject?.Description;
+            int? w = filter.WhereExpressionObject?.Width ?? 0;
+            int? h = filter.WhereExpressionObject?.Height ?? 0;
 
             param = new
             {

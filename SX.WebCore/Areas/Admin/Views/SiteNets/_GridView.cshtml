@@ -1,0 +1,17 @@
+﻿@model SxVMSiteNet[]
+
+@Html.SxGridView(Model,
+        new SxExtantions.SxGridViewSettings<SxVMSiteNet>
+        {
+            Columns = new SxExtantions.SxGridViewColumn<SxVMSiteNet>[]{
+                new SxExtantions.SxGridViewColumn<SxVMSiteNet>{FieldName="NetName", Caption="Сеть", Template=x=> { return "<i class=\""+x.Net.LogoCssClass+"\"></i>&nbsp;&nbsp;&nbsp;<span>"+x.NetName+"</span>"; } },
+                new SxExtantions.SxGridViewColumn<SxVMSiteNet>{FieldName="Url", Caption="Адрес"},
+                new SxExtantions.SxGridViewColumn<SxVMSiteNet>{FieldName="Show", Caption="Показывать", Template=x=> { return x.Show?"Да":"Нет"; } }
+            },
+            DataAjaxUrl = Url.Action("Index", "SiteNets"),
+            EnableEditing = true,
+            EditRowUrl = x => { return Url.Action("Edit", "SiteNets", new { id = x.Net.Id }); },
+            ShowPagerInfo = true,
+            RowCssClass = x => { return x.Url != null && x.Show ? null : "warning"; }
+        }
+    )

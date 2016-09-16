@@ -1,4 +1,5 @@
 ﻿using SX.WebCore.Attrubutes;
+using SX.WebCore.MvcControllers.Abstract;
 using SX.WebCore.Providers;
 using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
@@ -73,7 +74,6 @@ namespace SX.WebCore.MvcControllers
             var httpContext = System.Web.HttpContext.Current;
             return await Task.Run(() =>
             {
-                System.Web.HttpContext.Current = httpContext;
                 var data = files.Where(x => x.ContentLength <= maxSize && allowFormats.Contains(x.ContentType));
                 foreach (var file in data)
                 {

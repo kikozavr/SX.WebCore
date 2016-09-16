@@ -1,0 +1,33 @@
+﻿@model SxVMSeoTags
+@{
+    var isNew = Model.SeoTitle == null;
+}
+
+
+@if (ViewBag.SeoInfoRedactInfo != null)
+{
+    <div class="alert alert-info message">@ViewBag.SeoInfoRedactInfo</div>
+}
+
+@using (Ajax.BeginForm("EditForMaterial", new { controller = "SeoTags" }, new AjaxOptions { HttpMethod = "post", UpdateTargetId = "seo-block", OnBegin = "$('#btn-save-seo-tag').prepend('<i class=\"fa fa-spinner fa-spin\"></i>')", OnSuccess = "$('#seo-kw').sx_gv(); setTimeout(function(){$('.alert-info.message').fadeOut();}, 1000)" }))
+{
+    @Html.HiddenFor(x => x.Id)
+    @Html.HiddenFor(x => x.MaterialId)
+    @Html.HiddenFor(x => x.ModelCoreType)
+
+    @Html.AntiForgeryToken()
+
+    @Html.Partial("_GeneralEdit", Model)
+
+    <div class="form-group">
+        <button id="btn-save-seo-tag" type="submit" class="btn btn-primary">@(isNew ? "Добавить" : "Сохранить")</button>
+        <a href="#info" aria-controls="info" class="btn btn-default" onclick="$('a[href=&quot;#info&quot;]').tab('show'); return false;"><i class="fa fa-long-arrow-left" aria-hidden="true"></i>&nbsp;Параметры</a>
+    </div>
+}
+
+@if (!isNew)
+{
+    <div id="seo-kw">
+        @Html.Action("Index", "SeoKeywords", new { stid=Model.Id })
+    </div>
+}

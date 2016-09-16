@@ -11,6 +11,7 @@ using System.Linq;
 using Microsoft.AspNet.Identity;
 using SX.WebCore.ViewModels;
 using static SX.WebCore.HtmlHelpers.SxExtantions;
+using SX.WebCore.MvcControllers.Abstract;
 
 namespace SX.WebCore.MvcControllers
 {

@@ -1,0 +1,22 @@
+﻿@model SxVMValute[]
+@{
+    ViewBag.Title = "Текущие курсы валют ЦБ РФ";
+}
+
+<h2>@ViewBag.Title</h2>
+<div class="alert alert-info">
+    <strong>Для справки:</strong> данные предоставлены с <b><a href="http://www.cbr.ru/scripts/Root.asp?PrtId=SXML">http://www.cbr.ru/scripts/Root.asp?PrtId=SXML</a></b>.Частота обновления данных - <b>2 часа</b>
+</div>
+
+<div id="grid-valutes">
+    @Html.Partial("_GridView", Model)
+</div>
+
+
+@section scripts{
+    <script>
+        $(function () {
+            $('#grid-valutes').sx_gv();
+        });
+    </script>
+}

@@ -1,0 +1,529 @@
+﻿@{ 
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@(ViewBag.Title==null?"admin | leavingrussia.ru":ViewBag.Title+ " | admin | leavingrussia.ru")</title>
+
+    <link href="~/Areas/Admin/content/dist/css/site.min.css" rel="stylesheet" />
+    @RenderSection("styles", false)
+</head>
+<body>
+    <div id="wrapper">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")">@SX.WebCore.Resources.Settings.adminPanelName @SX.WebCore.Resources.Settings.adminPanelVersion</a><br />
+            </div>
+
+            <ul class="nav navbar-top-links navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-envelope fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-messages">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <strong>John Smith</strong>
+                                    <span class="pull-right text-muted">
+                                        <em>Yesterday</em>
+                                    </span>
+                                </div>
+                                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eleifend...</div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>Read All Messages</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-tasks fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-tasks">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 1</strong>
+                                        <span class="pull-right text-muted">40% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+                                            <span class="sr-only">40% Complete (success)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 2</strong>
+                                        <span class="pull-right text-muted">20% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100" style="width: 20%">
+                                            <span class="sr-only">20% Complete</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 3</strong>
+                                        <span class="pull-right text-muted">60% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+                                            <span class="sr-only">60% Complete (warning)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <p>
+                                        <strong>Task 4</strong>
+                                        <span class="pull-right text-muted">80% Complete</span>
+                                    </p>
+                                    <div class="progress progress-striped active">
+                                        <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+                                            <span class="sr-only">80% Complete (danger)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>See All Tasks</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-bell fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-alerts">
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-comment fa-fw"></i> New Comment
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+                                    <span class="pull-right text-muted small">12 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-envelope fa-fw"></i> Message Sent
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-tasks fa-fw"></i> New Task
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#">
+                                <div>
+                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+                                    <span class="pull-right text-muted small">4 minutes ago</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a class="text-center" href="#">
+                                <strong>See All Alerts</strong>
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li>
+                            <a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
+                        </li>
+                        <li>
+                            <a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <form method="post" action="@Url.Action("Logoff","Account", new { area=""})" style="display:none;">
+                                @Html.AntiForgeryToken()
+                            </form>
+                            <a href="javascript:void(0)" onclick="if(confirm('Вы действительно хотите покинуть панель управления?')){$(this).prev('form').submit();}"><i class="fa fa-sign-out fa-fw"></i> Выйти</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li class="sidebar-search">
+                            <div class="input-group custom-search-form">
+                                <input type="text" class="form-control" placeholder="Поиск...">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Home", new { area=""})"><i class="fa fa-home fa-fw"></i> На сайт</a>
+                        </li>
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-fw fa-user"></i> Менеджер пользователей<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="@Url.Action("Index", "UserRoles")"><i class="fa fa-fw fa-street-view"></i> Роли</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "Users")"><i class="fa fa-fw fa-user"></i> Пользователи</a>
+                                    </li>
+                                    @*<li>
+                                        <a href="@Url.Action("index", new { controller= "employees" })"><i class="fa fa-fw fa-male"></i> Сотрудники</a>
+                                    </li>*@
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-history fa-fw"></i> Статистика<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Requests")">Статистика запросов</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("UserLogins", "Statistics")">Статистика входов</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole("photo-redactor") || User.IsInRole("video-redactor"))
+                        {
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-crop fa-fw"></i> Мультимедиа<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    @if (User.IsInRole("photo-redactor"))
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("Index", "Pictures")"><i class="fa fa-image fa-fw"></i> Фото-контент</a>
+                                        </li>
+                                    }
+                                    @if (User.IsInRole("video-redactor"))
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("Index", "Videos")"><i class="fa fa-youtube fa-fw"></i> Видео сайта</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole("smm"))
+                        {
+                            <li>
+                                <a href="javascript:void(0)"><i class="fa fa-globe fa-fw"></i> Соцсети<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Nets")"> Поддерживаемы сети</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "SiteNets")"> Сети сайта</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "ShareButtons")"> Кнопки шар</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole("author-article") || User.IsInRole("author-news") || User.IsInRole("admin"))
+                        {
+                        <li>
+                            <a href="#"><i class="fa fa-archive fa-fw"></i> Материалы<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                @if (User.IsInRole("author-article"))
+                                {
+                                    <li>
+                                        <a href="#"><i class="fa fa-book"></i> Статьи <span class="fa arrow"></span></a>
+                                        <ul class="nav nav-third-level">
+
+                                            <li>
+                                                <a href="@Url.Action("Index", new { controller = "Articles" })">Каталог статей</a>
+                                            </li>
+
+                                            @if (User.IsInRole("admin"))
+                                            {
+                                                <li>
+                                                    <a href="@Url.Action("Index", "MaterialCategories", new { mct = SX.WebCore.Enums.ModelCoreType.Article })">Категории статей</a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                        }
+                        @if (User.IsInRole("seo"))
+                        {
+                            <li>
+                                <a href="#"><i class="fa fa-cog fa-fw"></i> Seo оптимизация<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="@Url.Action("Index", new { controller= "SeoTags" })"><i class="fa fa-cogs"></i> Метатеги</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", new { controller= "Redirects" })"><i class="fa fa-arrow-right"></i> 301 редирект</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("EditRobotsFile", new { controller= "Seo" })"><i class="fa fa-ship"></i> robot.txt</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", new { controller= "BannedUrls" })"><i class="fa fa-ban"></i> Забаненные адреса</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li>
+                                <a href="#"><i class="fa fa-cube fa-fw"></i> Монетизация<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="@Url.Action("Index", "Banners")"> Список баннеров</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "BannerGroups")"> Группы баннеров</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "AffiliateLinks")"> Партнерские ссылки</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li>
+                                <a href="#"><i class="fa fa-wrench fa-fw"></i> Настройки<span class="fa arrow"></span></a>
+                                <ul class="nav nav-second-level">
+                                    <li>
+                                        <a href="@Url.Action("EditSite", "SiteSettings")">Настройки сайта</a>
+                                    </li>
+                                    @if (User.IsInRole("architect"))
+                                    {
+                                        <li>
+                                            <a href="@Url.Action("GetLog", "Logs")"> Скачать лог</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </li>
+                        }
+                        @if (User.IsInRole("admin"))
+                        {
+                            <li>
+                                <a href="@Url.Action("Index", "Valutes")"><i class="fa fa-rub fa-fw"></i> Курсы валют ЦБ РФ</a>
+                            </li>
+                        }
+                        <li>
+                            <a href="#"><i class="fa fa-tasks fa-fw"></i> FAQ<span class="fa arrow"></span></a>
+                            <ul class="nav nav-second-level">
+                                <li>
+                                    <a href="@Url.Action("Index", "FAQ")">Справка</a>
+                                </li>
+                                @if (User.IsInRole("architect"))
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Index", "MaterialCategories", new { mct=SX.WebCore.Enums.ModelCoreType.Manual})">Справочные категории</a>
+                                    </li>
+                                    <li>
+                                        <a href="@Url.Action("Index", "Manuals")">Справочные материалы</a>
+                                    </li>
+                                }
+                                <li>
+                                    <a href="@Url.Action("ReleaseNotes", "SiteSettings")">История выпусков</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Chat")"><i class="fa fa fa-comments-o fa-fw"></i> Чат</a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Analizator")"><i class="fa fa-line-chart fa-fw" aria-hidden="true"></i> Анализатор</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper">
+            <small class="pull-right text-muted">Последний старт: @SX.WebCore.MvcApplication.SxMvcApplication.LastStartDate</small>
+            @RenderBody()
+        </div>
+    </div>
+
+    @*error panel*@
+    <div class="modal fade" tabindex="-1" role="dialog" id="modal-error">
+        @using (Ajax.BeginForm("SendErrorToArchitect", new { controller = "Errors" }, new AjaxOptions { HttpMethod = "post", OnBegin= "$('#modal-error-send-btn').append('<i class=\"fa fa-spinner fa-spipn\"></i>')", OnSuccess= "$('#modal-error-send-btn').find('.fa-spinner').remove();$('#modal-error').modal('hide'); alert('Письмо успешно отправлено!')" }, new { @id = "modal-error-form" }))
+        {
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content panel-danger">
+                    <div class="modal-header panel-heading" style="border-top-left-radius: inherit; border-top-right-radius: inherit;">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title"></h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="rawUrl" />
+                        <textarea name="html" class="form-control" style="height:300px; resize:none;"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <ul class="list-unstyled list-inline">
+                            <li>
+                                <button type="submit" class="btn btn-default" id="modal-error-send-btn"><i class="fa fa-envelope-o" aria-hidden="true"></i> Отправить разработчику</button>
+                            </li>
+                            <li>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <script src="~/Areas/Admin/content/dist/js/site.min.js"></script>
+    <script src="~/content/dist/js/jquery.unobtrusive-ajax.min.js"></script>
+    <script>
+        $(function () {
+            $('#side-menu').metisMenu();
+
+            $(window).bind("load resize", function () {
+                topOffset = 50;
+                width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
+                if (width < 768) {
+                    $('div.navbar-collapse').addClass('collapse');
+                    topOffset = 100; // 2-row-menu
+                } else {
+                    $('div.navbar-collapse').removeClass('collapse');
+                }
+
+                height = ((this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height) - 1;
+                height = height - topOffset;
+                if (height < 1) height = 1;
+                if (height > topOffset) {
+                    $("#page-wrapper").css("min-height", (height) + "px");
+                }
+            });
+
+            var url = window.location;
+            var element = $('ul.nav a').filter(function () {
+                return this.href == url || url.href.indexOf(this.href) == 0;
+            }).addClass('active').parent().parent().addClass('in').parent();
+            if (element.is('li')) {
+                element.addClass('active');
+            }
+
+            $(document).ajaxError(function (event, xhr, settings) {
+                $modal = $('#modal-error');
+                $modal.find('.modal-header h4').html('<span class="text-danger">Ошибка ' + xhr.status+ '</span>');
+                $modal.find('.modal-body textarea').val(xhr.responseText);
+                $modal.find('.modal-body input[name="rawUrl"]').val('@Request.RawUrl');
+                $('.modal').modal('hide');
+                $('#modal-error').modal('show');
+            });
+
+            $().alert();
+
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $(document).mouseup(function (e) {
+                var container = $(".sx-gvl__dropdown");
+
+                if (!container.is(e.target) && container.has(e.target).length === 0) {
+                    container.hide();
+                }
+            });
+        });
+    </script>
+    @RenderSection("scripts", false)
+</body>
+</html>

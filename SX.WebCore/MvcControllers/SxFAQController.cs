@@ -1,4 +1,5 @@
-﻿using SX.WebCore.Repositories;
+﻿using SX.WebCore.MvcControllers.Abstract;
+using SX.WebCore.Repositories;
 using SX.WebCore.ViewModels;
 using System.Linq;
 using System.Web.Mvc;

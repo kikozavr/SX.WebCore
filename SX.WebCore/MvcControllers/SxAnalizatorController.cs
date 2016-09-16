@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity;
+using SX.WebCore.MvcControllers.Abstract;
 using System.Linq;
 using System.Web.Mvc;
 

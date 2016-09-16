@@ -14,7 +14,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.SessionState;
 
-namespace SX.WebCore.MvcControllers
+namespace SX.WebCore.MvcControllers.Abstract
 {
     [SessionState(SessionStateBehavior.Disabled)]
     public abstract class SxBaseController : Controller
@@ -97,26 +97,27 @@ namespace SX.WebCore.MvcControllers
             response.Headers.Remove("Server");
         }
 
-        private SxRedirect get301Redirect(CacheItemPolicy cip = null)
+        private SxRedirect get301Redirect()
         {
-            cip = cip ?? SxCacheExpirationManager.GetExpiration(minutes: 60);
-            var redirect = (SxRedirect)SxMvcApplication.AppCache["CACHE_REDIRECT_" + SxRawUrl];
+            var key = "CACHE_REDIRECT_" + SxRawUrl;
+            var redirect = SxMvcApplication.CacheProvider.Get<SxRedirect>(key);
             if (redirect == null)
             {
                 redirect = SxRedirectsController.Repo.GetPageRedirect(SxRawUrl);
-                SxMvcApplication.AppCache.Add("CACHE_REDIRECT_" + SxRawUrl, redirect ?? new SxRedirect { OldUrl=SxRawUrl, NewUrl=null }, cip);
+                SxMvcApplication.CacheProvider.Set(key, redirect ?? new SxRedirect { OldUrl = SxRawUrl, NewUrl = null }, 60);
             }
 
             return redirect;
         }
 
-        private SxSeoTags getPageSeoTags(CacheItemPolicy cip = null)
+        private SxSeoTags getPageSeoTags()
         {
-            var seoTags = (SxSeoTags)SxMvcApplication.AppCache["CACHE_SEOTAGS_" + SxRawUrl];
+            var key = "CACHE_SEOTAGS_" + SxRawUrl;
+            var seoTags = SxMvcApplication.CacheProvider.Get<SxSeoTags>(key);
             if (seoTags == null)
             {
                 seoTags = SxSeoTagsController.Repo.GetSeoTags(SxRawUrl);
-                SxMvcApplication.AppCache.Add("CACHE_SEOTAGS_" + SxRawUrl, seoTags, cip);
+                SxMvcApplication.CacheProvider.Set(key, seoTags ?? new SxSeoTags(), 60);
             }
             return seoTags;
         }

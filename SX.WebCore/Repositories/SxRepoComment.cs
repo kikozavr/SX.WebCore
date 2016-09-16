@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using SX.WebCore.Abstract;
 using System.Data.SqlClient;
 using Dapper;
 using SX.WebCore.ViewModels;
+using SX.WebCore.Repositories.Abstract;
 
 namespace SX.WebCore.Repositories
 {

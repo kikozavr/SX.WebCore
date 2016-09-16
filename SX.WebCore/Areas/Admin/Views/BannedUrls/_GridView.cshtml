@@ -1,0 +1,20 @@
+﻿@model SxVMBannedUrl[]
+
+@Html.SxGridView(Model,
+        new SxExtantions.SxGridViewSettings<SxVMBannedUrl>
+        {
+            Columns = new SxExtantions.SxGridViewColumn<SxVMBannedUrl>[]{
+                new SxExtantions.SxGridViewColumn<SxVMBannedUrl> { FieldName="DateCreate", Caption="Дата занесения"},
+                new SxExtantions.SxGridViewColumn<SxVMBannedUrl>{FieldName="Url", Caption="Адрес", Template=(u)=> {
+                    return string.Format("<a href=\"{0}\" target=\"_blank\">{0}</a>", u.Url);
+                } },
+                new SxExtantions.SxGridViewColumn<SxVMBannedUrl>{FieldName="Couse", Caption="Причина бана"}
+            },
+            EnableCreating = true,
+            CreateRowUrl = Url.Action("Edit", "BannedUrls"),
+            EnableEditing = true,
+            EditRowUrl = (x) => { return Url.Action("Edit", "BannedUrls", new { id = x.Id }); },
+            DataAjaxUrl = Url.Action("Index", "BannedUrls"),
+            ShowPagerInfo = true
+        }
+    )

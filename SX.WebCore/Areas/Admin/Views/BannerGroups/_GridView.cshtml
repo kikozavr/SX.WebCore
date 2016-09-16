@@ -1,0 +1,18 @@
+﻿@model SxVMBannerGroup[]
+
+@Html.SxGridView(Model,
+        new SxExtantions.SxGridViewSettings<SxVMBannerGroup>
+        {
+            Columns = new SxExtantions.SxGridViewColumn<SxVMBannerGroup>[]{
+                new SxExtantions.SxGridViewColumn<SxVMBannerGroup>{FieldName="Id", Caption="Идентификатор", Template=x=> { return "<b class=\"text-info\">"+x.Id+"</b>"; } },
+                new SxExtantions.SxGridViewColumn<SxVMBannerGroup>{FieldName="Title", Caption="Заголовок"},
+                new SxExtantions.SxGridViewColumn<SxVMBannerGroup>{FieldName="Description", Caption="Описание"}
+            },
+            EnableCreating = true,
+            CreateRowUrl = Url.Action("Edit", "BannerGroups"),
+            EnableEditing = true,
+            EditRowUrl = x => { return Url.Action("Edit", "BannerGroups", new { id=x.Id }); },
+            DataAjaxUrl = Url.Action("Index", "BannerGroups"),
+            ShowPagerInfo=true
+        }
+    )

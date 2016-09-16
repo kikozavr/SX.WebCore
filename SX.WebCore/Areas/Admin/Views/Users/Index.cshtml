@@ -1,0 +1,18 @@
+﻿@model SxVMAppUser[]
+@{
+    ViewBag.Title = "Управление пользователями";
+}
+
+<h2>@ViewBag.Title</h2>
+<br />
+<div id="grid">
+    @Html.Partial("_GridView", Model)
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+            $('#grid').sx_gv();
+        });
+    </script>
+}

@@ -1,0 +1,19 @@
+﻿@model object
+@{
+    var fieldName = Html.NameForModel().ToString()+"Caption";
+    var pictureCaption = ViewData[fieldName];
+    var prefix = (string)ViewBag.Prefix;
+}
+
+<div id="@Html.IdForModel()">
+    <input type="hidden" value="@Html.ValueForModel()" name="@(prefix==null?Html.IdForModel().ToString(): prefix+"."+Html.IdForModel().ToString())" />
+
+    @Html.SxGridLookup(new SxExtantions.SxGridLookupSettings
+{
+    DataAjaxUrl = Url.Action("FindGridview", "Pictures"),
+    DefaulText = pictureCaption == null ? Html.ValueForModel().ToString() : pictureCaption.ToString(),
+    Placeholder="Выберите изображение"
+},
+    new SxVMPicture[0]
+)
+</div>

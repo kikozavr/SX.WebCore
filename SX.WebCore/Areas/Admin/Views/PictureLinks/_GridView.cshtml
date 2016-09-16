@@ -1,0 +1,23 @@
+﻿@model SxVMPicture[]
+@{
+    Layout = null;
+    int mid = ViewBag.MaterialId;
+    SX.WebCore.Enums.ModelCoreType mct = ViewBag.ModelCoreType;
+}
+
+
+@Html.SxGridView(Model,
+            new SxExtantions.SxGridViewSettings<SxVMPicture>
+            {
+                Columns = new SxExtantions.SxGridViewColumn<SxVMPicture>[]{
+                    new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Id", Caption="Идентификатор"},
+                    new SxExtantions.SxGridViewColumn<SxVMPicture>{FieldName="Caption", Caption="Наименование"}
+                },
+                DataAjaxUrl = Url.Action("Index", "PictureLinks", new { mid = mid, mct = mct }),
+                EnableDeleting = true,
+                DeleteRowUrl = x => { return Url.Action("DeleteMaterialPicture", "PictureLinks", new { mid = mid, mct = mct, pid = x.Id }); },
+                EnableCreating = true,
+                CreateRowUrl = "javascript:void(0)",
+                ShowPagerInfo=true
+            }
+    )

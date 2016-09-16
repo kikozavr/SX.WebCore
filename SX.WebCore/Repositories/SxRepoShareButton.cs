@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using SX.WebCore.Abstract;
 using SX.WebCore.Providers;
 using System.Data.SqlClient;
 using System.Linq;
@@ -8,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SX.WebCore.ViewModels;
+using SX.WebCore.Repositories.Abstract;
 
 namespace SX.WebCore.Repositories
 {

@@ -1,0 +1,29 @@
+﻿@model SxVMBanner[]
+
+@Html.SxGridView(Model,
+        new SxExtantions.SxGridViewSettings<SxVMBanner>
+        {
+            Columns = new SxExtantions.SxGridViewColumn<SxVMBanner>[]{
+                new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="Id", Caption="Идентификатор"},
+                new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="Url", Caption="Адрес перехода"},
+                new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="Title", Caption="Заголовок"},
+                new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="Place", Caption="Позиция", Template=(b)=> {
+                    return b.Place==SX.WebCore.SxBanner.BannerPlace.Unknown? null : string.Format("<b class=\"text-warning\">{0}</b>", b.Place);
+                } },
+                new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="ShowsCount", Caption="Показов"},
+                new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="ClicksCount", Caption="Кликов"},
+                new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="CTR", Caption="CTR, %"},
+                new SxExtantions.SxGridViewColumn<SxVMBanner>{FieldName="PictureId", Caption="Картинка", Template=(p)=> {
+                return string.Format("<a data-lightbox=\"roadtrip\" data-title=\"{1}\" data-toggle=\"tooltip\" title=\"Помотреть картинку\" href=\"/pictures/picture/{0}\"><i class=\"fa fa-picture-o\"></i></a>", p.PictureId, p.Title);
+            }, ColumnCssClass=x=> { return "col-cm"; }
+                }
+            },
+            EnableCreating = true,
+            CreateRowUrl = Url.Action("Edit","Banners"),
+            EnableEditing = true,
+            EditRowUrl = x => { return Url.Action("Edit", "Banners", new { id=x.Id}); },
+            DataAjaxUrl = Url.Action("Index", "Banners"),
+            ShowPagerInfo=true,
+            RowCssClass = x => { return !string.IsNullOrEmpty(x.Description) ? null : "warning"; }
+        }
+    )

@@ -1,0 +1,27 @@
+﻿@model SxVMNet[]
+@{
+    ViewBag.Title = "Соцсети";
+}
+
+@section styles{
+    <style type="text/css">
+        .net-color{
+            display:block;
+            height:2px;
+        }
+    </style>
+}
+
+<h2>@ViewBag.Title</h2>
+<br />
+<div id="grid-nets">
+    @Html.Partial("_gridview", Model)
+</div>
+
+@section scripts{
+    <script>
+        $(function () {
+            $('#grid-nets').sx_gv();
+        });
+    </script>
+}
